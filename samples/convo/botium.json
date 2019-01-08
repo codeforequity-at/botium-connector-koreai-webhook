@@ -1,0 +1,11 @@
+{
+  "botium": {
+    "Capabilities": {
+      "PROJECTNAME": "botium-koreai-webhook-convo-sample",
+      "CONTAINERMODE": "koreai-webhook",
+      "KOREAI_WEBHOOK_URL": "https://bots.kore.ai/chatbot/hooks/...",
+      "KOREAI_WEBHOOK_CLIENTID": "...",
+      "KOREAI_WEBHOOK_CLIENTSECRET": "..."
+    }
+  }
+}

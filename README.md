@@ -18,6 +18,12 @@ It can be used as any other Botium connector with all Botium Stack components:
 * [Botium Bindings](https://github.com/codeforequity-at/botium-bindings/)
 * [Botium Box](https://www.botium.at)
 
+## Limitations
+ 
+* Just text conversation and assertation is possible.
+* Connector uses synch webhook API of Kore.ai. Always user has to start the conversation, and it is not possible to handle two following bot sections 
+* Channel specific responses are not supported
+
 ## Requirements
 
 * __Node.js and NPM__
@@ -51,7 +57,7 @@ _Already integrated into Botium Box, no setup required_
 ## Connecting your Kore.ai chatbot to Botium
 
 You have to attach a _Webhook channel_ to your Kore.ai chatbot:
-1. Follow the [instructions](https://developer.kore.ai/docs/bots/bot-builder/adding-channels-to-your-bot/adding-webhook-channel/)
+1. Follow the [instructions](https://developer.kore.ai/docs/bots/bot-builder/adding-channels-to-your-bot/adding-webhook-channel/), use syncronous interation mode, and HS256 algorithm for JWT token.  
 2. From the Webhook configuration screen, copy those settings to the _botium.json_ file:
     1. CLIENT ID
     2. CLIENT SECRET

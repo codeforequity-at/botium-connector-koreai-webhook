@@ -1,0 +1,31 @@
+Flight Check
+
+#me
+help
+
+#bot
+Here are the tasks I can perform for you. a) Get flight status
+
+#me
+get flight status
+
+#bot
+Hello ! Welcome to *Los Angeles International Airport*. I can help you with flight Arrival/Departure information. Please select your preference. a) Arrival b) Departure
+
+#me
+arrival
+
+#bot
+Here are the flights Arrival details for Los Angeles International Airport today. Please select the flight number to see details
+
+#me
+EK222
+
+#bot
+Here are your flight details.
+
+#me
+thanks
+
+#bot
+You're welcome.

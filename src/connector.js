@@ -1,6 +1,6 @@
 const util = require('util')
 const request = require('request')
-const uuidv4 = require('uuid/v4')
+const { v4: uuidv4 } = require('uuid')
 const jwt = require('jsonwebtoken')
 const _ = require('lodash')
 const debug = require('debug')('botium-connector-koreai-webhook')

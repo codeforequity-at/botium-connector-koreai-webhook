@@ -18,12 +18,6 @@ It can be used as any other Botium connector with all Botium Stack components:
 * [Botium Bindings](https://github.com/codeforequity-at/botium-bindings/)
 * [Botium Box](https://www.botium.at)
 
-## Limitations
- 
-* Just text conversation and assertation is possible.
-* Connector uses synch webhook API of Kore.ai. Always user has to start the conversation, and it is not possible to handle two following bot sections 
-* Channel specific responses are not supported
-
 ## Requirements
 
 * __Node.js and NPM__
@@ -103,4 +97,6 @@ If set, this userId will be used as sender. Otherwise, for each convo a new user
 If set, this userId will be used as receiver. Otherwise, for each convo a new userId is generated.
 
 ## Open Issues and Restrictions
-* Currently only text messages supported
+* Just text conversation and assertation is possible.
+* Connector uses synch webhook API of Kore.ai. Always user has to start the conversation, and it is not possible to handle two following bot sections 
+* Channel specific responses are not supported

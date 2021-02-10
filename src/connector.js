@@ -91,7 +91,7 @@ class BotiumConnectorKoreaiWebhook {
             debug(`got response body: ${JSON.stringify(body, null, 2)}`)
 
             if (body.text) {
-              const messageTexts = (_.isArray(body.text) ? body.text : [ body.text ])
+              const messageTexts = (_.isArray(body.text) ? body.text : [body.text])
               messageTexts.filter(t => t).forEach((messageText) => {
                 const botMsg = { sourceData: body, messageText }
                 setTimeout(() => this.queueBotSays(botMsg), 0)

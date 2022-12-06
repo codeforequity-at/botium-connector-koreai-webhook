@@ -11,6 +11,7 @@ get flight status
 
 #bot
 Hello ! Welcome to *Los Angeles International Airport*. I can help you with flight Arrival/Departure information. Please select your preference. a) Arrival b) Departure
+INTENT Get flight status
 
 #me
 arrival

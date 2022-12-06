@@ -80,7 +80,9 @@ Botium setup is ready, you can begin to write your [BotiumScript](https://github
 Set the capability __CONTAINERMODE__ to __koreai-webhook__ to activate this connector.
 
 ### KOREAI_WEBHOOK_URL
-The full Webhook URL from the Webhook configuration settings
+The full Webhook URL from the Webhook configuration settings in V1 format:
+- ```{{host_url}}/chatbot/hooks/{{bot id}}``` or
+- ```{{host_url}}/chatbot/hooks/{{bot id}}/hookInstance/{{webHookId}}```
 
 ### KOREAI_WEBHOOK_CLIENTID
 The CLIENT ID from the Webhook configuration settings
@@ -100,3 +102,8 @@ If set, this userId will be used as receiver. Otherwise, for each convo a new us
 * Just text conversation and assertation is possible.
 * Connector uses synch webhook API of Kore.ai. Always user has to start the conversation, and it is not possible to handle two following bot sections 
 * Channel specific responses are not supported
+
+## Trouble shooting
+* Error 412: The chatbot does not support anonymous access. Use __KOREAI_WEBHOOK_FROMID__ capability. 
+Use the ID of a registered user.
+* Error 401: The webhook is not available

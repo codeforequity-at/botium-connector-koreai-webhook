@@ -1,11 +1,19 @@
 const PluginClass = require('./src/connector')
+const { importHandler, importArgs } = require('./src/intents')
 
 module.exports = {
   PluginVersion: 1,
   PluginClass: PluginClass,
+  Import: {
+    Handler: importHandler,
+    Args: importArgs
+  },
   PluginDesc: {
     name: 'Kore.ai',
     provider: 'Kore.ai',
+    features: {
+      testCaseGeneration: true
+    },
     capabilities: [
       {
         name: 'KOREAI_WEBHOOK_URL',

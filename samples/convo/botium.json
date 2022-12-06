@@ -3,9 +3,9 @@
     "Capabilities": {
       "PROJECTNAME": "botium-koreai-webhook-convo-sample",
       "CONTAINERMODE": "koreai-webhook",
-      "KOREAI_WEBHOOK_URL": "https://bots.kore.ai/chatbot/hooks/st-75abd7c4-65a9-5b7d-9c8f-a27ba4a97ef5",
-      "KOREAI_WEBHOOK_CLIENTID": "cs-bdf60b2b-6bf6-5376-8c8e-5748f3eebc81",
-      "KOREAI_WEBHOOK_CLIENTSECRET": "W0sl4S3Vy5DOu93Rw1cM6XjpM5R8gKLpPlUys85ddxw="
+      "KOREAI_WEBHOOK_URL": "https://bots.kore.ai/chatbot/hooks/...",
+      "KOREAI_WEBHOOK_CLIENTID": "...",
+      "KOREAI_WEBHOOK_CLIENTSECRET": "..."
     }
   }
 }

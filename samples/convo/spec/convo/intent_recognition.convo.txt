@@ -1,3 +1,5 @@
+intent name is extracted, but not for incomprehension.
+
 #me
 ping
 
@@ -10,4 +12,3 @@ somegarbagedjlkjlkjsdf
 
 #bot
 I am unable to find an answer. Please try something else. Here are the tasks I can perform for you. a) Get flight status b) PingDisplayName
-INTENT aaa

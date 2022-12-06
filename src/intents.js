@@ -1,4 +1,3 @@
-const _ = require('lodash')
 const { BotDriver } = require('botium-core')
 const debug = require('debug')('botium-connector-inbenta-intents')
 const rp = require('request-promise-native')
@@ -58,9 +57,6 @@ const getContent = async ({ container, statusCallback }) => {
     status(`got error response for mlexport: ${response.statusCode}/${response.statusMessage}`)
     throw new Error(`got error response for mlexport: ${response.statusCode}/${response.statusMessage}`)
   }
-  // It looks the streamId can be used to check the status (doc says: "it creates a request ID from which we can generate
-  // the Download link of the bot using ML Utterance Export Status API." But there is no requestId.) StreamId is the same
-  // as botId, maybe because there are no parallel downloads
   streamId = body.streamId
 
   //
@@ -131,7 +127,7 @@ const importKoreaiIntents = async ({ caps, importallutterances, buildconvos }, {
       if (!utterances[entry.taskName]) {
         utterances[entry.taskName] = {
           name: entry.taskName,
-          utterances: []
+          utterances: [entry.taskName]
         }
       }
       utterances[entry.taskName].utterances.push(entry.sentence)

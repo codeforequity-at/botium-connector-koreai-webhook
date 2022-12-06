@@ -5,7 +5,7 @@ ping
 
 #bot
 pong
-INTENT PingDisplayName
+INTENT Ping
 
 #me
 somegarbagedjlkjlkjsdf

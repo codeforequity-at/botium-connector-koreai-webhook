@@ -4,7 +4,7 @@ Flight Check
 help
 
 #bot
-Here are the tasks I can perform for you. a) Get flight status
+Here are the tasks I can perform for you. a)
 
 #me
 get flight status

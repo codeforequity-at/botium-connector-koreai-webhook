@@ -78,15 +78,21 @@ const getContent = async ({ container, statusCallback }) => {
   let downloadUrl = null
 
   for (let tries = 0; tries < 20 && !downloadUrl; tries++) {
-    const { body, response } = await rp(roStatus)
-    if (response.statusCode >= 400) {
-      status(`got error response for mlexport/status: ${response.statusCode}/${response.statusMessage}`)
-      throw new Error(`got error response for mlexport/status: ${response.statusCode}/${response.statusMessage}`)
-    }
-    downloadUrl = body.downloadUrl
-    if (!downloadUrl) {
-      status(`Download URI is not ready yet. Waiting ${JSON.stringify(body, null, 2)}`)
-      await new Promise(resolve => setTimeout(resolve, 1000))
+    try {
+      const { body, response } = await rp(roStatus)
+      if (response.statusCode >= 400) {
+        status(`got error response for mlexport/status: ${response.statusCode}/${response.statusMessage}`)
+        throw new Error(`got error response for mlexport/status: ${response.statusCode}/${response.statusMessage}`)
+      }
+      downloadUrl = body.downloadUrl
+      if (!downloadUrl) {
+        status(`Download URI is not ready yet. Waiting ${JSON.stringify(body, null, 2)}`)
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
+    } catch (err) {
+      // i get sometimes internal server error on first try, but on second try it is working.
+      // To be sure retry is for all errors, and not just for the first try
+      status(`Error from mlexport/status: ${err.message || err} retrying`)
     }
   }
 
@@ -116,7 +122,6 @@ const getContent = async ({ container, statusCallback }) => {
 const importKoreaiIntents = async ({ caps, importallutterances, buildconvos }, { statusCallback }) => {
   const driver = new BotDriver(getCaps(caps))
   const container = await driver.Build()
-  // required for token
   await container.Start()
   const chatbotData = await getContent({ container, statusCallback })
 
@@ -175,6 +180,10 @@ const exportKoreaiIntents = async ({ caps, uploadmode }, { utterances }, { statu
   const container = await driver.Build()
   // required for token
   await container.Start()
+  const adminToken = container.pluginInstance.adminToken
+  if (!adminToken) {
+    throw new Error('Admin token is not available, check admin credentials!')
+  }
   let newData = null
   if (uploadmode === 'append') {
     newData = await getContent({ container })
@@ -203,7 +212,7 @@ const exportKoreaiIntents = async ({ caps, uploadmode }, { utterances }, { statu
     uri: `${urlRoot}/uploadfile`,
     method: 'POST',
     headers: {
-      auth: `${container.pluginInstance.token}`,
+      auth: `${adminToken}`,
       'Content-Type': 'multipart/form-data'
     },
     formData: {
@@ -217,8 +226,6 @@ const exportKoreaiIntents = async ({ caps, uploadmode }, { utterances }, { statu
     })
   }
 
-  // TODO
-  console.log(`roUpload ===> ${JSON.stringify(roUpload)}`)
   const { body: uBody, response: uResponse } = await rp(roUpload)
   if (uResponse.statusCode >= 400) {
     status(`got error response for uploadfile: ${uResponse.statusCode}/${uResponse.statusMessage}`)

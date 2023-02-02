@@ -12,10 +12,10 @@ class BotiumConnectorKoreaiWebhook {
     this.queueBotSays = queueBotSays
     this.caps = caps
     this.token = null
+    this.adminToken = null
     this.fromId = null
     this.toId = null
     this.nlpAnalyticsUri = null
-    this.parentIntent = null
   }
 
   Validate () {
@@ -32,8 +32,6 @@ class BotiumConnectorKoreaiWebhook {
   Start () {
     debug('Start called')
 
-    this.parentIntent = null
-
     if (this.caps[Capabilities.KOREAI_WEBHOOK_FROMID]) {
       this.fromId = this.caps[Capabilities.KOREAI_WEBHOOK_FROMID]
     } else {
@@ -44,19 +42,8 @@ class BotiumConnectorKoreaiWebhook {
     } else {
       this.toId = uuidv4()
     }
-    const tokenPayload = {
-      isAnonymous: true
-    }
-    const tokenOptions = {
-      algorithm: 'HS256',
-      expiresIn: '1d',
-      issuer: this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTID],
-      audience: 'https://idproxy.kore.ai/authorize',
-      subject: this.fromId
-    }
-
-    this.token = jwt.sign(tokenPayload, this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTSECRET], tokenOptions)
-    debug(`Generated token ${this.token} from payload "${util.inspect(tokenPayload)}", options "${util.inspect(tokenOptions)}"`)
+    this.token = this.createToken()
+    this.adminToken = this.createAdminToken()
     if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE]) {
       if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_URL]) {
         this.nlpAnalyticsUri = this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_URL]
@@ -71,6 +58,33 @@ class BotiumConnectorKoreaiWebhook {
     }
   }
 
+  createAdminToken () {
+    const adminClientId = this.caps[Capabilities.KOREAI_WEBHOOK_ADMIN_CLIENTID]
+    const adminClientSecret = this.caps[Capabilities.KOREAI_WEBHOOK_ADMIN_CLIENTSECRET]
+    if (!adminClientSecret || !adminClientId) {
+      return null
+    }
+
+    return this.createToken(adminClientId, adminClientSecret)
+  }
+
+  createToken (clientId, clientSecret) {
+    const tokenPayload = {
+      isAnonymous: true
+    }
+    const tokenOptions = {
+      algorithm: 'HS256',
+      expiresIn: '1d',
+      issuer: clientId || this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTID],
+      audience: 'https://idproxy.kore.ai/authorize',
+      subject: this.fromId
+    }
+    const token = jwt.sign(tokenPayload, clientSecret || this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTSECRET], tokenOptions)
+    debug(`Generated token ${token} from payload "${util.inspect(tokenPayload)}", options "${util.inspect(tokenOptions)}"`)
+
+    return token
+  }
+
   UserSays (msg) {
     debug(`UserSays called ${util.inspect(msg)}`)
     return this._doRequest(msg)
@@ -79,6 +93,7 @@ class BotiumConnectorKoreaiWebhook {
   Stop () {
     debug('Stop called')
     this.token = null
+    this.adminToken = null
     this.fromId = null
     this.toId = null
   }
@@ -93,21 +108,23 @@ class BotiumConnectorKoreaiWebhook {
         requestOptions.nlp ? request(requestOptions.nlp) : null
       ]).then(results => {
         resolve(this)
-        const body = results[0]
-        if (body) {
+        const body = results && results.length > 0 ? results[0] : null
+        if (!body) {
+          debug(`body not found in response: ${JSON.stringify(results, null, 2)}`)
+        } else {
+          if (results.length > 1) {
+            debug(`composite response, extracting just the first one: ${JSON.stringify(results, null, 2)}`)
+          }
           debug(`got response body: ${JSON.stringify(body, null, 2)}`)
           let nlp = null
           const intentName = _.get(results, '[1].response.finalResolver.winningIntent[0].intent')
           if (intentName) {
-            this.parentIntent = intentName
             nlp = {
               intent: {
                 name: intentName
               }
             }
           } else {
-            // Should we clean parent intent?
-            // this.parentIntent = null
             if (results[1].response.result === 'failintent') {
               nlp = {
                 intent: {
@@ -116,6 +133,36 @@ class BotiumConnectorKoreaiWebhook {
                 }
               }
             }
+          }
+          const entities = _.get(results, '[1].response.finalResolver.entities')
+          if (entities && entities.length) {
+            if (!nlp) {
+              nlp = {}
+            }
+            nlp.entities = entities.map(e => {
+              let value = null
+            if (!e.value) {
+              value = ''
+            } else if (_.isArray(e.value) && e.value.length === 1) {
+                if (!e.value[0]) {
+                  value = ''
+                } else {
+                  // e.value is pure string like "2023-02-03", or json like
+                  // {
+                  //   "formatted_address": "London, UK",
+                  //   "lat": 51.5072178,
+                  //   "lng": -0.1275862
+                  // }
+                  value = _.isString(e.value[0]) ? e.value[0] : JSON.stringify(e.value[0])
+                }
+              } else {
+                value = JSON.stringify(e.value)
+              }
+              return {
+                name: e.field,
+                value
+              }
+            })
           }
           if (body.text) {
             const messageTexts = (_.isArray(body.text) ? body.text : [body.text])
@@ -142,19 +189,7 @@ class BotiumConnectorKoreaiWebhook {
       }).catch(err => {
         reject(new Error(`got error response from "${(err.options && err.options.uri) ? err.options.uri : 'N/A'}": ${err.statusCode}/${err.statusMessage}`))
       })
-
-      // request(requestOptions.main, (err, response, body) => {
-      //   if (err) {
-      //     reject(new Error(`rest request failed: ${util.inspect(err)}`))
-      //   } else {
-      //     if (response.statusCode >= 400) {
-      //       debug(`got error response: ${response.statusCode}/${response.statusMessage}`)
-      //       return reject(new Error(`got error response: ${response.statusCode}/${response.statusMessage}`))
-      //     }
-      //   }
-      // })
-    }
-    )
+    })
   }
 
   _buildRequest (msg) {
@@ -193,9 +228,6 @@ class BotiumConnectorKoreaiWebhook {
           streamName: this.caps[Capabilities.KOREAI_WEBHOOK_BOTNAME]
         }
       }
-      if (this.parentIntent) {
-        nlp.json.parentIntent = this.parentIntent
-      }
     }
     return {
       main,
@@ -204,6 +236,4 @@ class BotiumConnectorKoreaiWebhook {
   }
 }
 
-module
-
-  .exports = BotiumConnectorKoreaiWebhook
+module.exports = BotiumConnectorKoreaiWebhook

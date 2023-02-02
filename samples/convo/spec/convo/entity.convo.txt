@@ -1,0 +1,9 @@
+entity
+
+#me
+book a flight from london for today
+
+#bot
+INTENT Book a flight
+ENTITY_CONTENT BookDate|$date_ISO
+ENTITY_CONTENT BookLocation|{"formatted_address":"London, UK","lat":51.5072178,"lng":-0.1275862}

@@ -1,0 +1,7 @@
+none intent
+
+#me
+gggggggggggggg
+
+#bot
+INTENT None

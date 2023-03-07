@@ -1,9 +1,9 @@
 const util = require('util')
-const request = require('request-promise-native')
 const { v4: uuidv4 } = require('uuid')
 const jwt = require('jsonwebtoken')
 const _ = require('lodash')
 const debug = require('debug')('botium-connector-koreai-webhook')
+const axios = require('axios')
 
 const Capabilities = require('./Capabilities')
 
@@ -70,12 +70,12 @@ class BotiumConnectorKoreaiWebhook {
 
   createToken (clientId, clientSecret) {
     const tokenPayload = {
-      isAnonymous: true
+      isAnonymous: true,
+      appId: clientId || this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTID]
     }
     const tokenOptions = {
       algorithm: 'HS256',
       expiresIn: '1d',
-      issuer: clientId || this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTID],
       audience: 'https://idproxy.kore.ai/authorize',
       subject: this.fromId
     }
@@ -104,8 +104,8 @@ class BotiumConnectorKoreaiWebhook {
 
     return new Promise((resolve, reject) => {
       Promise.all([
-        request(requestOptions.main),
-        requestOptions.nlp ? request(requestOptions.nlp) : null
+        axios(requestOptions.main).data,
+        requestOptions.nlp ? axios(requestOptions.nlp).data : null
       ]).then(results => {
         resolve(this)
         const body = results && results.length > 0 ? results[0] : null
@@ -141,9 +141,9 @@ class BotiumConnectorKoreaiWebhook {
             }
             nlp.entities = entities.map(e => {
               let value = null
-            if (!e.value) {
-              value = ''
-            } else if (_.isArray(e.value) && e.value.length === 1) {
+              if (!e.value) {
+                value = ''
+              } else if (_.isArray(e.value) && e.value.length === 1) {
                 if (!e.value[0]) {
                   value = ''
                 } else {
@@ -193,16 +193,15 @@ class BotiumConnectorKoreaiWebhook {
   }
 
   _buildRequest (msg) {
-    const uri = this.caps[Capabilities.KOREAI_WEBHOOK_URL]
+    const url = this.caps[Capabilities.KOREAI_WEBHOOK_URL]
 
     const main = {
-      uri,
+      url,
       method: 'POST',
       headers: {
         Authorization: `Bearer ${this.token}`
       },
-      json: true,
-      body: {
+      data: {
         message: {
           text: msg.messageText
         },
@@ -218,12 +217,12 @@ class BotiumConnectorKoreaiWebhook {
     let nlp = null
     if (this.nlpAnalyticsUri && msg.messageText) {
       nlp = {
-        uri: this.nlpAnalyticsUri,
+        url: this.nlpAnalyticsUri,
         method: 'POST',
         headers: {
           auth: `${this.token}`
         },
-        json: {
+        data: {
           input: msg.messageText,
           streamName: this.caps[Capabilities.KOREAI_WEBHOOK_BOTNAME]
         }

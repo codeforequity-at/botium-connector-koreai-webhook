@@ -75,6 +75,21 @@ Open the file _botium.json_ in your working directory and add the Webhook settin
 ```
 Botium setup is ready, you can begin to write your [BotiumScript](https://github.com/codeforequity-at/botium-core/wiki/Botium-Scripting) files.
 
+## NLP Analitycs
+- Extracting of NLP metadata has to be turned on (KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE). 
+(It is not turned on as default, because it slows down the process.) 
+- The bot name has to set. (KOREAI_WEBHOOK_BOTNAME)
+- The app associated with the Kore AI webhook has to have the __Intent and Entity Detection__ scope.
+
+## Chatbot data downloader
+- The app associated with the Kore AI webhook has to have the __Utterances Export__ scope.
+
+## Chatbot data uploader
+- The app associated with the Kore AI webhook has to have the __Utterances Import__ scope.
+- A new Kore AI Admin App is required (Kore AI Admin Console, Security & Control, [API scopes](https://bots.kore.ai/admin/#_botApiScopes) )
+- The Kore AI Admin App has to have the __Bot Import__ scope
+- The Kore AI Admin App has to be registered to Botium via __KOREAI_WEBHOOK_ADMIN_CLIENTID__, and __OREAI_WEBHOOK_ADMIN_CLIENTSECRET__.
+
 ## Supported Capabilities
 
 Set the capability __CONTAINERMODE__ to __koreai-webhook__ to activate this connector.
@@ -92,18 +107,30 @@ The CLIENT SECRET from the Webhook configuration settings
 
 _It is recommended to actually not add this to the botium.json file, but to use the environment variable BOTIUM_KOREAI_WEBHOOK_CLIENTSECRET instead_
 
+### KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE
+Turn it on to extract NLP metadata, like recognized intent, and entities.
+
+### KOREAI_WEBHOOK_NLP_ANALYTICS_URL
+It is an advanced capability. In special cases it might be required to overwrite the URL calculated by Botium.
+
+### KOREAI_WEBHOOK_BOTNAME
+The name of the Bot. If NLP Analytics is enabled, then this capability is required.
+
 ### KOREAI_WEBHOOK_FROMID
 If set, this userId will be used as sender. Otherwise, for each convo a new userId is generated.
 
 ### KOREAI_WEBHOOK_TOID
 If set, this userId will be used as receiver. Otherwise, for each convo a new userId is generated.
 
-## Open Issues and Restrictions
-* Just text conversation and assertation is possible.
-* Connector uses synch webhook API of Kore.ai. Always user has to start the conversation, and it is not possible to handle two following bot sections 
-* Channel specific responses are not supported
+### KOREAI_WEBHOOK_ADMIN_CLIENTID
+The CLIENT ID of an app, created in Kore AI Admin Console
 
-## Trouble shooting
-* Error 412: The chatbot does not support anonymous access. Use __KOREAI_WEBHOOK_FROMID__ capability. 
-Use the ID of a registered user.
+### OREAI_WEBHOOK_ADMIN_CLIENTSECRET
+The CLIENT SECRET of an app, created in Kore AI Admin Console
+
+## Open Issues and Restrictions
+* Connector uses synch webhook API of Kore.ai. Always user has to start the conversation, and it is not possible to handle two following bot sections 
+
+## Troubleshooting
+* Error 412: The chatbot does not support anonymous access. Use __KOREAI_WEBHOOK_FROMID__ capability, set the ID of a registered user.
 * Error 401: The webhook is not available

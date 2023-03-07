@@ -108,7 +108,7 @@ const getContent = async ({ container, statusCallback }) => {
   return resDownload.data
 }
 
-const importKoreaiIntents = async ({ caps, importallutterances, buildconvos }, {statusCallback}) => {
+const importKoreaiIntents = async ({ caps, importallutterances, buildconvos }, { statusCallback }) => {
   const driver = new BotDriver(getCaps(caps))
   const container = await driver.Build()
   await container.Start()

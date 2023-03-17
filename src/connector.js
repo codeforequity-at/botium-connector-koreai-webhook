@@ -104,72 +104,150 @@ class BotiumConnectorKoreaiWebhook {
 
     return new Promise((resolve, reject) => {
       Promise.all([
-        axios(requestOptions.main).data,
-        requestOptions.nlp ? axios(requestOptions.nlp).data : null
+        axios(requestOptions.main),
+        requestOptions.nlp ? axios(requestOptions.nlp) : null
       ]).then(results => {
         resolve(this)
+        results = [results[0].data, results[1]?.data]
         const body = results && results.length > 0 ? results[0] : null
         if (!body) {
           debug(`body not found in response: ${JSON.stringify(results, null, 2)}`)
         } else {
-          if (results.length > 1) {
-            debug(`composite response, extracting just the first one: ${JSON.stringify(results, null, 2)}`)
-          }
-          debug(`got response body: ${JSON.stringify(body, null, 2)}`)
           let nlp = null
-          const intentName = _.get(results, '[1].response.finalResolver.winningIntent[0].intent')
-          if (intentName) {
-            nlp = {
-              intent: {
-                name: intentName
-              }
+          debug(`got response body: ${JSON.stringify(body, null, 2)}`)
+          if (results[1]?.response) {
+            debug(`got nlp response: ${JSON.stringify(results[1].response)}`)
+            if (results[1].response.finalResolver && results[1].response.result !== 'failintent') {
+              debug('no final resolver, unknown reason')
             }
-          } else {
-            if (results[1].response.result === 'failintent') {
+            const intentName = _.get(results, '[1].response.finalResolver.winningIntent[0].intent')
+            if (intentName) {
               nlp = {
                 intent: {
-                  name: 'None',
-                  incomprehension: true
+                  name: intentName
+                }
+              }
+            } else {
+              if (results[1].response.result === 'failintent') {
+                nlp = {
+                  intent: {
+                    name: 'None',
+                    incomprehension: true
+                  }
                 }
               }
             }
-          }
-          const entities = _.get(results, '[1].response.finalResolver.entities')
-          if (entities && entities.length) {
-            if (!nlp) {
-              nlp = {}
-            }
-            nlp.entities = entities.map(e => {
-              let value = null
-              if (!e.value) {
-                value = ''
-              } else if (_.isArray(e.value) && e.value.length === 1) {
-                if (!e.value[0]) {
+            const entities = _.get(results, '[1].response.finalResolver.entities')
+            if (entities && entities.length) {
+              if (!nlp) {
+                nlp = {}
+              }
+              nlp.entities = entities.map(e => {
+                let value = null
+                if (!e.value) {
                   value = ''
+                } else if (_.isArray(e.value) && e.value.length === 1) {
+                  if (!e.value[0]) {
+                    value = ''
+                  } else {
+                    // e.value is pure string like "2023-02-03", or json like
+                    // {
+                    //   "formatted_address": "London, UK",
+                    //   "lat": 51.5072178,
+                    //   "lng": -0.1275862
+                    // }
+                    value = _.isString(e.value[0]) ? e.value[0] : JSON.stringify(e.value[0])
+                  }
                 } else {
-                  // e.value is pure string like "2023-02-03", or json like
-                  // {
-                  //   "formatted_address": "London, UK",
-                  //   "lat": 51.5072178,
-                  //   "lng": -0.1275862
-                  // }
-                  value = _.isString(e.value[0]) ? e.value[0] : JSON.stringify(e.value[0])
+                  value = JSON.stringify(e.value)
                 }
-              } else {
-                value = JSON.stringify(e.value)
-              }
-              return {
-                name: e.field,
-                value
-              }
-            })
+                return {
+                  name: e.field,
+                  value
+                }
+              })
+            }
           }
           if (body.text) {
-            const messageTexts = (_.isArray(body.text) ? body.text : [body.text])
-            messageTexts.filter(t => t).forEach((messageText) => {
+            const texts = (_.isArray(body.text) ? body.text : [body.text])
+            texts.filter(t => t).forEach((text) => {
+              let asJson = null
+              try {
+                asJson = JSON.parse(text.replace(/&quot;/g, '"'))
+              } catch (err) { }
+
+              let messageText = null
+              let buttons = null
+              let media = null
+              let cards = null
+              if (asJson) {
+                debug(`response as json: ${JSON.stringify(asJson)}`)
+                if (asJson.file) {
+                  // {"file":{"type":"link","payload":{"url":"...","title":"...","template_type":"attachment"}}}
+                  if (asJson.file.type === 'link') {
+                    media = [{
+                      mediaUri: asJson.file.payload.url,
+                      altText: asJson.file.payload.title
+                    }]
+                  } else {
+                    debug('unknown file format')
+                  }
+                } else if (asJson.type === 'template' && asJson?.payload?.template_type) {
+                  messageText = asJson.payload.text
+                  switch (asJson.payload.template_type) {
+                    // --- BUTTON ---
+                    case 'button':
+                      // If I created this button, then I set just one value, "Button1".
+                      // So I suppose just the title is important for me
+                      // {"type":"postback","title":"Button1","payload":"button1","value":"button1"}
+                      buttons = asJson.payload.buttons.map(({ title, payload }) => ({ text: title, payload: payload }))
+                      break
+                    // --- QUICK REPLY ---
+                    case 'quick_replies':
+                      // {"content_type":"text","title":"B1","payload":"button1","image_url":"https:...","value":"button1"}
+                      buttons = asJson.payload.quick_replies.map(({ title, payload }) => ({ text: title, payload: payload }))
+                      break
+                    case 'carousel':
+                      // default_action is not used. its always
+                      // {
+                      //   "type": "web_url",
+                      //   "url": ""
+                      // }
+                      // eslint-disable-next-line camelcase
+                      cards = asJson.payload.elements.map((element) => ({
+                        text: [element.title, element.subtitle],
+                        image: { mediaUri: element.image_url },
+                        buttons: element.buttons.map(({ title, payload }) => ({ text: title, payload: payload })),
+                        sourceData: element
+                      }))
+                      break
+                    default:
+                      debug(`Not supported template type: ${asJson.payload.template_type} in: ${JSON.stringify(asJson, null, 2)}`)
+
+                      break
+                  }
+                } else {
+                  debug(`Not supported json: ${JSON.stringify(asJson, null, 2)}`)
+                }
+              } else {
+                // --- CONFIRMATION ---
+                // "This is a confirmation\nYes, No, "
+                if (text.endsWith('\nYes, No, ')) {
+                  messageText = text.substring(0, text.length - '\nYes, No, '.length)
+                  buttons = [
+                    { text: 'Yes' },
+                    { text: 'No' }
+                  ]
+                } else {
+                  messageText = text
+                }
+              }
               const botMsg = {
                 sourceData: body,
-                messageText
+                messageText,
+                buttons,
+                media,
+                cards
               }
               if (nlp) {
                 botMsg.nlp = nlp

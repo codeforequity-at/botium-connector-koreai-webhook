@@ -1,0 +1,13 @@
+buttons
+
+#me
+buttons
+
+#bot
+BUTTONS Button1|Button2|Button3
+
+#me
+BUTTON button1
+
+#bot
+Button1 pushed

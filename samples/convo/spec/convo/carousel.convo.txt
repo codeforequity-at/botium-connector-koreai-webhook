@@ -1,0 +1,9 @@
+carousel
+
+#me
+carousel
+
+#bot
+CARDS header|desc|h1|d1
+BUTTONS Button1|Button2|b1|b2
+MEDIA https://images.credly.com/size/340x340/images/d37acfad-a646-4e48-b1ca-9f92718f485d/blob.png|https://images.credly.com/size/340x340/images/d37acfad-a646-4e48-b1ca-9f92718f485d/blob.png

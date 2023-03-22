@@ -1,0 +1,18 @@
+{
+  "utterances": [
+    {
+      "name": "Ping",
+      "utterances": [
+        "Ping",
+        "Are you there?",
+        "You there?"
+      ]
+    },
+    {
+      "name": "Get flight status",
+      "utterances": [
+        "Get flight status"
+      ]
+    }
+  ]
+}

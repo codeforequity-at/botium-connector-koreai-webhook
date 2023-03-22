@@ -243,11 +243,19 @@ class BotiumConnectorKoreaiWebhook {
                 }
               }
               const botMsg = {
-                sourceData: body,
-                messageText,
-                buttons,
-                media,
-                cards
+                sourceData: body
+              }
+              if (messageText) {
+                botMsg.messageText = messageText
+              }
+              if (buttons) {
+                botMsg.buttons = buttons
+              }
+              if (media) {
+                botMsg.media = media
+              }
+              if (cards) {
+                botMsg.cards = cards
               }
               if (nlp) {
                 botMsg.nlp = nlp
@@ -265,7 +273,7 @@ class BotiumConnectorKoreaiWebhook {
           }
         }
       }).catch(err => {
-        reject(new Error(`got error response from "${(err.options && err.options.uri) ? err.options.uri : 'N/A'}": ${err.statusCode}/${err.statusMessage}`))
+        reject(new Error(`failed to call endpoint "${err.config?.url}" error message "${err.message}"`))
       })
     })
   }
@@ -312,5 +320,7 @@ class BotiumConnectorKoreaiWebhook {
     }
   }
 }
+
+BotiumConnectorKoreaiWebhook.axios = axios
 
 module.exports = BotiumConnectorKoreaiWebhook

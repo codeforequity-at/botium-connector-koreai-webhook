@@ -1,0 +1,18 @@
+{
+  "utterances": [
+    {
+      "name": "not existing intent",
+      "utterances": [
+        "Ping",
+        "Are you there?",
+        "You there?"
+      ]
+    },
+    {
+      "name": "Get flight status",
+      "utterances": [
+        "Flight status"
+      ]
+    }
+  ]
+}

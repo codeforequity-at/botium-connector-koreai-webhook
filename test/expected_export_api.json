@@ -1,0 +1,28 @@
+[
+  {
+    "entities": [],
+    "language": "en",
+    "sentence": "Are you there?",
+    "taskName": "Ping",
+    "type": "DialogIntent"
+  },
+  {
+    "entities": [],
+    "language": "en",
+    "sentence": "You there?",
+    "taskName": "Ping",
+    "type": "DialogIntent"
+  },
+  {
+    "entities": [],
+    "language": "en",
+    "sentence": "Get flight status",
+    "taskName": "Get flight status",
+    "type": "DialogIntent"
+  },
+  {
+    "sentence": "Flight status",
+    "taskName": "Get flight status",
+    "type": "DialogIntent"
+  }
+]

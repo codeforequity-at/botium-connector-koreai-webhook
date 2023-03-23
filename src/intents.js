@@ -183,7 +183,7 @@ const exportKoreaiIntents = async ({ caps }, { utterances }, { statusCallback })
     const existingIntents = new Set(newData.map(s => s.taskName))
 
     for (const struct of utterances) {
-      if (!existingIntents.has(struct.name)) {
+      if (existingIntents.has(struct.name)) {
         status(`Skipping intent "${struct.name}" because it does not exist in the Chatbot`)
         continue
       }

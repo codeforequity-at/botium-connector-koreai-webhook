@@ -13,7 +13,7 @@ const caps = require('./jsons/mocked_botium_for_exporter.json').botium.Capabilit
 const toUpload = require('./jsons/utterances_to_export.json')
 const expectedExport = require('./jsons/expected_export_api.json')
 
-describe('uploader', function () {
+describe('exporter', function () {
   beforeEach(async function () {
     this.mockAdapter = new MockAdapter(intents.axios)
     addDownloaderMocks(this.mockAdapter)

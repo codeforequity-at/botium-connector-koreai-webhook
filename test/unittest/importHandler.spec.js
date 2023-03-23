@@ -9,7 +9,7 @@ const downloadConverted = require('./jsons/expected_import.json')
 const intents = require('../../src/intents')
 const { addDownloaderMocks } = require('./helper')
 
-describe('downloader', function () {
+describe('importer', function () {
   beforeEach(async function () {
     this.mockAdapter = new MockAdapter(intents.axios)
     addDownloaderMocks(this.mockAdapter)

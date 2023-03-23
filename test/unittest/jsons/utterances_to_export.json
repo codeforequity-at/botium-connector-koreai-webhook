@@ -11,7 +11,7 @@
     {
       "name": "Get flight status",
       "utterances": [
-        "Flight status"
+        "not existing utterance"
       ]
     }
   ]

@@ -1860,36 +1860,5 @@
         }
       }
     }
-  },
-  {
-    "request": "buttons",
-    "api": {
-      "text": "{&quot;type&quot;:&quot;template&quot;,&quot;payload&quot;:{&quot;template_type&quot;:&quot;button&quot;,&quot;text&quot;:&quot;sometext&quot;,&quot;buttons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]},&quot;allPostbackButtons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]}"
-    },
-    "chatbot": {
-      "sourceData": {
-        "text": "{&quot;type&quot;:&quot;template&quot;,&quot;payload&quot;:{&quot;template_type&quot;:&quot;button&quot;,&quot;text&quot;:&quot;sometext&quot;,&quot;buttons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]},&quot;allPostbackButtons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]}"
-      },
-      "messageText": "sometext",
-      "buttons": [
-        {
-          "text": "Button1",
-          "payload": "button1"
-        },
-        {
-          "text": "Button2",
-          "payload": "button2"
-        },
-        {
-          "text": "Button3",
-          "payload": "button3"
-        }
-      ],
-      "nlp": {
-        "intent": {
-          "name": "Buttons"
-        }
-      }
-    }
   }
 ]

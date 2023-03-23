@@ -168,13 +168,95 @@ class BotiumConnectorKoreaiWebhook {
               })
             }
           }
+
+          let forms = null
+          // all other rich components are stored in the text fied.
+          if (body.form) {
+            if (!body.form.formDef?.components.length) {
+              debug(`cant process form, skipped: ${JSON.stringify(body.form)}`)
+            } else {
+              forms = []
+              const componentToBotiumFormat = (c) => {
+                const md = c.metaData
+                if (!md) {
+                  debug(`metaData missing: ${JSON.stringify(c)}`)
+                  return null
+                }
+
+                const converted = {
+                  name: md.name,
+                  label: md.displayName
+                }
+                // dont understand they concept with the default values. Just collected the possible sources
+                const def = md.defaultvalueInput || c.defaultvalueInput || md.defaultvalueDateInput || md.defaultvalueInputNum || md.toggleDefaultValue
+                if (!_.isNil(def)) {
+                  converted.value = def
+                } else if (md.values && md.values.find(({ selected }) => selected)) {
+                  // and for radiobutton, and checkbox
+                  converted.value = md.values.find(({ selected }) => selected).value
+                }
+
+                switch (md.type) {
+                  case 'textField':
+                  case 'textArea':
+                  case 'phoneNumber':
+                  case 'email':
+                  case 'address':
+                  case 'url':
+                  case 'password':
+                    converted.type = 'Text'
+                    break
+                  case 'number':
+                  case 'rangeSlider':
+                    converted.type = 'Number'
+                    break
+                  case 'radio':
+                  case 'checkbox':
+                    converted.type = 'RadioSet'
+                    break
+                  case 'dropdown':
+                    converted.type = 'ChoiceSet'
+                    break
+                  case 'date':
+                    converted.type = 'Date'
+                    break
+                  case 'toggle':
+                    converted.type = 'Toggle'
+                    break
+                  default:
+                    debug(`component not supported, skipped: ${JSON.stringify(c)}`)
+                }
+
+                return converted
+              }
+              for (const c of body.form.formDef.components) {
+                if (c.components?.length) {
+                  for (const sub of c.components) {
+                    const converted = componentToBotiumFormat(sub)
+                    if (converted) {
+                      forms.push(converted)
+                    }
+                  }
+                } else {
+                  if (!c.metaData) {
+                    debug(`metaData missing: ${JSON.stringify(c)}`)
+                  } else {
+                    const converted = componentToBotiumFormat(c)
+                    if (converted) {
+                      forms.push(converted)
+                    }
+                  }
+                }
+              }
+            }
+          }
           if (body.text) {
             const texts = (_.isArray(body.text) ? body.text : [body.text])
             texts.filter(t => t).forEach((text) => {
               let asJson = null
               try {
                 asJson = JSON.parse(text.replace(/&quot;/g, '"'))
-              } catch (err) { }
+              } catch (err) {}
 
               let messageText = null
               let buttons = null
@@ -200,12 +282,18 @@ class BotiumConnectorKoreaiWebhook {
                       // If I created this button, then I set just one value, "Button1".
                       // So I suppose just the title is important for me
                       // {"type":"postback","title":"Button1","payload":"button1","value":"button1"}
-                      buttons = asJson.payload.buttons.map(({ title, payload }) => ({ text: title, payload: payload }))
+                      buttons = asJson.payload.buttons.map(({ title, payload }) => ({
+                        text: title,
+                        payload: payload
+                      }))
                       break
                     // --- QUICK REPLY ---
                     case 'quick_replies':
                       // {"content_type":"text","title":"B1","payload":"button1","image_url":"https:...","value":"button1"}
-                      buttons = asJson.payload.quick_replies.map(({ title, payload }) => ({ text: title, payload: payload }))
+                      buttons = asJson.payload.quick_replies.map(({ title, payload }) => ({
+                        text: title,
+                        payload: payload
+                      }))
                       break
                     case 'carousel':
                       // default_action is not used. its always
@@ -217,7 +305,10 @@ class BotiumConnectorKoreaiWebhook {
                       cards = asJson.payload.elements.map((element) => ({
                         text: [element.title, element.subtitle],
                         image: { mediaUri: element.image_url },
-                        buttons: element.buttons.map(({ title, payload }) => ({ text: title, payload: payload })),
+                        buttons: element.buttons.map(({ title, payload }) => ({
+                          text: title,
+                          payload: payload
+                        })),
                         sourceData: element
                       }))
                       break
@@ -260,6 +351,12 @@ class BotiumConnectorKoreaiWebhook {
               if (nlp) {
                 botMsg.nlp = nlp
               }
+              if (forms) {
+                botMsg.forms = forms
+                // teoretically one form has just one (mandatory) text,
+                // but if there are more text somehow, we dont want to display form for each
+                forms = null
+              }
               setTimeout(() => this.queueBotSays(botMsg), 0)
             })
           } else {
@@ -270,6 +367,16 @@ class BotiumConnectorKoreaiWebhook {
               }
               setTimeout(() => this.queueBotSays(botMsg), 0)
             }
+          }
+          if (forms) {
+            // teoretically one form has just one (mandatory) text,
+            // but if there are no text somehow, we want to display the form once
+            const botMsg = {
+              sourceData: body,
+              forms
+            }
+            forms = null
+            setTimeout(() => this.queueBotSays(botMsg), 0)
           }
         }
       }).catch(err => {

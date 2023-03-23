@@ -7,7 +7,9 @@
   "scripts": {
     "build": "npm run eslint && rollup -c",
     "eslint": "eslint index.js src/**/*.js",
-    "eslint:fix": "eslint --fix index.js src/**/*.js"
+    "eslint:fix": "eslint --fix index.js src/**/*.js",
+    "test": "mocha test/unittest/**/*spec.js",
+    "test-nightly": "mocha test/nightly/**/*spec.js"
   },
   "repository": {
     "type": "git",

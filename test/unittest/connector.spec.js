@@ -5,9 +5,10 @@ const assert = chai.assert
 const MockAdapter = require('axios-mock-adapter')
 const _ = require('lodash')
 
-const Connector = require('../src/connector')
-const capsBasic = require('./mocked_botium_basic.json').botium.Capabilities
-const capsWithNlp = require('./mocked_botium_with_nlp.json').botium.Capabilities
+const Connector = require('../../src/connector')
+const capsBasic = require('./jsons/mocked_botium_basic.json').botium.Capabilities
+const capsWithNlp = require('./jsons/mocked_botium_with_nlp.json').botium.Capabilities
+const RICH_ELEMENTS_TEST_DEFINITIONS = require('./jsons/richElements.json')
 
 describe('connector', function () {
   describe('error handling', function () {
@@ -44,7 +45,6 @@ describe('connector', function () {
   })
 
   describe('rich elements', function () {
-    const TESTS = require('./richElements.json')
     beforeEach(async function () {
       this.botMsgPromise = new Promise(resolve => {
         this.botMsgPromiseResolve = resolve
@@ -64,19 +64,19 @@ describe('connector', function () {
       this.mock.onPost('/mocked').reply((config) => {
         try {
           const data = JSON.parse(config.data)
-          const desc = TESTS.find(({ request }) => request === data.message?.text)
+          const desc = RICH_ELEMENTS_TEST_DEFINITIONS.find(({ request }) => request === data.message?.text)
           if (desc) {
             return [200, desc.api]
           }
         } catch (err) {
           return [500, { reason: err }]
         }
-        return [500, { reason: 'unknown config' }]
+        return [404, { reason: 'unknown config' }]
       })
       this.mock.onPost('/mocked/findIntent?fetchConfiguredTasks=false').reply((config) => {
         try {
           const data = JSON.parse(config.data)
-          const desc = TESTS.find(({ request }) => request === data.input)
+          const desc = RICH_ELEMENTS_TEST_DEFINITIONS.find(({ request }) => request === data.input)
           if (desc && desc.nlp) {
             // response.finalResolver.winningIntent[0].intent
             return [200, _.isString(desc.nlp) ? { response: { finalResolver: { winningIntent: [{ intent: desc.nlp }] } } } : desc.nlp]
@@ -88,7 +88,7 @@ describe('connector', function () {
       })
     })
 
-    TESTS.forEach(testCase => {
+    RICH_ELEMENTS_TEST_DEFINITIONS.forEach(testCase => {
       it(`should handle ${testCase.request}`, async function () {
         await this.connector.UserSays({ messageText: testCase.request })
         const botMsg = await this.botMsgPromise

@@ -5,13 +5,13 @@ chai.use(chaiAsPromised)
 const assert = chai.assert
 const MockAdapter = require('axios-mock-adapter')
 
-const intents = require('../src/intents')
+const intents = require('../../src/intents')
 const { addDownloaderMocks } = require('./helper')
 const nock = require('nock')
 
-const caps = require('./mocked_botium_for_exporter.json').botium.Capabilities
-const toUpload = require('./utterances_to_export.json')
-const expectedExport = require('./expected_export_api.json')
+const caps = require('./jsons/mocked_botium_for_exporter.json').botium.Capabilities
+const toUpload = require('./jsons/utterances_to_export.json')
+const expectedExport = require('./jsons/expected_export_api.json')
 
 describe('uploader', function () {
   beforeEach(async function () {
@@ -32,7 +32,6 @@ describe('uploader', function () {
           if (_.isString(line)) {
             const matches = line?.match(/name="([^"]+)"/)
             const key = matches?.[1]
-            console.log(`key ===> ${JSON.stringify(key)}`)
             if (key) {
               result._currentKey = key
             } else if (line !== '\\r\\n') {
@@ -78,11 +77,10 @@ describe('uploader', function () {
   })
 
   it('should export the chatbot data', async function () {
-    this.timeout(5000)
     await intents.exportHandler({ caps }, toUpload)
     await this.promiseUploadFinised
     assert.deepEqual(this.importedFile, expectedExport)
-  })
+  }).timeout(5000)
 
   afterEach(async function () {
     if (this.connector) {

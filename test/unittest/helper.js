@@ -1,4 +1,4 @@
-const downloadApi = require('./mocked_import_api.json')
+const downloadApi = require('./jsons/mocked_import_api.json')
 
 module.exports = {
   addDownloaderMocks: (mockAdapter) => {

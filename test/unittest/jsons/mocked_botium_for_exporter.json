@@ -1,0 +1,13 @@
+{
+  "botium": {
+    "Capabilities": {
+      "PROJECTNAME": "mocked",
+      "CONTAINERMODE": "koreai-webhook",
+      "KOREAI_WEBHOOK_URL": "https://bots.kore.ai/chatbot/hooks/mockedBotId",
+      "KOREAI_WEBHOOK_CLIENTID": "mocked",
+      "KOREAI_WEBHOOK_CLIENTSECRET": "mocked",
+      "KOREAI_WEBHOOK_ADMIN_CLIENTID": "mocked",
+      "KOREAI_WEBHOOK_ADMIN_CLIENTSECRET": "mocked"
+    }
+  }
+}

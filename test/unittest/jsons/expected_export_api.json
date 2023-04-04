@@ -1,0 +1,38 @@
+[
+  {
+    "taskName": "Ping",
+    "sentence": "Are you there?",
+    "type": "DialogIntent",
+    "entities": [],
+    "language": "en"
+  },
+  {
+    "taskName": "Ping",
+    "sentence": "You there?",
+    "type": "DialogIntent",
+    "entities": [],
+    "language": "en"
+  },
+  {
+    "taskName": "Get flight status",
+    "sentence": "Get flight status",
+    "type": "DialogIntent",
+    "entities": [],
+    "language": "en"
+  },
+  {
+    "taskName": "not existing intent",
+    "sentence": "Ping",
+    "type": "DialogIntent"
+  },
+  {
+    "taskName": "not existing intent",
+    "sentence": "Are you there?",
+    "type": "DialogIntent"
+  },
+  {
+    "taskName": "not existing intent",
+    "sentence": "You there?",
+    "type": "DialogIntent"
+  }
+]

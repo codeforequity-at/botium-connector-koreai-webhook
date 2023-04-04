@@ -1,0 +1,13 @@
+quick reply
+
+#me
+Quick reply
+
+#bot
+BUTTONS B1|B1
+
+#me
+BUTTON button2
+
+#bot
+button2 pushed

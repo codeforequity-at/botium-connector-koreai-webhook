@@ -1,0 +1,7 @@
+form
+
+#me
+form
+
+#bot
+Please click below to continue your conversation using a form: https://bots.kore.ai/api/1.1/UIFlow/forms/token

@@ -1,0 +1,1864 @@
+[
+  {
+    "request": "form",
+    "api": {
+      "text": "Please click below to continue your conversation using a form: https://bots.kore.ai/api/1.1/UIFlow/forms/token?hash=13347901ae9ed746dd18fc0766648bde",
+      "form": {
+        "formDef": {
+          "_id": "frm-4236cc64-8fa1-5059-89fd-e850d2e899db",
+          "streamId": "st-75abd7c4-65a9-5b7d-9c8f-a27ba4a97ef5",
+          "__v": 0,
+          "acl": [],
+          "agentGroups": [],
+          "approvalRequestedLanguages": [
+            "en"
+          ],
+          "approvedLanguages": [
+            "en"
+          ],
+          "branding": {
+            "properties": []
+          },
+          "componentPaletteView": "list",
+          "components": [
+            {
+              "_id": "fct-8aba246e-3974-504c-a0d6-12284a323fad",
+              "refId": "efd64476-5d7a-5f5f-9389-cb5188844bc2",
+              "components": [
+                {
+                  "_id": "fct-a4fb99f3-cd30-518b-8499-010d9be6d90a",
+                  "refId": "8ac449b9-c6df-53f8-b482-c1328312a245",
+                  "components": [],
+                  "metaData": {
+                    "type": "textField",
+                    "key": "textField",
+                    "displayName": "TextFieldOfSectionDisplayName",
+                    "name": "TextFieldOfSectionName",
+                    "placeholder": "someplaceholder",
+                    "toolTip": "",
+                    "isVisible": true,
+                    "required": false,
+                    "defaultvalueInput": "TextFieldOfSectionDefaultValue",
+                    "validations": {
+                      "validationType": "simple"
+                    },
+                    "validateOn": "onBlur",
+                    "pii_pattern": {
+                      "type": "redaction"
+                    },
+                    "visibilityRules": {
+                      "validationType": "simple",
+                      "simpleValidation": {},
+                      "advancedValidation": {}
+                    },
+                    "description": "some description"
+                  },
+                  "name": "TextFieldOfSectionName",
+                  "type": "textField"
+                }
+              ],
+              "metaData": {
+                "type": "section",
+                "key": "section",
+                "description": "Section description",
+                "displayName": "Section",
+                "name": "Section0",
+                "icon": "assets/icons/component-icons/section.svg",
+                "toolTip": "",
+                "isVisible": true,
+                "visibilitySettings": false,
+                "pii_pattern": {
+                  "type": "redaction"
+                },
+                "validations": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                },
+                "visibilityRules": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                }
+              },
+              "name": "Section0",
+              "type": "section"
+            },
+            {
+              "_id": "fct-e321d04a-390c-59b5-b752-0db829932dc7",
+              "refId": "a5090532-4104-516a-9aa9-fe86310235e3",
+              "components": [],
+              "metaData": {
+                "type": "textField",
+                "key": "textField",
+                "displayName": "Text Field",
+                "name": "TextField0",
+                "placeholder": "Provide your input",
+                "toolTip": "",
+                "isVisible": true,
+                "required": false,
+                "defaultvalueInput": "",
+                "validations": {
+                  "validationType": "simple"
+                },
+                "validateOn": "onBlur"
+              },
+              "name": "TextField0",
+              "type": "textField"
+            },
+            {
+              "_id": "fct-db38e001-d294-514e-9518-041b8cde36cf",
+              "refId": "3b7cb292-d863-5b68-a7e2-dd2eec965626",
+              "components": [],
+              "metaData": {
+                "type": "textArea",
+                "key": "textArea",
+                "displayName": "Text area",
+                "name": "Textarea0",
+                "placeholder": "Provide your input",
+                "toolTip": "",
+                "componentType": "",
+                "tabIndexOverride": false,
+                "defaultvalueInput": "",
+                "required": false,
+                "isVisible": true,
+                "validations": {
+                  "validationType": "simple"
+                },
+                "validateOn": "onBlur"
+              },
+              "name": "Textarea0",
+              "type": "textArea"
+            },
+            {
+              "_id": "fct-366a306b-254c-590b-9b9b-4f8b414e5619",
+              "refId": "bbeb6c2d-8075-5875-94ef-19c773eeff90",
+              "components": [],
+              "metaData": {
+                "type": "number",
+                "key": "number",
+                "name": "Number0",
+                "displayName": "Number",
+                "placeholder": "Provide your input",
+                "toolTip": "",
+                "componentType": "",
+                "tabIndexOverride": false,
+                "defaultvalueInputNum": null,
+                "required": false,
+                "isVisible": true,
+                "validations": {
+                  "validationType": "simple"
+                },
+                "validateOn": "onBlur",
+                "pii_pattern": {
+                  "type": "redaction"
+                },
+                "visibilityRules": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                },
+                "defaultvalueInput": 12
+              },
+              "name": "Number0",
+              "type": "number"
+            },
+            {
+              "_id": "fct-c54b6841-66af-5cae-8b17-77e957b0b958",
+              "refId": "94047d07-3cf0-5eab-8844-50d166f7b982",
+              "components": [],
+              "metaData": {
+                "key": "radio",
+                "type": "radio",
+                "displayName": "Radio Button",
+                "name": "RadioButton0",
+                "tooltip": "",
+                "description": "",
+                "required": false,
+                "disabled": false,
+                "isVisible": true,
+                "unique": true,
+                "inline": false,
+                "errorLabel": "",
+                "validateOn": "onBlur",
+                "isMultiSelect": false,
+                "values": [
+                  {
+                    "value": "value1",
+                    "selected": false
+                  },
+                  {
+                    "value": "value2",
+                    "selected": true
+                  }
+                ],
+                "validations": {
+                  "validationType": "simple"
+                },
+                "pii_pattern": {
+                  "type": "redaction"
+                },
+                "visibilityRules": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                },
+                "isSecured": false
+              },
+              "name": "RadioButton0",
+              "type": "radio"
+            },
+            {
+              "_id": "fct-b94973b8-3cdb-5f60-a995-6e7b05638233",
+              "refId": "45bdac2d-bc4c-5bbf-8572-dafd78ff24f5",
+              "components": [],
+              "metaData": {
+                "key": "dropdown",
+                "type": "dropdown",
+                "displayName": "Dropdown",
+                "name": "Dropdown0",
+                "tooltip": "",
+                "placeholder": "Select value",
+                "description": "",
+                "enableDropDownSearch": true,
+                "required": false,
+                "disabled": false,
+                "isVisible": true,
+                "unique": true,
+                "errorLabel": "",
+                "minSelection": 1,
+                "maxSelection": 5,
+                "minSelectedCountMessage": "",
+                "maxSelectedCountMessage": "",
+                "isMultiSelect": true,
+                "placeholderSearch": "",
+                "values": [
+                  {
+                    "value": "value1",
+                    "selected": false
+                  },
+                  {
+                    "value": "value2",
+                    "selected": true
+                  }
+                ],
+                "validations": {
+                  "validationType": "simple"
+                },
+                "validateOn": "onBlur",
+                "pii_pattern": {
+                  "type": "redaction"
+                },
+                "visibilityRules": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                }
+              },
+              "name": "Dropdown0",
+              "type": "dropdown"
+            },
+            {
+              "_id": "fct-c481f54b-64dd-508e-8bae-06e243938489",
+              "refId": "8acb5ef9-04c7-5061-886b-262df3ffd4b3",
+              "components": [],
+              "metaData": {
+                "key": "checkbox",
+                "type": "checkbox",
+                "displayName": "Checkbox",
+                "name": "Checkbox0",
+                "tooltip": "",
+                "description": "",
+                "columns": 4,
+                "required": false,
+                "disabled": false,
+                "isVisible": true,
+                "unique": true,
+                "inline": false,
+                "errorLabel": "",
+                "minSelection": 1,
+                "maxSelection": 5,
+                "minSelectedCountMessage": "",
+                "maxSelectedCountMessage": "",
+                "validateOn": "onBlur",
+                "isMultiSelect": true,
+                "values": [
+                  {
+                    "value": "val1",
+                    "selected": false
+                  },
+                  {
+                    "value": "val2",
+                    "selected": false
+                  },
+                  {
+                    "value": "val3",
+                    "selected": false
+                  }
+                ],
+                "validations": {
+                  "validationType": "simple"
+                },
+                "pii_pattern": {
+                  "type": "redaction"
+                },
+                "visibilityRules": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                }
+              },
+              "name": "Checkbox0",
+              "type": "checkbox"
+            },
+            {
+              "_id": "fct-bee6f525-e354-5594-b843-a581e3aebcb3",
+              "refId": "31b9145f-8fab-5435-8800-02f1ff37da4c",
+              "components": [],
+              "metaData": {
+                "key": "date",
+                "type": "date",
+                "displayName": "Date",
+                "name": "Date0",
+                "placeholder": "Provide your input",
+                "toolTip": "",
+                "isVisible": true,
+                "required": false,
+                "disabled": false,
+                "options": {
+                  "singleDatePicker": true,
+                  "autoUpdateInput": false,
+                  "showDropdowns": true,
+                  "autoApply": true,
+                  "locale": {
+                    "format": "MM/DD/YYYY HH:mm A",
+                    "separator": " - ",
+                    "applyLabel": "Apply",
+                    "cancelLabel": "Cancel",
+                    "weekLabel": "W",
+                    "firstDay": 1
+                  }
+                },
+                "pii_pattern": {
+                  "type": "redaction"
+                },
+                "validations": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                },
+                "visibilityRules": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                },
+                "defaultvalueDateInput": "03/23/2023"
+              },
+              "name": "Date0",
+              "type": "date"
+            },
+            {
+              "_id": "fct-a460e4e5-bc15-51a7-9c3b-3fd173ecfc52",
+              "refId": "f206c9e7-cd2a-5fe9-b072-6c72ef6bdf15",
+              "components": [],
+              "metaData": {
+                "type": "phoneNumber",
+                "key": "phoneNumber",
+                "displayName": "Phone Number",
+                "name": "PhoneNumber0",
+                "placeholder": "Provide your input",
+                "toolTip": "",
+                "componentType": "",
+                "countryCode": "us",
+                "countryName": "United States",
+                "tabIndexOverride": false,
+                "required": false,
+                "isVisible": true,
+                "defaultvalueInput": "",
+                "validations": {
+                  "validationType": "simple"
+                },
+                "validateOn": "onBlur"
+              },
+              "name": "PhoneNumber0",
+              "type": "phoneNumber"
+            },
+            {
+              "_id": "fct-bbaf7478-e380-5285-bae7-4bf4d5d5ab1a",
+              "refId": "a47fd3ba-ffdd-51fb-adec-ab83ada76828",
+              "components": [],
+              "metaData": {
+                "type": "email",
+                "key": "email",
+                "displayName": "Email",
+                "name": "Email0",
+                "placeholder": "Provide your input",
+                "toolTip": "",
+                "componentType": "",
+                "tabIndexOverride": false,
+                "required": false,
+                "isVisible": true,
+                "defaultvalueInput": "",
+                "validations": {
+                  "validationType": "simple"
+                },
+                "validateOn": "onBlur"
+              },
+              "name": "Email0",
+              "type": "email"
+            },
+            {
+              "_id": "fct-0229464e-6d41-57e2-99c1-6a1c781e280a",
+              "refId": "eec071e6-2694-5f8c-bdb3-68205c079b23",
+              "components": [],
+              "metaData": {
+                "key": "toggle",
+                "type": "toggle",
+                "name": "toggle0",
+                "displayName": "Toggle",
+                "componentName": "toggle",
+                "toggleDefaultValue": false,
+                "toggleEnabledValue": "Enabled",
+                "toggleDisabledValue": "Disabled",
+                "isVisible": true,
+                "pii_pattern": {
+                  "type": "redaction"
+                },
+                "validations": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                },
+                "visibilityRules": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                }
+              },
+              "name": "toggle0",
+              "type": "toggle"
+            },
+            {
+              "_id": "fct-fb2ea038-9a55-5589-9689-996bb11ac3fb",
+              "refId": "671db88b-cf66-5d57-bb6a-6e9ac9b6908f",
+              "components": [],
+              "metaData": {
+                "type": "address",
+                "key": "address",
+                "displayName": "Address",
+                "name": "Address0",
+                "placeholder": "Provide your input",
+                "toolTip": "",
+                "componentType": "",
+                "tabIndexOverride": false,
+                "defaultvalueInput": "",
+                "required": false,
+                "isVisible": true,
+                "validations": {
+                  "validationType": "simple"
+                },
+                "validateOn": "onBlur"
+              },
+              "name": "Address0",
+              "type": "address"
+            },
+            {
+              "_id": "fct-59fbb394-569f-501b-8081-783e1f3341e9",
+              "refId": "d1f475b8-8af9-56f4-8fe3-0861159d1904",
+              "components": [],
+              "metaData": {
+                "type": "url",
+                "key": "url",
+                "displayName": "Url",
+                "name": "Url0",
+                "placeholder": "Provide your input",
+                "toolTip": "",
+                "componentType": "",
+                "tabIndexOverride": false,
+                "defaultvalueInput": "",
+                "required": false,
+                "isVisible": true,
+                "validations": {
+                  "validationType": "simple"
+                },
+                "validateOn": "onBlur"
+              },
+              "name": "Url0",
+              "type": "url"
+            },
+            {
+              "_id": "fct-dea0bb89-71c1-521c-9b05-6d0bad07f730",
+              "refId": "83901bab-b5ff-5ed8-8529-4bd34013b6dd",
+              "components": [],
+              "metaData": {
+                "type": "rangeSlider",
+                "key": "rangeSlider",
+                "name": "RangeSlider0",
+                "displayName": "Range Slider",
+                "placeholder": "Please enter",
+                "toolTip": "",
+                "componentType": "",
+                "tabIndexOverride": false,
+                "required": false,
+                "isVisible": true,
+                "minRange": 0,
+                "maxRange": 100,
+                "sliderStep": 1,
+                "isPercentage": true,
+                "defaultvalueInputNum": null,
+                "validations": {
+                  "validationType": "simple"
+                },
+                "validateOn": "onBlur"
+              },
+              "name": "RangeSlider0",
+              "type": "rangeSlider"
+            },
+            {
+              "_id": "fct-789b078e-cbab-54c1-9961-5922d930e093",
+              "refId": "9c9bcee1-ee3d-57f3-b235-fe46e6b9cdb5",
+              "components": [],
+              "metaData": {
+                "type": "password",
+                "key": "password",
+                "displayName": "Password",
+                "name": "Password0",
+                "placeholder": "Provide your input",
+                "toolTip": "",
+                "componentType": "",
+                "tabIndexOverride": false,
+                "defaultvalueInput": "",
+                "required": false,
+                "isVisible": true,
+                "validations": {
+                  "validationType": "simple"
+                },
+                "validateOn": "onBlur",
+                "pii_pattern": {
+                  "type": "redaction"
+                },
+                "visibilityRules": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                },
+                "description": "description"
+              },
+              "name": "Password0",
+              "type": "password"
+            },
+            {
+              "_id": "fct-17b2f5ea-1cc0-5590-b352-e1fe64e8b72b",
+              "refId": "e21a88ce-fd64-5079-9583-388a31fd3819",
+              "components": [],
+              "metaData": {
+                "type": "label",
+                "key": "label",
+                "displayName": "Label",
+                "name": "Label0",
+                "toolTip": "",
+                "isVisible": true,
+                "visibilitySettings": false,
+                "pii_pattern": {
+                  "type": "redaction"
+                },
+                "validations": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                },
+                "visibilityRules": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                },
+                "description": "description of the label"
+              },
+              "name": "Label0",
+              "type": "label"
+            },
+            {
+              "_id": "fct-df290cf9-354d-5c51-9c4e-7333aa9145b0",
+              "refId": "7008b676-7755-5c89-9036-9c1eb93ba905",
+              "components": [],
+              "metaData": {
+                "key": "note",
+                "type": "note",
+                "name": "note0",
+                "displayName": "Note",
+                "description": "description of the note",
+                "componentName": "note",
+                "linkText": "",
+                "link": "",
+                "isVisible": true,
+                "pii_pattern": {
+                  "type": "redaction"
+                },
+                "validations": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                },
+                "visibilityRules": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                }
+              },
+              "name": "note0",
+              "type": "note"
+            },
+            {
+              "_id": "fct-a1e39351-da63-5709-97dc-ba08bb85bb37",
+              "refId": "b5b982ae-c405-5de5-abf6-a3475395943f",
+              "components": [],
+              "metaData": {
+                "key": "button",
+                "type": "button",
+                "displayName": "URL",
+                "name": "btnUrl",
+                "buttonAction": "goToUrl",
+                "isVisible": true,
+                "buttonStyle": "primary",
+                "sourceUrl": "",
+                "pii_pattern": {
+                  "type": "redaction"
+                },
+                "validations": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                },
+                "visibilityRules": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                },
+                "url": "https://cyara.com/"
+              },
+              "name": "btnUrl",
+              "type": "button"
+            },
+            {
+              "_id": "fct-a88cd8aa-588d-5f7a-a10e-66da011c196a",
+              "refId": "29e8a228-bef2-5aeb-902d-46a27218b66e",
+              "components": [],
+              "metaData": {
+                "key": "button",
+                "type": "button",
+                "displayName": "Reset",
+                "name": "btnReset",
+                "buttonAction": "reset",
+                "isVisible": true,
+                "buttonStyle": "primary",
+                "sourceUrl": "",
+                "pii_pattern": {
+                  "type": "redaction"
+                },
+                "validations": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                },
+                "visibilityRules": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                }
+              },
+              "name": "btnReset",
+              "type": "button"
+            },
+            {
+              "_id": "fct-112777bd-8a81-5607-841c-52837761896b",
+              "refId": "8687b7a5-453f-53d0-b79d-2b0d45640c96",
+              "components": [],
+              "metaData": {
+                "key": "button",
+                "type": "button",
+                "displayName": "Cancel",
+                "name": "btnCancel",
+                "buttonAction": "cancel",
+                "isVisible": true,
+                "buttonStyle": "primary",
+                "sourceUrl": "",
+                "pii_pattern": {
+                  "type": "redaction"
+                },
+                "validations": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                },
+                "visibilityRules": {
+                  "validationType": "simple",
+                  "simpleValidation": {},
+                  "advancedValidation": {}
+                }
+              },
+              "name": "btnCancel",
+              "type": "button"
+            },
+            {
+              "_id": "fct-0f77a8e5-a402-5f17-8aea-437eb003f014",
+              "refId": "b16b1d8a-68f7-55ba-bd8c-48de9af4631f",
+              "components": [],
+              "metaData": {
+                "key": "button",
+                "type": "button",
+                "displayName": "Submit",
+                "name": "Submit",
+                "buttonAction": "submit",
+                "isVisible": true,
+                "buttonStyle": "primary",
+                "sourceUrl": ""
+              },
+              "name": "Submit",
+              "type": "button"
+            }
+          ],
+          "createdBy": "u-4cafacd6-228e-50a7-9332-5cb8d282fa92",
+          "createdOn": "2023-03-15T14:24:43.530Z",
+          "displayName": "DemoForm",
+          "formData": {
+            "visibility": {
+              "serviceNode": true,
+              "dialogExecution": true,
+              "botKit": true
+            },
+            "ttl": 1800
+          },
+          "integrations": [
+            {
+              "type": "dialog",
+              "resourceId": "2f2e62b1-af87-5598-8361-596f6362daf4",
+              "resourceMeta": {
+                "componentId": "a0509da8-e838-53b8-8c3d-004896fc9c92"
+              }
+            }
+          ],
+          "isSecured": false,
+          "lMod": "2023-03-23T06:37:34.000Z",
+          "lModBy": "u-4cafacd6-228e-50a7-9332-5cb8d282fa92",
+          "name": "DemoForm",
+          "queues": [],
+          "refId": "7948fb73-99a6-5397-9735-9ff16969fd0d",
+          "state": "published",
+          "type": "regular",
+          "visibility": {
+            "namespace": "enterprise",
+            "namespaceIds": [
+              "o-7bab3422-2af6-5c39-9153-83dff22986ac"
+            ]
+          },
+          "description": "regular"
+        },
+        "formInitialization": {}
+      }
+    },
+    "chatbot": {
+      "sourceData": {
+        "text": "Please click below to continue your conversation using a form: https://bots.kore.ai/api/1.1/UIFlow/forms/token?hash=13347901ae9ed746dd18fc0766648bde",
+        "form": {
+          "formDef": {
+            "_id": "frm-4236cc64-8fa1-5059-89fd-e850d2e899db",
+            "streamId": "st-75abd7c4-65a9-5b7d-9c8f-a27ba4a97ef5",
+            "__v": 0,
+            "acl": [],
+            "agentGroups": [],
+            "approvalRequestedLanguages": [
+              "en"
+            ],
+            "approvedLanguages": [
+              "en"
+            ],
+            "branding": {
+              "properties": []
+            },
+            "componentPaletteView": "list",
+            "components": [
+              {
+                "_id": "fct-8aba246e-3974-504c-a0d6-12284a323fad",
+                "refId": "efd64476-5d7a-5f5f-9389-cb5188844bc2",
+                "components": [
+                  {
+                    "_id": "fct-a4fb99f3-cd30-518b-8499-010d9be6d90a",
+                    "refId": "8ac449b9-c6df-53f8-b482-c1328312a245",
+                    "components": [],
+                    "metaData": {
+                      "type": "textField",
+                      "key": "textField",
+                      "displayName": "TextFieldOfSectionDisplayName",
+                      "name": "TextFieldOfSectionName",
+                      "placeholder": "someplaceholder",
+                      "toolTip": "",
+                      "isVisible": true,
+                      "required": false,
+                      "defaultvalueInput": "TextFieldOfSectionDefaultValue",
+                      "validations": {
+                        "validationType": "simple"
+                      },
+                      "validateOn": "onBlur",
+                      "pii_pattern": {
+                        "type": "redaction"
+                      },
+                      "visibilityRules": {
+                        "validationType": "simple",
+                        "simpleValidation": {},
+                        "advancedValidation": {}
+                      },
+                      "description": "some description"
+                    },
+                    "name": "TextFieldOfSectionName",
+                    "type": "textField"
+                  }
+                ],
+                "metaData": {
+                  "type": "section",
+                  "key": "section",
+                  "description": "Section description",
+                  "displayName": "Section",
+                  "name": "Section0",
+                  "icon": "assets/icons/component-icons/section.svg",
+                  "toolTip": "",
+                  "isVisible": true,
+                  "visibilitySettings": false,
+                  "pii_pattern": {
+                    "type": "redaction"
+                  },
+                  "validations": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  },
+                  "visibilityRules": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  }
+                },
+                "name": "Section0",
+                "type": "section"
+              },
+              {
+                "_id": "fct-e321d04a-390c-59b5-b752-0db829932dc7",
+                "refId": "a5090532-4104-516a-9aa9-fe86310235e3",
+                "components": [],
+                "metaData": {
+                  "type": "textField",
+                  "key": "textField",
+                  "displayName": "Text Field",
+                  "name": "TextField0",
+                  "placeholder": "Provide your input",
+                  "toolTip": "",
+                  "isVisible": true,
+                  "required": false,
+                  "defaultvalueInput": "",
+                  "validations": {
+                    "validationType": "simple"
+                  },
+                  "validateOn": "onBlur"
+                },
+                "name": "TextField0",
+                "type": "textField"
+              },
+              {
+                "_id": "fct-db38e001-d294-514e-9518-041b8cde36cf",
+                "refId": "3b7cb292-d863-5b68-a7e2-dd2eec965626",
+                "components": [],
+                "metaData": {
+                  "type": "textArea",
+                  "key": "textArea",
+                  "displayName": "Text area",
+                  "name": "Textarea0",
+                  "placeholder": "Provide your input",
+                  "toolTip": "",
+                  "componentType": "",
+                  "tabIndexOverride": false,
+                  "defaultvalueInput": "",
+                  "required": false,
+                  "isVisible": true,
+                  "validations": {
+                    "validationType": "simple"
+                  },
+                  "validateOn": "onBlur"
+                },
+                "name": "Textarea0",
+                "type": "textArea"
+              },
+              {
+                "_id": "fct-366a306b-254c-590b-9b9b-4f8b414e5619",
+                "refId": "bbeb6c2d-8075-5875-94ef-19c773eeff90",
+                "components": [],
+                "metaData": {
+                  "type": "number",
+                  "key": "number",
+                  "name": "Number0",
+                  "displayName": "Number",
+                  "placeholder": "Provide your input",
+                  "toolTip": "",
+                  "componentType": "",
+                  "tabIndexOverride": false,
+                  "defaultvalueInputNum": null,
+                  "required": false,
+                  "isVisible": true,
+                  "validations": {
+                    "validationType": "simple"
+                  },
+                  "validateOn": "onBlur",
+                  "pii_pattern": {
+                    "type": "redaction"
+                  },
+                  "visibilityRules": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  },
+                  "defaultvalueInput": 12
+                },
+                "name": "Number0",
+                "type": "number"
+              },
+              {
+                "_id": "fct-c54b6841-66af-5cae-8b17-77e957b0b958",
+                "refId": "94047d07-3cf0-5eab-8844-50d166f7b982",
+                "components": [],
+                "metaData": {
+                  "key": "radio",
+                  "type": "radio",
+                  "displayName": "Radio Button",
+                  "name": "RadioButton0",
+                  "tooltip": "",
+                  "description": "",
+                  "required": false,
+                  "disabled": false,
+                  "isVisible": true,
+                  "unique": true,
+                  "inline": false,
+                  "errorLabel": "",
+                  "validateOn": "onBlur",
+                  "isMultiSelect": false,
+                  "values": [
+                    {
+                      "value": "value1",
+                      "selected": false
+                    },
+                    {
+                      "value": "value2",
+                      "selected": true
+                    }
+                  ],
+                  "validations": {
+                    "validationType": "simple"
+                  },
+                  "pii_pattern": {
+                    "type": "redaction"
+                  },
+                  "visibilityRules": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  },
+                  "isSecured": false
+                },
+                "name": "RadioButton0",
+                "type": "radio"
+              },
+              {
+                "_id": "fct-b94973b8-3cdb-5f60-a995-6e7b05638233",
+                "refId": "45bdac2d-bc4c-5bbf-8572-dafd78ff24f5",
+                "components": [],
+                "metaData": {
+                  "key": "dropdown",
+                  "type": "dropdown",
+                  "displayName": "Dropdown",
+                  "name": "Dropdown0",
+                  "tooltip": "",
+                  "placeholder": "Select value",
+                  "description": "",
+                  "enableDropDownSearch": true,
+                  "required": false,
+                  "disabled": false,
+                  "isVisible": true,
+                  "unique": true,
+                  "errorLabel": "",
+                  "minSelection": 1,
+                  "maxSelection": 5,
+                  "minSelectedCountMessage": "",
+                  "maxSelectedCountMessage": "",
+                  "isMultiSelect": true,
+                  "placeholderSearch": "",
+                  "values": [
+                    {
+                      "value": "value1",
+                      "selected": false
+                    },
+                    {
+                      "value": "value2",
+                      "selected": true
+                    }
+                  ],
+                  "validations": {
+                    "validationType": "simple"
+                  },
+                  "validateOn": "onBlur",
+                  "pii_pattern": {
+                    "type": "redaction"
+                  },
+                  "visibilityRules": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  }
+                },
+                "name": "Dropdown0",
+                "type": "dropdown"
+              },
+              {
+                "_id": "fct-c481f54b-64dd-508e-8bae-06e243938489",
+                "refId": "8acb5ef9-04c7-5061-886b-262df3ffd4b3",
+                "components": [],
+                "metaData": {
+                  "key": "checkbox",
+                  "type": "checkbox",
+                  "displayName": "Checkbox",
+                  "name": "Checkbox0",
+                  "tooltip": "",
+                  "description": "",
+                  "columns": 4,
+                  "required": false,
+                  "disabled": false,
+                  "isVisible": true,
+                  "unique": true,
+                  "inline": false,
+                  "errorLabel": "",
+                  "minSelection": 1,
+                  "maxSelection": 5,
+                  "minSelectedCountMessage": "",
+                  "maxSelectedCountMessage": "",
+                  "validateOn": "onBlur",
+                  "isMultiSelect": true,
+                  "values": [
+                    {
+                      "value": "val1",
+                      "selected": false
+                    },
+                    {
+                      "value": "val2",
+                      "selected": false
+                    },
+                    {
+                      "value": "val3",
+                      "selected": false
+                    }
+                  ],
+                  "validations": {
+                    "validationType": "simple"
+                  },
+                  "pii_pattern": {
+                    "type": "redaction"
+                  },
+                  "visibilityRules": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  }
+                },
+                "name": "Checkbox0",
+                "type": "checkbox"
+              },
+              {
+                "_id": "fct-bee6f525-e354-5594-b843-a581e3aebcb3",
+                "refId": "31b9145f-8fab-5435-8800-02f1ff37da4c",
+                "components": [],
+                "metaData": {
+                  "key": "date",
+                  "type": "date",
+                  "displayName": "Date",
+                  "name": "Date0",
+                  "placeholder": "Provide your input",
+                  "toolTip": "",
+                  "isVisible": true,
+                  "required": false,
+                  "disabled": false,
+                  "options": {
+                    "singleDatePicker": true,
+                    "autoUpdateInput": false,
+                    "showDropdowns": true,
+                    "autoApply": true,
+                    "locale": {
+                      "format": "MM/DD/YYYY HH:mm A",
+                      "separator": " - ",
+                      "applyLabel": "Apply",
+                      "cancelLabel": "Cancel",
+                      "weekLabel": "W",
+                      "firstDay": 1
+                    }
+                  },
+                  "pii_pattern": {
+                    "type": "redaction"
+                  },
+                  "validations": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  },
+                  "visibilityRules": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  },
+                  "defaultvalueDateInput": "03/23/2023"
+                },
+                "name": "Date0",
+                "type": "date"
+              },
+              {
+                "_id": "fct-a460e4e5-bc15-51a7-9c3b-3fd173ecfc52",
+                "refId": "f206c9e7-cd2a-5fe9-b072-6c72ef6bdf15",
+                "components": [],
+                "metaData": {
+                  "type": "phoneNumber",
+                  "key": "phoneNumber",
+                  "displayName": "Phone Number",
+                  "name": "PhoneNumber0",
+                  "placeholder": "Provide your input",
+                  "toolTip": "",
+                  "componentType": "",
+                  "countryCode": "us",
+                  "countryName": "United States",
+                  "tabIndexOverride": false,
+                  "required": false,
+                  "isVisible": true,
+                  "defaultvalueInput": "",
+                  "validations": {
+                    "validationType": "simple"
+                  },
+                  "validateOn": "onBlur"
+                },
+                "name": "PhoneNumber0",
+                "type": "phoneNumber"
+              },
+              {
+                "_id": "fct-bbaf7478-e380-5285-bae7-4bf4d5d5ab1a",
+                "refId": "a47fd3ba-ffdd-51fb-adec-ab83ada76828",
+                "components": [],
+                "metaData": {
+                  "type": "email",
+                  "key": "email",
+                  "displayName": "Email",
+                  "name": "Email0",
+                  "placeholder": "Provide your input",
+                  "toolTip": "",
+                  "componentType": "",
+                  "tabIndexOverride": false,
+                  "required": false,
+                  "isVisible": true,
+                  "defaultvalueInput": "",
+                  "validations": {
+                    "validationType": "simple"
+                  },
+                  "validateOn": "onBlur"
+                },
+                "name": "Email0",
+                "type": "email"
+              },
+              {
+                "_id": "fct-0229464e-6d41-57e2-99c1-6a1c781e280a",
+                "refId": "eec071e6-2694-5f8c-bdb3-68205c079b23",
+                "components": [],
+                "metaData": {
+                  "key": "toggle",
+                  "type": "toggle",
+                  "name": "toggle0",
+                  "displayName": "Toggle",
+                  "componentName": "toggle",
+                  "toggleDefaultValue": false,
+                  "toggleEnabledValue": "Enabled",
+                  "toggleDisabledValue": "Disabled",
+                  "isVisible": true,
+                  "pii_pattern": {
+                    "type": "redaction"
+                  },
+                  "validations": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  },
+                  "visibilityRules": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  }
+                },
+                "name": "toggle0",
+                "type": "toggle"
+              },
+              {
+                "_id": "fct-fb2ea038-9a55-5589-9689-996bb11ac3fb",
+                "refId": "671db88b-cf66-5d57-bb6a-6e9ac9b6908f",
+                "components": [],
+                "metaData": {
+                  "type": "address",
+                  "key": "address",
+                  "displayName": "Address",
+                  "name": "Address0",
+                  "placeholder": "Provide your input",
+                  "toolTip": "",
+                  "componentType": "",
+                  "tabIndexOverride": false,
+                  "defaultvalueInput": "",
+                  "required": false,
+                  "isVisible": true,
+                  "validations": {
+                    "validationType": "simple"
+                  },
+                  "validateOn": "onBlur"
+                },
+                "name": "Address0",
+                "type": "address"
+              },
+              {
+                "_id": "fct-59fbb394-569f-501b-8081-783e1f3341e9",
+                "refId": "d1f475b8-8af9-56f4-8fe3-0861159d1904",
+                "components": [],
+                "metaData": {
+                  "type": "url",
+                  "key": "url",
+                  "displayName": "Url",
+                  "name": "Url0",
+                  "placeholder": "Provide your input",
+                  "toolTip": "",
+                  "componentType": "",
+                  "tabIndexOverride": false,
+                  "defaultvalueInput": "",
+                  "required": false,
+                  "isVisible": true,
+                  "validations": {
+                    "validationType": "simple"
+                  },
+                  "validateOn": "onBlur"
+                },
+                "name": "Url0",
+                "type": "url"
+              },
+              {
+                "_id": "fct-dea0bb89-71c1-521c-9b05-6d0bad07f730",
+                "refId": "83901bab-b5ff-5ed8-8529-4bd34013b6dd",
+                "components": [],
+                "metaData": {
+                  "type": "rangeSlider",
+                  "key": "rangeSlider",
+                  "name": "RangeSlider0",
+                  "displayName": "Range Slider",
+                  "placeholder": "Please enter",
+                  "toolTip": "",
+                  "componentType": "",
+                  "tabIndexOverride": false,
+                  "required": false,
+                  "isVisible": true,
+                  "minRange": 0,
+                  "maxRange": 100,
+                  "sliderStep": 1,
+                  "isPercentage": true,
+                  "defaultvalueInputNum": null,
+                  "validations": {
+                    "validationType": "simple"
+                  },
+                  "validateOn": "onBlur"
+                },
+                "name": "RangeSlider0",
+                "type": "rangeSlider"
+              },
+              {
+                "_id": "fct-789b078e-cbab-54c1-9961-5922d930e093",
+                "refId": "9c9bcee1-ee3d-57f3-b235-fe46e6b9cdb5",
+                "components": [],
+                "metaData": {
+                  "type": "password",
+                  "key": "password",
+                  "displayName": "Password",
+                  "name": "Password0",
+                  "placeholder": "Provide your input",
+                  "toolTip": "",
+                  "componentType": "",
+                  "tabIndexOverride": false,
+                  "defaultvalueInput": "",
+                  "required": false,
+                  "isVisible": true,
+                  "validations": {
+                    "validationType": "simple"
+                  },
+                  "validateOn": "onBlur",
+                  "pii_pattern": {
+                    "type": "redaction"
+                  },
+                  "visibilityRules": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  },
+                  "description": "description"
+                },
+                "name": "Password0",
+                "type": "password"
+              },
+              {
+                "_id": "fct-17b2f5ea-1cc0-5590-b352-e1fe64e8b72b",
+                "refId": "e21a88ce-fd64-5079-9583-388a31fd3819",
+                "components": [],
+                "metaData": {
+                  "type": "label",
+                  "key": "label",
+                  "displayName": "Label",
+                  "name": "Label0",
+                  "toolTip": "",
+                  "isVisible": true,
+                  "visibilitySettings": false,
+                  "pii_pattern": {
+                    "type": "redaction"
+                  },
+                  "validations": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  },
+                  "visibilityRules": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  },
+                  "description": "description of the label"
+                },
+                "name": "Label0",
+                "type": "label"
+              },
+              {
+                "_id": "fct-df290cf9-354d-5c51-9c4e-7333aa9145b0",
+                "refId": "7008b676-7755-5c89-9036-9c1eb93ba905",
+                "components": [],
+                "metaData": {
+                  "key": "note",
+                  "type": "note",
+                  "name": "note0",
+                  "displayName": "Note",
+                  "description": "description of the note",
+                  "componentName": "note",
+                  "linkText": "",
+                  "link": "",
+                  "isVisible": true,
+                  "pii_pattern": {
+                    "type": "redaction"
+                  },
+                  "validations": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  },
+                  "visibilityRules": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  }
+                },
+                "name": "note0",
+                "type": "note"
+              },
+              {
+                "_id": "fct-a1e39351-da63-5709-97dc-ba08bb85bb37",
+                "refId": "b5b982ae-c405-5de5-abf6-a3475395943f",
+                "components": [],
+                "metaData": {
+                  "key": "button",
+                  "type": "button",
+                  "displayName": "URL",
+                  "name": "btnUrl",
+                  "buttonAction": "goToUrl",
+                  "isVisible": true,
+                  "buttonStyle": "primary",
+                  "sourceUrl": "",
+                  "pii_pattern": {
+                    "type": "redaction"
+                  },
+                  "validations": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  },
+                  "visibilityRules": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  },
+                  "url": "https://cyara.com/"
+                },
+                "name": "btnUrl",
+                "type": "button"
+              },
+              {
+                "_id": "fct-a88cd8aa-588d-5f7a-a10e-66da011c196a",
+                "refId": "29e8a228-bef2-5aeb-902d-46a27218b66e",
+                "components": [],
+                "metaData": {
+                  "key": "button",
+                  "type": "button",
+                  "displayName": "Reset",
+                  "name": "btnReset",
+                  "buttonAction": "reset",
+                  "isVisible": true,
+                  "buttonStyle": "primary",
+                  "sourceUrl": "",
+                  "pii_pattern": {
+                    "type": "redaction"
+                  },
+                  "validations": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  },
+                  "visibilityRules": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  }
+                },
+                "name": "btnReset",
+                "type": "button"
+              },
+              {
+                "_id": "fct-112777bd-8a81-5607-841c-52837761896b",
+                "refId": "8687b7a5-453f-53d0-b79d-2b0d45640c96",
+                "components": [],
+                "metaData": {
+                  "key": "button",
+                  "type": "button",
+                  "displayName": "Cancel",
+                  "name": "btnCancel",
+                  "buttonAction": "cancel",
+                  "isVisible": true,
+                  "buttonStyle": "primary",
+                  "sourceUrl": "",
+                  "pii_pattern": {
+                    "type": "redaction"
+                  },
+                  "validations": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  },
+                  "visibilityRules": {
+                    "validationType": "simple",
+                    "simpleValidation": {},
+                    "advancedValidation": {}
+                  }
+                },
+                "name": "btnCancel",
+                "type": "button"
+              },
+              {
+                "_id": "fct-0f77a8e5-a402-5f17-8aea-437eb003f014",
+                "refId": "b16b1d8a-68f7-55ba-bd8c-48de9af4631f",
+                "components": [],
+                "metaData": {
+                  "key": "button",
+                  "type": "button",
+                  "displayName": "Submit",
+                  "name": "Submit",
+                  "buttonAction": "submit",
+                  "isVisible": true,
+                  "buttonStyle": "primary",
+                  "sourceUrl": ""
+                },
+                "name": "Submit",
+                "type": "button"
+              }
+            ],
+            "createdBy": "u-4cafacd6-228e-50a7-9332-5cb8d282fa92",
+            "createdOn": "2023-03-15T14:24:43.530Z",
+            "displayName": "DemoForm",
+            "formData": {
+              "visibility": {
+                "serviceNode": true,
+                "dialogExecution": true,
+                "botKit": true
+              },
+              "ttl": 1800
+            },
+            "integrations": [
+              {
+                "type": "dialog",
+                "resourceId": "2f2e62b1-af87-5598-8361-596f6362daf4",
+                "resourceMeta": {
+                  "componentId": "a0509da8-e838-53b8-8c3d-004896fc9c92"
+                }
+              }
+            ],
+            "isSecured": false,
+            "lMod": "2023-03-23T06:37:34.000Z",
+            "lModBy": "u-4cafacd6-228e-50a7-9332-5cb8d282fa92",
+            "name": "DemoForm",
+            "queues": [],
+            "refId": "7948fb73-99a6-5397-9735-9ff16969fd0d",
+            "state": "published",
+            "type": "regular",
+            "visibility": {
+              "namespace": "enterprise",
+              "namespaceIds": [
+                "o-7bab3422-2af6-5c39-9153-83dff22986ac"
+              ]
+            },
+            "description": "regular"
+          },
+          "formInitialization": {}
+        }
+      },
+      "messageText": "Please click below to continue your conversation using a form: https://bots.kore.ai/api/1.1/UIFlow/forms/token?hash=13347901ae9ed746dd18fc0766648bde",
+      "nlp": {
+        "intent": {
+          "name": "attachments"
+        }
+      },
+      "forms": [
+        {
+          "name": "TextFieldOfSectionName",
+          "label": "TextFieldOfSectionDisplayName",
+          "value": "TextFieldOfSectionDefaultValue",
+          "type": "Text"
+        },
+        {
+          "name": "TextField0",
+          "label": "Text Field",
+          "type": "Text"
+        },
+        {
+          "name": "Textarea0",
+          "label": "Text area",
+          "type": "Text"
+        },
+        {
+          "name": "Number0",
+          "label": "Number",
+          "value": 12,
+          "type": "Number"
+        },
+        {
+          "name": "RadioButton0",
+          "label": "Radio Button",
+          "value": "value2",
+          "type": "RadioSet"
+        },
+        {
+          "name": "Dropdown0",
+          "label": "Dropdown",
+          "value": "value2",
+          "type": "ChoiceSet"
+        },
+        {
+          "name": "Checkbox0",
+          "label": "Checkbox",
+          "type": "RadioSet"
+        },
+        {
+          "name": "Date0",
+          "label": "Date",
+          "value": "03/23/2023",
+          "type": "Date"
+        },
+        {
+          "name": "PhoneNumber0",
+          "label": "Phone Number",
+          "type": "Text"
+        },
+        {
+          "name": "Email0",
+          "label": "Email",
+          "type": "Text"
+        },
+        {
+          "name": "toggle0",
+          "label": "Toggle",
+          "value": false,
+          "type": "Toggle"
+        },
+        {
+          "name": "Address0",
+          "label": "Address",
+          "type": "Text"
+        },
+        {
+          "name": "Url0",
+          "label": "Url",
+          "type": "Text"
+        },
+        {
+          "name": "RangeSlider0",
+          "label": "Range Slider",
+          "type": "Number"
+        },
+        {
+          "name": "Password0",
+          "label": "Password",
+          "type": "Text"
+        },
+        {
+          "name": "Label0",
+          "label": "Label"
+        },
+        {
+          "name": "note0",
+          "label": "Note"
+        },
+        {
+          "name": "btnUrl",
+          "label": "URL"
+        },
+        {
+          "name": "btnReset",
+          "label": "Reset"
+        },
+        {
+          "name": "btnCancel",
+          "label": "Cancel"
+        },
+        {
+          "name": "Submit",
+          "label": "Submit"
+        }
+      ]
+    },
+    "nlp": "attachments"
+  },
+  {
+    "request": "attachments",
+    "api": {
+      "text": "{&quot;file&quot;:{&quot;type&quot;:&quot;link&quot;,&quot;payload&quot;:{&quot;url&quot;:&quot;https://images.credly.com/size/340x340/images/d37acfad-a646-4e48-b1ca-9f92718f485d/blob.png&quot;,&quot;title&quot;:&quot;This is cyara logo&quot;,&quot;template_type&quot;:&quot;attachment&quot;}}}"
+    },
+    "chatbot": {
+      "sourceData": {
+        "text": "{&quot;file&quot;:{&quot;type&quot;:&quot;link&quot;,&quot;payload&quot;:{&quot;url&quot;:&quot;https://images.credly.com/size/340x340/images/d37acfad-a646-4e48-b1ca-9f92718f485d/blob.png&quot;,&quot;title&quot;:&quot;This is cyara logo&quot;,&quot;template_type&quot;:&quot;attachment&quot;}}}"
+      },
+      "media": [
+        {
+          "mediaUri": "https://images.credly.com/size/340x340/images/d37acfad-a646-4e48-b1ca-9f92718f485d/blob.png",
+          "altText": "This is cyara logo"
+        }
+      ],
+      "nlp": {
+        "intent": {
+          "name": "attachments"
+        }
+      }
+    },
+    "nlp": "attachments"
+  },
+  {
+    "request": "buttons",
+    "api": {
+      "text": "{&quot;type&quot;:&quot;template&quot;,&quot;payload&quot;:{&quot;template_type&quot;:&quot;button&quot;,&quot;text&quot;:&quot;sometext&quot;,&quot;buttons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]},&quot;allPostbackButtons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]}"
+    },
+    "chatbot": {
+      "sourceData": {
+        "text": "{&quot;type&quot;:&quot;template&quot;,&quot;payload&quot;:{&quot;template_type&quot;:&quot;button&quot;,&quot;text&quot;:&quot;sometext&quot;,&quot;buttons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]},&quot;allPostbackButtons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]}"
+      },
+      "messageText": "sometext",
+      "buttons": [
+        {
+          "text": "Button1",
+          "payload": "button1"
+        },
+        {
+          "text": "Button2",
+          "payload": "button2"
+        },
+        {
+          "text": "Button3",
+          "payload": "button3"
+        }
+      ],
+      "nlp": {
+        "intent": {
+          "name": "Buttons"
+        }
+      }
+    },
+    "nlp": "Buttons"
+  },
+  {
+    "request": "carousel",
+    "api": {
+      "text": "{&quot;type&quot;:&quot;template&quot;,&quot;payload&quot;:{&quot;template_type&quot;:&quot;carousel&quot;,&quot;elements&quot;:[{&quot;title&quot;:&quot;header&quot;,&quot;image_url&quot;:&quot;https://images.credly.com/size/340x340/images/d37acfad-a646-4e48-b1ca-9f92718f485d/blob.png&quot;,&quot;subtitle&quot;:&quot;desc&quot;,&quot;default_action&quot;:{&quot;type&quot;:&quot;web_url&quot;,&quot;url&quot;:&quot;&quot;},&quot;buttons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;}]},{&quot;title&quot;:&quot;h1&quot;,&quot;image_url&quot;:&quot;https://images.credly.com/size/340x340/images/d37acfad-a646-4e48-b1ca-9f92718f485d/blob.png&quot;,&quot;subtitle&quot;:&quot;d1&quot;,&quot;default_action&quot;:{&quot;type&quot;:&quot;web_url&quot;,&quot;url&quot;:&quot;&quot;},&quot;buttons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;b1&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;b2&quot;,&quot;payload&quot;:&quot;button4&quot;,&quot;value&quot;:&quot;button4&quot;}]}]},&quot;allPostbackButtons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;b1&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;b2&quot;,&quot;payload&quot;:&quot;button4&quot;,&quot;value&quot;:&quot;button4&quot;}]}"
+    },
+    "chatbot": {
+      "sourceData": {
+        "text": "{&quot;type&quot;:&quot;template&quot;,&quot;payload&quot;:{&quot;template_type&quot;:&quot;carousel&quot;,&quot;elements&quot;:[{&quot;title&quot;:&quot;header&quot;,&quot;image_url&quot;:&quot;https://images.credly.com/size/340x340/images/d37acfad-a646-4e48-b1ca-9f92718f485d/blob.png&quot;,&quot;subtitle&quot;:&quot;desc&quot;,&quot;default_action&quot;:{&quot;type&quot;:&quot;web_url&quot;,&quot;url&quot;:&quot;&quot;},&quot;buttons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;}]},{&quot;title&quot;:&quot;h1&quot;,&quot;image_url&quot;:&quot;https://images.credly.com/size/340x340/images/d37acfad-a646-4e48-b1ca-9f92718f485d/blob.png&quot;,&quot;subtitle&quot;:&quot;d1&quot;,&quot;default_action&quot;:{&quot;type&quot;:&quot;web_url&quot;,&quot;url&quot;:&quot;&quot;},&quot;buttons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;b1&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;b2&quot;,&quot;payload&quot;:&quot;button4&quot;,&quot;value&quot;:&quot;button4&quot;}]}]},&quot;allPostbackButtons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;b1&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;b2&quot;,&quot;payload&quot;:&quot;button4&quot;,&quot;value&quot;:&quot;button4&quot;}]}"
+      },
+      "cards": [
+        {
+          "text": [
+            "header",
+            "desc"
+          ],
+          "image": {
+            "mediaUri": "https://images.credly.com/size/340x340/images/d37acfad-a646-4e48-b1ca-9f92718f485d/blob.png"
+          },
+          "buttons": [
+            {
+              "text": "Button1",
+              "payload": "button1"
+            },
+            {
+              "text": "Button2",
+              "payload": "button2"
+            }
+          ],
+          "sourceData": {
+            "title": "header",
+            "image_url": "https://images.credly.com/size/340x340/images/d37acfad-a646-4e48-b1ca-9f92718f485d/blob.png",
+            "subtitle": "desc",
+            "default_action": {
+              "type": "web_url",
+              "url": ""
+            },
+            "buttons": [
+              {
+                "type": "postback",
+                "title": "Button1",
+                "payload": "button1",
+                "value": "button1"
+              },
+              {
+                "type": "postback",
+                "title": "Button2",
+                "payload": "button2",
+                "value": "button2"
+              }
+            ]
+          }
+        },
+        {
+          "text": [
+            "h1",
+            "d1"
+          ],
+          "image": {
+            "mediaUri": "https://images.credly.com/size/340x340/images/d37acfad-a646-4e48-b1ca-9f92718f485d/blob.png"
+          },
+          "buttons": [
+            {
+              "text": "b1",
+              "payload": "button3"
+            },
+            {
+              "text": "b2",
+              "payload": "button4"
+            }
+          ],
+          "sourceData": {
+            "title": "h1",
+            "image_url": "https://images.credly.com/size/340x340/images/d37acfad-a646-4e48-b1ca-9f92718f485d/blob.png",
+            "subtitle": "d1",
+            "default_action": {
+              "type": "web_url",
+              "url": ""
+            },
+            "buttons": [
+              {
+                "type": "postback",
+                "title": "b1",
+                "payload": "button3",
+                "value": "button3"
+              },
+              {
+                "type": "postback",
+                "title": "b2",
+                "payload": "button4",
+                "value": "button4"
+              }
+            ]
+          }
+        }
+      ],
+      "nlp": {
+        "intent": {
+          "name": "Carousel"
+        }
+      }
+    },
+    "nlp": "Carousel"
+  },
+  {
+    "request": "confirmation",
+    "api": {
+      "text": "This is a confirmation\nsecond line\nYes, No, "
+    },
+    "chatbot": {
+      "sourceData": {
+        "text": "This is a confirmation\nsecond line\nYes, No, "
+      },
+      "messageText": "This is a confirmation\nsecond line",
+      "buttons": [
+        {
+          "text": "Yes"
+        },
+        {
+          "text": "No"
+        }
+      ],
+      "nlp": {
+        "intent": {
+          "name": "Confirmation"
+        }
+      }
+    },
+    "nlp": "Confirmation"
+  },
+  {
+    "request": "formatted text",
+    "api": {
+      "text": "*Bold* _italic_"
+    },
+    "chatbot": {
+      "sourceData": {
+        "text": "*Bold* _italic_"
+      },
+      "messageText": "*Bold* _italic_",
+      "nlp": {
+        "intent": {
+          "name": "FormattedText"
+        }
+      }
+    },
+    "nlp": "FormattedText"
+  },
+  {
+    "request": "buttons",
+    "api": {
+      "text": "{&quot;type&quot;:&quot;template&quot;,&quot;payload&quot;:{&quot;template_type&quot;:&quot;button&quot;,&quot;text&quot;:&quot;sometext&quot;,&quot;buttons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]},&quot;allPostbackButtons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]}"
+    },
+    "chatbot": {
+      "sourceData": {
+        "text": "{&quot;type&quot;:&quot;template&quot;,&quot;payload&quot;:{&quot;template_type&quot;:&quot;button&quot;,&quot;text&quot;:&quot;sometext&quot;,&quot;buttons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]},&quot;allPostbackButtons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]}"
+      },
+      "messageText": "sometext",
+      "buttons": [
+        {
+          "text": "Button1",
+          "payload": "button1"
+        },
+        {
+          "text": "Button2",
+          "payload": "button2"
+        },
+        {
+          "text": "Button3",
+          "payload": "button3"
+        }
+      ],
+      "nlp": {
+        "intent": {
+          "name": "Buttons"
+        }
+      }
+    }
+  }
+]

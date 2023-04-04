@@ -1,0 +1,11 @@
+{
+  "botium": {
+    "Capabilities": {
+      "PROJECTNAME": "mocked",
+      "CONTAINERMODE": "koreai-webhook",
+      "KOREAI_WEBHOOK_URL": "mocked",
+      "KOREAI_WEBHOOK_CLIENTID": "mocked",
+      "KOREAI_WEBHOOK_CLIENTSECRET": "mocked"
+    }
+  }
+}

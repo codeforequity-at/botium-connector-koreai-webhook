@@ -1,0 +1,14 @@
+confirmation
+
+#me
+Confirmation
+
+#bot
+This is a confirmation
+BUTTONS Yes|No
+
+#me
+BUTTON Yes
+
+#bot
+You have choosen "yes"

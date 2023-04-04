@@ -1,0 +1,7 @@
+formatted text
+
+#me
+formattedtext
+
+#bot
+*Bold* _italic_

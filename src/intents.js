@@ -156,10 +156,11 @@ const importKoreaiIntents = async ({ caps, importallutterances, buildconvos }, {
     }
   }
 
-  return {
-    convos,
-    utterances: Object.values(utterances)
+  const res = { utterances: Object.values(utterances) }
+  if (convos && convos.length) {
+    res.convos = convos
   }
+  return res
 }
 
 const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { statusCallback }) => {

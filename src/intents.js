@@ -162,7 +162,7 @@ const importKoreaiIntents = async ({ caps, importallutterances, buildconvos }, {
   }
 }
 
-const exportKoreaiIntents = async ({ caps, language }, { utterances }, { statusCallback }) => {
+const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { statusCallback }) => {
   try {
     const status = (log, obj) => {
       if (obj) {
@@ -355,7 +355,8 @@ module.exports = {
     },
     language: {
       describe: 'The language of the data (like "en")',
-      type: 'string'
+      type: 'string',
+      default: 'en'
     }
   }
 }

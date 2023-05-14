@@ -1,5 +1,5 @@
 const PluginClass = require('./src/connector')
-const { importHandler, importArgs } = require('./src/intents')
+const { importHandler, importArgs, exportHandler, exportArgs } = require('./src/intents')
 
 module.exports = {
   PluginVersion: 1,
@@ -7,6 +7,10 @@ module.exports = {
   Import: {
     Handler: importHandler,
     Args: importArgs
+  },
+  Export: {
+    Handler: exportHandler,
+    Args: exportArgs
   },
   PluginDesc: {
     name: 'Kore.ai',

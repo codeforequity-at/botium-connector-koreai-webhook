@@ -82,7 +82,7 @@ const getContent = async ({ container, statusCallback }) => {
       }
     }
 
-    if (resStatus.status !== 'SUCCESS') {
+    if (!resStatus || resStatus.status !== 'SUCCESS') {
       throw new Error(`Import failed ${JSON.stringify(resStatus, null, 2)}`)
     }
 
@@ -157,11 +157,12 @@ const importKoreaiIntents = async ({ caps, importallutterances, buildconvos }, {
   }
 
   return {
+    convos,
     utterances: Object.values(utterances)
   }
 }
 
-const exportKoreaiIntents = async ({ caps }, { utterances }, { statusCallback }) => {
+const exportKoreaiIntents = async ({ caps, language }, { utterances }, { statusCallback }) => {
   try {
     const status = (log, obj) => {
       if (obj) {
@@ -183,17 +184,18 @@ const exportKoreaiIntents = async ({ caps }, { utterances }, { statusCallback })
     const existingIntents = new Set(newData.map(s => s.taskName))
 
     for (const struct of utterances) {
-      if (existingIntents.has(struct.name)) {
+      if (!existingIntents.has(struct.name)) {
         status(`Skipping intent "${struct.name}" because it does not exist in the Chatbot`)
-        continue
-      }
-      for (const utterance of struct.utterances) {
-        if (!newData.find(old => old.taskName === struct.name && old.sentence === utterance)) {
-          newData.push({
-            taskName: struct.name,
-            sentence: utterance,
-            type: 'DialogIntent'
-          })
+      } else {
+        for (const utterance of struct.utterances) {
+          if (!newData.find(old => old.taskName === struct.name && old.sentence === utterance)) {
+            newData.push({
+              taskName: struct.name,
+              sentence: utterance,
+              type: 'DialogIntent',
+              language: language
+            })
+          }
         }
       }
     }
@@ -299,7 +301,7 @@ const koreaiImportEndpointNative = async ({ container, urlStruct, fileName, file
         chunks.push(chunk)
       })
 
-      res.on('end', function (chunk) {
+      res.on('end', function () {
         const body = Buffer.concat(chunks)
         if (res.statusCode < 400) {
           resolve(JSON.parse(body))
@@ -344,12 +346,16 @@ module.exports = {
       default: false
     }
   },
-  exportHandler: ({ caps, ...rest } = {}, { convos, utterances } = {}, { statusCallback } = {}) => exportKoreaiIntents({ caps, ...rest }, { convos, utterances }, { statusCallback }),
+  exportHandler: ({ caps, language, ...rest } = {}, { convos, utterances } = {}, { statusCallback } = {}) => exportKoreaiIntents({ caps, language, ...rest }, { convos, utterances }, { statusCallback }),
   exportArgs: {
     caps: {
       describe: 'Capabilities',
       type: 'json',
       skipCli: true
+    },
+    language: {
+      describe: 'The language of the data (like "en")',
+      type: 'string'
     }
   }
 }

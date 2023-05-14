@@ -179,16 +179,20 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
       throw new Error('Admin token is not available, check admin credentials!')
     }
 
+    status(`Import started`)
     const newData = await getContent({ container, statusCallback })
 
     const existingIntents = new Set(newData.map(s => s.taskName))
+    status(`Chatbot data imported. (${newData.length} utterances in ${existingIntents.size} intents)`)
 
+    let added = 0
     for (const struct of utterances) {
       if (!existingIntents.has(struct.name)) {
         status(`Skipping intent "${struct.name}" because it does not exist in the Chatbot`)
       } else {
         for (const utterance of struct.utterances) {
           if (!newData.find(old => old.taskName === struct.name && old.sentence === utterance)) {
+            added++
             newData.push({
               taskName: struct.name,
               sentence: utterance,
@@ -198,6 +202,13 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
           }
         }
       }
+    }
+
+    if (!added) {
+      status(`No utterance added to data, noting to export. Exiting.`)
+      return
+    } else {
+      status(`Adding ${added} utterance(s) to exported data`)
     }
 
     const urlStruct = extractUrl(container)

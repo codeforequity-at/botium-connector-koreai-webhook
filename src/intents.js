@@ -179,7 +179,7 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
       throw new Error('Admin token is not available, check admin credentials!')
     }
 
-    status("Import started")
+    status('Import started')
     const newData = await getContent({ container, statusCallback })
 
     const existingIntents = new Set(newData.map(s => s.taskName))
@@ -205,7 +205,7 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
     }
 
     if (!added) {
-      status("No utterance added to data, noting to export. Exiting.")
+      status('No utterance added to data, noting to export. Exiting.')
       return
     } else {
       status(`Adding ${added} utterance(s) to exported data`)

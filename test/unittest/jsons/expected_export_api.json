@@ -21,18 +21,9 @@
     "language": "en"
   },
   {
-    "taskName": "not existing intent",
-    "sentence": "Ping",
-    "type": "DialogIntent"
-  },
-  {
-    "taskName": "not existing intent",
-    "sentence": "Are you there?",
-    "type": "DialogIntent"
-  },
-  {
-    "taskName": "not existing intent",
-    "sentence": "You there?",
-    "type": "DialogIntent"
+    "taskName": "Get flight status",
+    "sentence": "not existing utterance",
+    "type": "DialogIntent",
+    "language": "en"
   }
 ]

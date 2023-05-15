@@ -7,7 +7,7 @@ describe('exporthandler', function () {
     this.caps = readCaps()
   })
   it('should successfully upload existing utterances', async function () {
-    await exportHandler({ caps: this.caps }, {
+    await exportHandler({ caps: this.caps, language: 'en' }, {
       utterances: [
         {
           name: 'Ping',

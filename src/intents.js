@@ -177,7 +177,7 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
     await container.Start()
     const adminToken = container.adminToken
     if (!adminToken) {
-      throw new Error('Admin token is not available, check admin credentials!')
+      throw new Error('Admin token is not available, check admin credentials (Admin client id, and admin client secret) in chatbot settings!')
     }
 
     status('Import started')

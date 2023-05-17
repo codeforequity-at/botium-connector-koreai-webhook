@@ -10,6 +10,7 @@ const { addDownloaderMocks } = require('./helper')
 const nock = require('nock')
 
 const caps = require('./jsons/mocked_botium_for_exporter.json').botium.Capabilities
+const capsBasic = require('./jsons/mocked_botium_basic.json').botium.Capabilities
 const toUpload = require('./jsons/utterances_to_export.json')
 const expectedExport = require('./jsons/expected_export_api.json')
 
@@ -80,6 +81,10 @@ describe('exporter', function () {
     await intents.exportHandler({ caps }, toUpload)
     await this.promiseUploadFinised
     assert.deepEqual(this.importedFile, expectedExport)
+  }).timeout(5000)
+
+  it('should not export if admin credentials are missing', async function () {
+    await assert.isRejected(intents.exportHandler({ caps: capsBasic }, toUpload), 'Admin token is not available, check admin credentials (Admin client id, and admin client secret) in chatbot settings!')
   }).timeout(5000)
 
   afterEach(async function () {

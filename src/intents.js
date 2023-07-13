@@ -78,7 +78,11 @@ const getContent = async ({ container, statusCallback }) => {
       } catch (err) {
       // i get sometimes internal server error on first try, but on second try it is working.
       // To be sure retry is for all errors, and not just for the first try
-        status(`Error from mlexport/status: ${err.message || err} retrying`)
+        if (tries !== 19) {
+          status(`Error from mlexport/status: ${err.message || err} retrying`)
+        } else {
+          throw new Error(`Import failed, mlexport/status try #20 failed with error message "${err.message || err}"`)
+        }
       }
     }
 

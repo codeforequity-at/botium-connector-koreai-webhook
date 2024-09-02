@@ -274,6 +274,8 @@ class BotiumConnectorKoreaiWebhook {
                   } else {
                     debug('unknown file format')
                   }
+                } else if (asJson.text) {
+                  messageText = asJson.text
                 } else if (asJson.type === 'template' && asJson?.payload?.template_type) {
                   messageText = asJson.payload.text
                   switch (asJson.payload.template_type) {

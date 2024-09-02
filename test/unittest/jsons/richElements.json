@@ -1831,34 +1831,21 @@
     "nlp": "FormattedText"
   },
   {
-    "request": "buttons",
+    "request": "jsontext",
     "api": {
-      "text": "{&quot;type&quot;:&quot;template&quot;,&quot;payload&quot;:{&quot;template_type&quot;:&quot;button&quot;,&quot;text&quot;:&quot;sometext&quot;,&quot;buttons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]},&quot;allPostbackButtons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]}"
+      "text": "{&quot;text&quot;:&quot;If you ever need to mute yourself, you can click on the microphone icon @showcards(mic) in the bottom left corner of the screen. You can interrupt me by clicking on the hand button.@hidecards(mic)&quot;,&quot;variables&quot;:{&quot;public-mic&quot;:{&quot;component&quot;:&quot;image&quot;,&quot;data&quot;:{&quot;url&quot;:&quot;https://ias-staging.digitalpfizer.com/web-sdk/Digital-Workforce-Chatbot/Assets/Mute.png&quot;,&quot;alt&quot;:&quot;mute button and mic&quot;}}}}"
     },
     "chatbot": {
       "sourceData": {
-        "text": "{&quot;type&quot;:&quot;template&quot;,&quot;payload&quot;:{&quot;template_type&quot;:&quot;button&quot;,&quot;text&quot;:&quot;sometext&quot;,&quot;buttons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]},&quot;allPostbackButtons&quot;:[{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button1&quot;,&quot;payload&quot;:&quot;button1&quot;,&quot;value&quot;:&quot;button1&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button2&quot;,&quot;payload&quot;:&quot;button2&quot;,&quot;value&quot;:&quot;button2&quot;},{&quot;type&quot;:&quot;postback&quot;,&quot;title&quot;:&quot;Button3&quot;,&quot;payload&quot;:&quot;button3&quot;,&quot;value&quot;:&quot;button3&quot;}]}"
+        "text": "{&quot;text&quot;:&quot;If you ever need to mute yourself, you can click on the microphone icon @showcards(mic) in the bottom left corner of the screen. You can interrupt me by clicking on the hand button.@hidecards(mic)&quot;,&quot;variables&quot;:{&quot;public-mic&quot;:{&quot;component&quot;:&quot;image&quot;,&quot;data&quot;:{&quot;url&quot;:&quot;https://ias-staging.digitalpfizer.com/web-sdk/Digital-Workforce-Chatbot/Assets/Mute.png&quot;,&quot;alt&quot;:&quot;mute button and mic&quot;}}}}"
       },
-      "messageText": "sometext",
-      "buttons": [
-        {
-          "text": "Button1",
-          "payload": "button1"
-        },
-        {
-          "text": "Button2",
-          "payload": "button2"
-        },
-        {
-          "text": "Button3",
-          "payload": "button3"
-        }
-      ],
+      "messageText": "If you ever need to mute yourself, you can click on the microphone icon @showcards(mic) in the bottom left corner of the screen. You can interrupt me by clicking on the hand button.@hidecards(mic)",
       "nlp": {
         "intent": {
-          "name": "Buttons"
+          "name": "Jsontext"
         }
       }
-    }
+    },
+    "nlp": "Jsontext"
   }
 ]

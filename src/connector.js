@@ -101,7 +101,7 @@ class BotiumConnectorKoreaiWebhook {
     const controller = new AbortController()
 
     // Set timeout to abort fetch after X ms
-    const timeoutMs = 1000
+    const timeoutMs = 10000
     const timeoutId = setTimeout(() => {
       controller.abort()
     }, timeoutMs)

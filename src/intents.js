@@ -120,7 +120,7 @@ const getContent = async ({ container, statusCallback }) => {
 
     return resDownload
   } catch (err) {
-    throw new Error(`failed to call endpoint "${resStatus}" error message "${err.message}"`)
+    throw new Error(`failed to call endpoint error message "${err.message}"`)
   }
 }
 

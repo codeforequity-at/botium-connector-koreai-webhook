@@ -1,17 +1,16 @@
-const _ = require('lodash')
-const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
-chai.use(chaiAsPromised)
-const assert = chai.assert
-const nock = require('nock')
-const formidable = require('formidable') // Library to parse multipart form data
+// const _ = require('lodash')
+// const chai = require('chai')
+// const chaiAsPromised = require('chai-as-promised')
+// chai.use(chaiAsPromised)
+// const assert = chai.assert
+// const nock = require('nock')
 
-const intents = require('../../src/intents')
-const { addDownloaderMocks } = require('./helper')
+// const intents = require('../../src/intents')
+// const { addDownloaderMocks } = require('./helper')
 
-const caps = require('./jsons/mocked_botium_for_exporter.json').botium.Capabilities
-const toUpload = require('./jsons/utterances_to_export.json')
-const expectedExport = require('./jsons/expected_export_api.json')
+// const caps = require('./jsons/mocked_botium_for_exporter.json').botium.Capabilities
+// const toUpload = require('./jsons/utterances_to_export.json')
+// const expectedExport = require('./jsons/expected_export_api.json')
 
 // describe('exporter', function () {
 //   beforeEach(async function () {

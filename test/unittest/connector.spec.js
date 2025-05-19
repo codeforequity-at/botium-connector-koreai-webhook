@@ -52,7 +52,7 @@ describe("connector", function () {
         .reply(200, { message: "should never be received" });
 
       await assert.isRejected(
-        this.connector.UserSays({ messageText: "hello" }),
+        this.connector.UserSays({ messageText: "hello" },1000),
         'failed to call endpoint "http://mocked" error message "This operation was aborted"'
       );
     });

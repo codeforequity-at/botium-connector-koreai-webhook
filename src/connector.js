@@ -83,9 +83,9 @@ class BotiumConnectorKoreaiWebhook {
     return token
   }
 
-  UserSays (msg) {
+  UserSays (msg, timeout = 10000) {
     debug(`UserSays called ${util.inspect(msg)}`)
-    return this._doRequest(msg)
+    return this._doRequest(msg, timeout)
   }
 
   Stop () {
@@ -96,12 +96,12 @@ class BotiumConnectorKoreaiWebhook {
     this.toId = null
   }
 
-  _doRequest (msg) {
+  _doRequest (msg, timeout) {
     const requestOptions = this._buildRequest(msg)
     const controller = new AbortController()
 
     // Set timeout to abort fetch after X ms
-    const timeoutMs = 10000
+    const timeoutMs = timeout
     const timeoutId = setTimeout(() => {
       controller.abort()
     }, timeoutMs)

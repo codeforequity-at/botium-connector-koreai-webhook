@@ -53,6 +53,11 @@ const getContent = async ({ container, statusCallback }) => {
       headers: roStart.headers,
       ...(roStart.data && { body: JSON.stringify(roStart.data) })
     })
+
+    if (!resStart.ok) {
+      throw new Error(`Failed to start import, status code ${resStart.status}`)
+    }
+
     const resStartData = await resStart.json()
     const streamId = resStartData.streamId
     status('Import started')
@@ -77,6 +82,11 @@ const getContent = async ({ container, statusCallback }) => {
           method: roStatus.method,
           headers: roStatus.headers
         })
+
+        if (!resStatusData.ok) {
+          throw new Error(`Failed to get import status, status code ${resStatusData.status}`)
+        }
+
         resStatus = await resStatusData.json()
         // Some other state to check?
         exportFinished = ['FAILED', 'SUCCESS'].includes(resStatus.status)
@@ -113,6 +123,10 @@ const getContent = async ({ container, statusCallback }) => {
     const resDownloadData = await fetch(roDownload.url, {
       method: roDownload.method
     })
+
+    if (!resDownloadData.ok) {
+      throw new Error(`Failed to download import file, status code ${resDownloadData.status}`)
+    }
 
     const resDownload = await resDownloadData.json()
 
@@ -249,6 +263,11 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
       headers: roUpload.headers,
       ...(roUpload.data && { body: roUpload.data })
     })
+
+    if (!resUploadData.ok) {
+      throw new Error(`Failed to upload file, status code ${resUploadData.status}`)
+    }
+
     const resUpload = await resUploadData.json()
     if (!resUpload || !resUpload.fileId) {
       status(`fileId not found in uploadfile response: ${JSON.stringify(resUpload)}`)
@@ -275,6 +294,10 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
           method: roStatus.method,
           headers: roStatus.headers
         })
+
+        if (!resStatusData.ok) {
+          throw new Error(`Failed to get export status, status code ${resStatusData.status}`)
+        }
 
         resStatus = await resStatusData.json()
         // Some other state to check?

@@ -1,26 +1,32 @@
-const downloadApi = require('./jsons/mocked_import_api.json')
+const downloadApi = require('./jsons/mocked_import_api.json');
+const nock = require('nock');
 
 module.exports = {
-  addDownloaderMocks: (mockAdapter) => {
-    mockAdapter.onPost('https://bots.kore.ai/api/public/bot/mockedBotId/mlexport?state=configured&=&type=json')
-      .reply(() => {
-        return [200, {
-          streamId: 'mockedStreamId'
-        }]
-      })
+  addDownloaderMocks: () => {
+    // Mock the mlexport endpoint
+    nock('https://bots.kore.ai')
+      .post('/api/public/bot/mockedBotId/mlexport?state=configured&=&type=json')
+      .reply(200, {
+        streamId: 'mockedStreamId',
+      });
 
+    // Mock the mlexport status endpoint
     const responses = [
-      [[500]], // they had some trouble with status check coming too fast.
-      [[200], { status: 'SOMETHING_ELSE_AS_SUCCESS_AND_FAILED' }],
-      [[200], { status: 'SUCCESS', downloadUrl: 'mockedDownloadUrl' }]
-    ]
-    mockAdapter.onGet('https://bots.kore.ai/api/public/bot/mockedStreamId/mlexport/status')
+      [500], // Simulate an error for the first status check
+      [200, { status: 'SOMETHING_ELSE_AS_SUCCESS_AND_FAILED' }],
+      [200, { status: 'SUCCESS', downloadUrl: 'mockedDownloadUrl' }],
+    ];
+    nock('https://bots.kore.ai')
+      .get('/api/public/bot/mockedStreamId/mlexport/status')
+      .times(responses.length) // Ensure it matches the number of responses
       .reply(() => {
-        const res = responses.shift()
-        return res
-      })
+        const res = responses.shift();
+        return res;
+      });
 
-    mockAdapter.onGet('mockedDownloadUrl')
-      .replyOnce([200], downloadApi)
-  }
-}
+    // Mock the download URL
+    nock('https://bots.kore.ai')
+      .get('/mockedDownloadUrl')
+      .reply(200, downloadApi);
+  },
+};

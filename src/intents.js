@@ -1,6 +1,5 @@
 const Connector = require('./connector')
 const debug = () => require('debug')('botium-connector-koreai-intents')
-const axios = require('axios')
 const FormData = require('form-data')
 const uuidv1 = require('uuid').v1
 const https = require('https')
@@ -44,12 +43,23 @@ const getContent = async ({ container, statusCallback }) => {
       url: `${urlRoot}/bot/${botId}/mlexport?state=configured&=&type=json`,
       method: 'POST',
       headers: {
-        auth: `${container.token}`
+        auth: `${container.token}`,
+        'Content-Type': 'application/json'
       }
     }
     debug(`Constructed requestOptions for mlexport: ${JSON.stringify(roStart, null, 2)}`)
-    const resStart = await axios(roStart)
-    const streamId = resStart.data.streamId
+    const resStart = await fetch(roStart.url, {
+      method: roStart.method,
+      headers: roStart.headers,
+      ...(roStart.data && { body: JSON.stringify(roStart.data) })
+    })
+
+    if (!resStart.ok) {
+      throw new Error(`Failed to start import, status code ${resStart.status}`)
+    }
+
+    const resStartData = await resStart.json()
+    const streamId = resStartData.streamId
     status('Import started')
 
     //
@@ -68,7 +78,16 @@ const getContent = async ({ container, statusCallback }) => {
 
     for (let tries = 0; tries < 20 && !exportFinished; tries++) {
       try {
-        resStatus = (await axios(roStatus)).data
+        const resStatusData = await fetch(roStatus.url, {
+          method: roStatus.method,
+          headers: roStatus.headers
+        })
+
+        if (!resStatusData.ok) {
+          throw new Error(`Failed to get import status, status code ${resStatusData.status}`)
+        }
+
+        resStatus = await resStatusData.json()
         // Some other state to check?
         exportFinished = ['FAILED', 'SUCCESS'].includes(resStatus.status)
         if (!exportFinished) {
@@ -96,21 +115,26 @@ const getContent = async ({ container, statusCallback }) => {
     // Download
     //
     const roDownload = {
-      url: resStatus.downloadUrl,
+      url: `https://bots.kore.ai/${resStatus.downloadUrl}`,
       method: 'GET'
     }
     debug(`Constructed requestOptions for download: ${JSON.stringify(roDownload, null, 2)}`)
 
-    const resDownload = await axios(roDownload)
+    const resDownloadData = await fetch(roDownload.url, {
+      method: roDownload.method
+    })
+
+    if (!resDownloadData.ok) {
+      throw new Error(`Failed to download import file, status code ${resDownloadData.status}`)
+    }
+
+    const resDownload = await resDownloadData.json()
 
     status('Import file downloaded')
 
-    return resDownload.data
+    return resDownload
   } catch (err) {
-    if (err.isAxiosError) {
-      throw new Error(`failed to call endpoint "${err.config?.url}" error message "${err.message}"`)
-    }
-    throw err
+    throw new Error(`failed to call endpoint error message "${err.message}"`)
   }
 }
 
@@ -228,19 +252,30 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
       url: `${urlRoot}/uploadfile`,
       method: 'POST',
       headers: {
-        auth: `${adminToken}`
+        auth: `${adminToken}`,
+        'Content-Type': 'multipart/form-data'
       },
       data: data
     }
     debug(`Constructed requestOptions for uploadfile: ${JSON.stringify(Object.assign({}, roUpload, { data: '...' }), null, 2)}`)
-    const resUpload = await axios(roUpload)
-    if (!resUpload.data || !resUpload.data.fileId) {
-      status(`fileId not found in uploadfile response: ${JSON.stringify(resUpload.data)}`)
-      throw new Error(`fileId not found in uploadfile response: ${JSON.stringify(resUpload.data)}`)
+    const resUploadData = await fetch(roUpload.url, {
+      method: roUpload.method,
+      headers: roUpload.headers,
+      ...(roUpload.data && { body: roUpload.data })
+    })
+
+    if (!resUploadData.ok) {
+      throw new Error(`Failed to upload file, status code ${resUploadData.status}`)
+    }
+
+    const resUpload = await resUploadData.json()
+    if (!resUpload || !resUpload.fileId) {
+      status(`fileId not found in uploadfile response: ${JSON.stringify(resUpload)}`)
+      throw new Error(`fileId not found in uploadfile response: ${JSON.stringify(resUpload)}`)
     }
     status('Export started')
 
-    const resImport = await koreaiImportEndpointNative({ container, urlStruct, fileName, fileId: resUpload.data.fileId })
+    const resImport = await koreaiImportEndpointNative({ container, urlStruct, fileName, fileId: resUpload.fileId })
 
     const roStatus = {
       url: `${urlRoot}/bot/${botId}/mlimport/status/${resImport._id}`,
@@ -255,7 +290,16 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
 
     for (let tries = 0; tries < 20 && !importFinished; tries++) {
       try {
-        resStatus = (await axios(roStatus)).data
+        const resStatusData = await fetch(roStatus.url, {
+          method: roStatus.method,
+          headers: roStatus.headers
+        })
+
+        if (!resStatusData.ok) {
+          throw new Error(`Failed to get export status, status code ${resStatusData.status}`)
+        }
+
+        resStatus = await resStatusData.json()
         // Some other state to check?
         importFinished = ['failed', 'success'].includes(resStatus.status)
         if (!importFinished) {
@@ -274,10 +318,7 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
 
     status(`File exported to KoreAI successful: ${resStatus.message}`)
   } catch (err) {
-    if (err.isAxiosError) {
-      throw new Error(`failed to call endpoint "${err.config?.url}" error message "${err.message}"`)
-    }
-    throw err
+    throw new Error(`failed to call endpoint error message "${err.message}"`)
   }
 }
 
@@ -343,7 +384,6 @@ const koreaiImportEndpointNative = async ({ container, urlStruct, fileName, file
 }
 
 module.exports = {
-  axios,
   importHandler: ({ caps, importallutterances, buildconvos, ...rest } = {}, { statusCallback } = {}) => importKoreaiIntents({ caps, importallutterances, buildconvos, ...rest }, { statusCallback }),
   importArgs: {
     caps: {

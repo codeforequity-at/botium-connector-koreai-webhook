@@ -96,6 +96,76 @@ class BotiumConnectorKoreaiWebhook {
     this.toId = null
   }
 
+  _extractCustomComponents (entry) {
+    const _extractButtonToSubcard = (element) => {
+      if (element.type === 'button') {
+        const action = element.click?.actions?.[0] || {}
+        if (action.type === 'publishText') {
+          return {
+            buttons: [{
+              text: element.title || 'No title defined',
+              payload: action.text || 'No text defined'
+            }]
+          }
+        } else if (action.type === 'link') {
+          return {
+            buttons: [{
+              text: element.title || 'No title defined',
+              payload: action.web?.uri || 'No URL defined'
+            }]
+          }
+        } else {
+          debug(`Unsupported button action type: ${action.type} in: ${JSON.stringify(element)}`)
+        }
+      } else {
+        debug(`Unsupported element type on extracting button: ${element.type} in element: ${JSON.stringify(element)}`)
+      }
+    }
+
+    if (entry.type === 'ContentEvent') {
+      debug(`Customer specific format "${entry.type}" detected, processing...`)
+      // extract buttons from quick replies to card.
+      // maybe this could be put into the buttons field? Button can't be a link, isnt it?,
+      return { text: entry.message, cards: (entry.quickReplies?.replies || []).map(_extractButtonToSubcard) }
+    } else if (entry.type === 'RichContentEvent') {
+      if (entry.content.type === 'vertical' || entry.content.type === 'carousel') {
+        debug(`Customer specific format "${entry.type}"."${entry.content.type}" detected, processing...`)
+        const _extractComponentsRecursive = (elements) => {
+          const cards = elements.map((element) => {
+            if (element.type === 'vertical' || element.type === 'carousel') {
+              return {
+                cards: _extractComponentsRecursive(element.elements)
+              }
+            } else if (element.type === 'text') {
+              return {
+                text: element.text
+              }
+            } else if (element.type === 'accordion') {
+              return {
+                text: element.text,
+                cards: _extractComponentsRecursive(element.elements)
+              }
+            } else if (element.type === 'button') {
+              const asCard = _extractButtonToSubcard(element)
+              if (asCard) {
+                return asCard
+              }
+              return false
+            } else {
+              debug(`Unsupported element type: ${element.type} in: ${JSON.stringify(element)}`)
+              return false
+            }
+          }).filter(element => element)
+
+          return cards
+        }
+
+        return { cards: _extractComponentsRecursive(entry.content.elements) }
+      }
+    }
+    return null
+  }
+
   _doRequest (msg, timeout) {
     const requestOptions = this._buildRequest(msg)
     const controller = new AbortController()
@@ -363,6 +433,7 @@ class BotiumConnectorKoreaiWebhook {
                 }
                 if (nlp) {
                   botMsg.nlp = nlp
+                  nlp = null
                 }
                 if (forms) {
                   botMsg.forms = forms
@@ -373,23 +444,26 @@ class BotiumConnectorKoreaiWebhook {
                 setTimeout(() => this.queueBotSays(botMsg), 0)
               })
             } else {
-              if (nlp) {
+              const customComponents = this._extractCustomComponents(body)
+              // this case has to be activated by custom components.
+              // nlp and forms are there just to be sure.
+              if (nlp || forms || customComponents) {
                 const botMsg = {
                   sourceData: body,
-                  nlp
+                  ...(customComponents || {})
+                }
+                if (nlp) {
+                  botMsg.nlp = nlp
+                  nlp = null
+                }
+                if (forms) {
+                  botMsg.forms = forms
+                  // teoretically one form has just one (mandatory) text,
+                  // but if there are more text somehow, we dont want to display form for each
+                  forms = null
                 }
                 setTimeout(() => this.queueBotSays(botMsg), 0)
               }
-            }
-            if (forms) {
-            // teoretically one form has just one (mandatory) text,
-            // but if there are no text somehow, we want to display the form once
-              const botMsg = {
-                sourceData: body,
-                forms
-              }
-              forms = null
-              setTimeout(() => this.queueBotSays(botMsg), 0)
             }
           }
         })

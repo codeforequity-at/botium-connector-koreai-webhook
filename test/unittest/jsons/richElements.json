@@ -1847,5 +1847,1479 @@
       }
     },
     "nlp": "Jsontext"
+  },
+  {
+    "request": "Customer1.Accordion_ThankyouPoints_RichContent",
+    "api": {
+      "type": "RichContentEvent",
+      "content": {
+        "type": "vertical",
+        "elements": [
+          {
+            "type": "vertical",
+            "elements": [
+              {
+                "type": "vertical",
+                "elements": [
+                  {
+                    "type": "text",
+                    "text": "ThankYou® Points",
+                    "style": {
+                      "size": "small",
+                      "color": "#666666",
+                      "bold": false
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "55,414",
+                    "tooltip": "55,414",
+                    "style": {
+                      "size": "extra_large",
+                      "color": "",
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "ThankYou® ID 8910231769217384",
+                    "style": {
+                      "size": "small",
+                      "color": "#666666",
+                      "bold": false
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "accordion",
+            "text": "Accounts for ThankYou® ID",
+            "elements": [
+              {
+                "type": "vertical",
+                "elements": [
+                  {
+                    "type": "text",
+                    "text": "AT&T Universal Rewards - 6862rCiti® Double Cash Card - 6004rExpedia.com - 0388",
+                    "style": {
+                      "size": "small"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "button",
+            "title": "Redeem points",
+            "tooltip": "Redeem points",
+            "click": {
+              "actions": [
+                {
+                  "type": "publishText",
+                  "text": "Redeem points"
+                }
+              ]
+            }
+          },
+          {
+            "type": "button",
+            "title": "Check rewards for other ThankYou IDs",
+            "tooltip": "Check rewards for other ThankYou IDs",
+            "click": {
+              "actions": [
+                {
+                  "type": "publishText",
+                  "text": "Check rewards for other ThankYou IDs"
+                }
+              ]
+            }
+          },
+          {
+            "type": "button",
+            "title": "Combine rewards for multiple ThankYou IDs",
+            "tooltip": "Combine rewards for multiple ThankYou IDs",
+            "click": {
+              "actions": [
+                {
+                  "type": "publishText",
+                  "text": "Combine rewards for multiple ThankYou IDs"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "chatbot": {
+      "sourceData": {
+        "type": "RichContentEvent",
+        "content": {
+          "type": "vertical",
+          "elements": [
+            {
+              "type": "vertical",
+              "elements": [
+                {
+                  "type": "vertical",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": "ThankYou® Points",
+                      "style": {
+                        "size": "small",
+                        "color": "#666666",
+                        "bold": false
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": "55,414",
+                      "tooltip": "55,414",
+                      "style": {
+                        "size": "extra_large",
+                        "color": "",
+                        "bold": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": "ThankYou® ID 8910231769217384",
+                      "style": {
+                        "size": "small",
+                        "color": "#666666",
+                        "bold": false
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "accordion",
+              "text": "Accounts for ThankYou® ID",
+              "elements": [
+                {
+                  "type": "vertical",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": "AT&T Universal Rewards - 6862rCiti® Double Cash Card - 6004rExpedia.com - 0388",
+                      "style": {
+                        "size": "small"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "title": "Redeem points",
+              "tooltip": "Redeem points",
+              "click": {
+                "actions": [
+                  {
+                    "type": "publishText",
+                    "text": "Redeem points"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "button",
+              "title": "Check rewards for other ThankYou IDs",
+              "tooltip": "Check rewards for other ThankYou IDs",
+              "click": {
+                "actions": [
+                  {
+                    "type": "publishText",
+                    "text": "Check rewards for other ThankYou IDs"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "button",
+              "title": "Combine rewards for multiple ThankYou IDs",
+              "tooltip": "Combine rewards for multiple ThankYou IDs",
+              "click": {
+                "actions": [
+                  {
+                    "type": "publishText",
+                    "text": "Combine rewards for multiple ThankYou IDs"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "cards": [
+        {
+          "cards": [
+            {
+              "cards": [
+                {
+                  "text": "ThankYou® Points"
+                },
+                {
+                  "text": "55,414"
+                },
+                {
+                  "text": "ThankYou® ID 8910231769217384"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Accounts for ThankYou® ID",
+          "cards": [
+            {
+              "cards": [
+                {
+                  "text": "AT&T Universal Rewards - 6862rCiti® Double Cash Card - 6004rExpedia.com - 0388"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "buttons": [
+            {
+              "text": "Redeem points",
+              "payload": "Redeem points"
+            }
+          ]
+        },
+        {
+          "buttons": [
+            {
+              "text": "Check rewards for other ThankYou IDs",
+              "payload": "Check rewards for other ThankYou IDs"
+            }
+          ]
+        },
+        {
+          "buttons": [
+            {
+              "text": "Combine rewards for multiple ThankYou IDs",
+              "payload": "Combine rewards for multiple ThankYou IDs"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "request": "Customer1.Buttons_DeepdropLinkOnly_RichContent",
+    "api": {
+      "type": "RichContentEvent",
+      "content": {
+        "type": "vertical",
+        "elements": [
+          {
+            "type": "button",
+            "title": "Go to Contact Us",
+            "tooltip": "Go to Contact Us",
+            "click": {
+              "actions": [
+                {
+                  "type": "link",
+                  "uri": "Citiglobal://CONTACTUS",
+                  "web": {
+                    "uri": "https://online.citi.com/US/ag/contactus"
+                  },
+                  "android": {
+                    "uri": "citiglobal://Contactus"
+                  },
+                  "ios": {
+                    "uri": "Citiglobal://CONTACTUS"
+                  },
+                  "target": "self"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "chatbot": {
+      "sourceData": {
+        "type": "RichContentEvent",
+        "content": {
+          "type": "vertical",
+          "elements": [
+            {
+              "type": "button",
+              "title": "Go to Contact Us",
+              "tooltip": "Go to Contact Us",
+              "click": {
+                "actions": [
+                  {
+                    "type": "link",
+                    "uri": "Citiglobal://CONTACTUS",
+                    "web": {
+                      "uri": "https://online.citi.com/US/ag/contactus"
+                    },
+                    "android": {
+                      "uri": "citiglobal://Contactus"
+                    },
+                    "ios": {
+                      "uri": "Citiglobal://CONTACTUS"
+                    },
+                    "target": "self"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "cards": [
+        {
+          "buttons": [
+            {
+              "text": "Go to Contact Us",
+              "payload": "https://online.citi.com/US/ag/contactus"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "request": "Customer1.Text_Buttons_Rewards_RichContents",
+    "api": {
+      "type": "RichContentEvent",
+      "content": {
+        "type": "vertical",
+        "elements": [
+          {
+            "type": "text",
+            "text": "AT&T Universal Rewards - 0829",
+            "tooltip": "AT&T Universal Rewards - 0829",
+            "style": {
+              "size": "medium",
+              "color": "",
+              "bold": true
+            }
+          },
+          {
+            "type": "vertical",
+            "elements": [
+              {
+                "type": "vertical",
+                "elements": [
+                  {
+                    "type": "text",
+                    "text": ""
+                  },
+                  {
+                    "type": "text",
+                    "text": "8,117",
+                    "tooltip": "8,117",
+                    "style": {
+                      "size": "large",
+                      "color": "",
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "ThankYou® Points",
+                    "style": {
+                      "size": "medium",
+                      "color": "",
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": ""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": "Here's what you can do next:",
+            "tooltip": "Here's what you can do next:",
+            "style": {
+              "color": ""
+            }
+          },
+          {
+            "type": "button",
+            "title": "Redeem points",
+            "tooltip": "Redeem points",
+            "click": {
+              "actions": [
+                {
+                  "type": "publishText",
+                  "text": "Redeem points"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "chatbot": {
+      "sourceData": {
+        "type": "RichContentEvent",
+        "content": {
+          "type": "vertical",
+          "elements": [
+            {
+              "type": "text",
+              "text": "AT&T Universal Rewards - 0829",
+              "tooltip": "AT&T Universal Rewards - 0829",
+              "style": {
+                "size": "medium",
+                "color": "",
+                "bold": true
+              }
+            },
+            {
+              "type": "vertical",
+              "elements": [
+                {
+                  "type": "vertical",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": ""
+                    },
+                    {
+                      "type": "text",
+                      "text": "8,117",
+                      "tooltip": "8,117",
+                      "style": {
+                        "size": "large",
+                        "color": "",
+                        "bold": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": "ThankYou® Points",
+                      "style": {
+                        "size": "medium",
+                        "color": "",
+                        "bold": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "Here's what you can do next:",
+              "tooltip": "Here's what you can do next:",
+              "style": {
+                "color": ""
+              }
+            },
+            {
+              "type": "button",
+              "title": "Redeem points",
+              "tooltip": "Redeem points",
+              "click": {
+                "actions": [
+                  {
+                    "type": "publishText",
+                    "text": "Redeem points"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "cards": [
+        {
+          "text": "AT&T Universal Rewards - 0829"
+        },
+        {
+          "cards": [
+            {
+              "cards": [
+                {
+                  "text": ""
+                },
+                {
+                  "text": "8,117"
+                },
+                {
+                  "text": "ThankYou® Points"
+                },
+                {
+                  "text": ""
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Here's what you can do next:"
+        },
+        {
+          "buttons": [
+            {
+              "text": "Redeem points",
+              "payload": "Redeem points"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "request": "Customer1.Carousel_RichContent",
+    "api": {
+      "type": "RichContentEvent",
+      "content": {
+        "type": "vertical",
+        "elements": [
+          {
+            "type": "text",
+            "text": "AT&T Universal Rewards - 0829",
+            "tooltip": "AT&T Universal Rewards - 0829",
+            "style": {
+              "size": "medium",
+              "color": "",
+              "bold": true
+            }
+          },
+          {
+            "type": "vertical",
+            "elements": [
+              {
+                "type": "vertical",
+                "elements": [
+                  {
+                    "type": "text",
+                    "text": ""
+                  },
+                  {
+                    "type": "text",
+                    "text": "8,117",
+                    "tooltip": "8,117",
+                    "style": {
+                      "size": "large",
+                      "color": "",
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "ThankYou® Points",
+                    "style": {
+                      "size": "medium",
+                      "color": "",
+                      "bold": true
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": ""
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "text",
+            "text": "Here's what you can do next:",
+            "tooltip": "Here's what you can do next:",
+            "style": {
+              "color": ""
+            }
+          },
+          {
+            "type": "button",
+            "title": "Redeem points",
+            "tooltip": "Redeem points",
+            "click": {
+              "actions": [
+                {
+                  "type": "publishText",
+                  "text": "Redeem points"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "chatbot": {
+      "sourceData": {
+        "type": "RichContentEvent",
+        "content": {
+          "type": "vertical",
+          "elements": [
+            {
+              "type": "text",
+              "text": "AT&T Universal Rewards - 0829",
+              "tooltip": "AT&T Universal Rewards - 0829",
+              "style": {
+                "size": "medium",
+                "color": "",
+                "bold": true
+              }
+            },
+            {
+              "type": "vertical",
+              "elements": [
+                {
+                  "type": "vertical",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": ""
+                    },
+                    {
+                      "type": "text",
+                      "text": "8,117",
+                      "tooltip": "8,117",
+                      "style": {
+                        "size": "large",
+                        "color": "",
+                        "bold": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": "ThankYou® Points",
+                      "style": {
+                        "size": "medium",
+                        "color": "",
+                        "bold": true
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "text": "Here's what you can do next:",
+              "tooltip": "Here's what you can do next:",
+              "style": {
+                "color": ""
+              }
+            },
+            {
+              "type": "button",
+              "title": "Redeem points",
+              "tooltip": "Redeem points",
+              "click": {
+                "actions": [
+                  {
+                    "type": "publishText",
+                    "text": "Redeem points"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "cards": [
+        {
+          "text": "AT&T Universal Rewards - 0829"
+        },
+        {
+          "cards": [
+            {
+              "cards": [
+                {
+                  "text": ""
+                },
+                {
+                  "text": "8,117"
+                },
+                {
+                  "text": "ThankYou® Points"
+                },
+                {
+                  "text": ""
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Here's what you can do next:"
+        },
+        {
+          "buttons": [
+            {
+              "text": "Redeem points",
+              "payload": "Redeem points"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "request": "Customer1.Single Accordion_RichContent",
+    "api": {
+      "type": "RichContentEvent",
+      "content": {
+        "type": "vertical",
+        "elements": [
+          {
+            "type": "text",
+            "text": "AT&T Universal ...tercard®...2020",
+            "tooltip": "AT&T Universal ...tercard®...2020",
+            "style": {
+              "size": "small",
+              "bold": true,
+              "color": ""
+            }
+          },
+          {
+            "type": "vertical",
+            "elements": [
+              {
+                "type": "vertical",
+                "elements": [
+                  {
+                    "type": "text",
+                    "text": "Status",
+                    "tooltip": "Status",
+                    "style": {
+                      "size": "small",
+                      "color": "#666666",
+                      "bold": false
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "Processed",
+                    "tooltip": "Processed",
+                    "style": {
+                      "size": "medium",
+                      "color": "",
+                      "bold": true
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "vertical",
+                "elements": [
+                  {
+                    "type": "text",
+                    "text": "Processed on",
+                    "tooltip": "Processed on",
+                    "style": {
+                      "size": "small",
+                      "color": "#666666",
+                      "bold": false
+                    }
+                  },
+                  {
+                    "type": "text",
+                    "text": "May 20, 2025",
+                    "tooltip": "May 20, 2025",
+                    "style": {
+                      "size": "medium",
+                      "color": "",
+                      "bold": true
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "vertical",
+                "elements": [
+                  {
+                    "type": "text",
+                    "text": "Your card will ship via US Mail and should arrive within 7 business days. It will be in a plain envelope with no Citi markings.",
+                    "tooltip": "Your card will ship via US Mail and should arrive within 7 business days. It will be in a plain envelope with no Citi markings.",
+                    "style": {
+                      "size": "medium",
+                      "bold": false,
+                      "color": ""
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "accordion",
+            "text": "Read more",
+            "elements": [
+              {
+                "type": "vertical",
+                "elements": [
+                  {
+                    "type": "vertical",
+                    "elements": [
+                      {
+                        "type": "text",
+                        "text": "&lt;ul&gt;&lt;li&gt;Don’t forget to provide your new card information to merchants who auto-bill your card and any apps that have your card on file. Any mobile wallet apps you’re enrolled in will be updated automatically.&lt;/li&gt;&lt;/ul&gt;",
+                        "tooltip": "Don’t forget to provide your new card information to merchants who auto-bill your card and any apps that have your card on file. Any mobile wallet apps you’re enrolled in will be updated automatically.",
+                        "style": {
+                          "size": "small",
+                          "bold": false
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "vertical",
+                    "elements": [
+                      {
+                        "type": "text",
+                        "text": "&lt;ul&gt;&lt;li&gt;Your replacement card has the same number and a new expiration date. You can continue using your current card until you receive and activate the replacement.&lt;/li&gt;&lt;/ul&gt;",
+                        "tooltip": "Your replacement card has the same number and a new expiration date. You can continue using your current card until you receive and activate the replacement.",
+                        "style": {
+                          "size": "small",
+                          "bold": false
+                        }
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "chatbot": {
+      "sourceData": {
+        "type": "RichContentEvent",
+        "content": {
+          "type": "vertical",
+          "elements": [
+            {
+              "type": "text",
+              "text": "AT&T Universal ...tercard®...2020",
+              "tooltip": "AT&T Universal ...tercard®...2020",
+              "style": {
+                "size": "small",
+                "bold": true,
+                "color": ""
+              }
+            },
+            {
+              "type": "vertical",
+              "elements": [
+                {
+                  "type": "vertical",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": "Status",
+                      "tooltip": "Status",
+                      "style": {
+                        "size": "small",
+                        "color": "#666666",
+                        "bold": false
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": "Processed",
+                      "tooltip": "Processed",
+                      "style": {
+                        "size": "medium",
+                        "color": "",
+                        "bold": true
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "vertical",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": "Processed on",
+                      "tooltip": "Processed on",
+                      "style": {
+                        "size": "small",
+                        "color": "#666666",
+                        "bold": false
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "text": "May 20, 2025",
+                      "tooltip": "May 20, 2025",
+                      "style": {
+                        "size": "medium",
+                        "color": "",
+                        "bold": true
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "vertical",
+                  "elements": [
+                    {
+                      "type": "text",
+                      "text": "Your card will ship via US Mail and should arrive within 7 business days. It will be in a plain envelope with no Citi markings.",
+                      "tooltip": "Your card will ship via US Mail and should arrive within 7 business days. It will be in a plain envelope with no Citi markings.",
+                      "style": {
+                        "size": "medium",
+                        "bold": false,
+                        "color": ""
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "accordion",
+              "text": "Read more",
+              "elements": [
+                {
+                  "type": "vertical",
+                  "elements": [
+                    {
+                      "type": "vertical",
+                      "elements": [
+                        {
+                          "type": "text",
+                          "text": "&lt;ul&gt;&lt;li&gt;Don’t forget to provide your new card information to merchants who auto-bill your card and any apps that have your card on file. Any mobile wallet apps you’re enrolled in will be updated automatically.&lt;/li&gt;&lt;/ul&gt;",
+                          "tooltip": "Don’t forget to provide your new card information to merchants who auto-bill your card and any apps that have your card on file. Any mobile wallet apps you’re enrolled in will be updated automatically.",
+                          "style": {
+                            "size": "small",
+                            "bold": false
+                          }
+                        }
+                      ]
+                    },
+                    {
+                      "type": "vertical",
+                      "elements": [
+                        {
+                          "type": "text",
+                          "text": "&lt;ul&gt;&lt;li&gt;Your replacement card has the same number and a new expiration date. You can continue using your current card until you receive and activate the replacement.&lt;/li&gt;&lt;/ul&gt;",
+                          "tooltip": "Your replacement card has the same number and a new expiration date. You can continue using your current card until you receive and activate the replacement.",
+                          "style": {
+                            "size": "small",
+                            "bold": false
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      },
+      "cards": [
+        {
+          "text": "AT&T Universal ...tercard®...2020"
+        },
+        {
+          "cards": [
+            {
+              "cards": [
+                {
+                  "text": "Status"
+                },
+                {
+                  "text": "Processed"
+                }
+              ]
+            },
+            {
+              "cards": [
+                {
+                  "text": "Processed on"
+                },
+                {
+                  "text": "May 20, 2025"
+                }
+              ]
+            },
+            {
+              "cards": [
+                {
+                  "text": "Your card will ship via US Mail and should arrive within 7 business days. It will be in a plain envelope with no Citi markings."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "text": "Read more",
+          "cards": [
+            {
+              "cards": [
+                {
+                  "cards": [
+                    {
+                      "text": "&lt;ul&gt;&lt;li&gt;Don’t forget to provide your new card information to merchants who auto-bill your card and any apps that have your card on file. Any mobile wallet apps you’re enrolled in will be updated automatically.&lt;/li&gt;&lt;/ul&gt;"
+                    }
+                  ]
+                },
+                {
+                  "cards": [
+                    {
+                      "text": "&lt;ul&gt;&lt;li&gt;Your replacement card has the same number and a new expiration date. You can continue using your current card until you receive and activate the replacement.&lt;/li&gt;&lt;/ul&gt;"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "request": "Customer1.QuickReplies_Buttons_RichContent",
+    "api": {
+      "type": "ContentEvent",
+      "contentType": "text/plain",
+      "message": "Is this for your credit card or your banking account?",
+      "quickReplies": {
+        "type": "quickReplies",
+        "itemsPerRow": 8,
+        "replies": [
+          {
+            "type": "button",
+            "title": "Credit card",
+            "tooltip": "Credit card",
+            "click": {
+              "actions": [
+                {
+                  "type": "publishText",
+                  "text": "Credit card"
+                }
+              ]
+            }
+          },
+          {
+            "type": "button",
+            "title": "ATM/Debit card",
+            "tooltip": "ATM/Debit card",
+            "click": {
+              "actions": [
+                {
+                  "type": "publishText",
+                  "text": "ATM/Debit card"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "chatbot": {
+      "sourceData": {
+        "type": "ContentEvent",
+        "contentType": "text/plain",
+        "message": "Is this for your credit card or your banking account?",
+        "quickReplies": {
+          "type": "quickReplies",
+          "itemsPerRow": 8,
+          "replies": [
+            {
+              "type": "button",
+              "title": "Credit card",
+              "tooltip": "Credit card",
+              "click": {
+                "actions": [
+                  {
+                    "type": "publishText",
+                    "text": "Credit card"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "button",
+              "title": "ATM/Debit card",
+              "tooltip": "ATM/Debit card",
+              "click": {
+                "actions": [
+                  {
+                    "type": "publishText",
+                    "text": "ATM/Debit card"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "text": "Is this for your credit card or your banking account?",
+      "cards": [
+        {
+          "buttons": [
+            {
+              "text": "Credit card",
+              "payload": "Credit card"
+            }
+          ]
+        },
+        {
+          "buttons": [
+            {
+              "text": "ATM/Debit card",
+              "payload": "ATM/Debit card"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "request": "Customer1.Buttons_WithPublishedText_and_DeepdropLink_RichContent",
+    "api": {
+      "type": "RichContentEvent",
+      "content": {
+        "type": "vertical",
+        "elements": [
+          {
+            "type": "text",
+            "text": "Afterwards, you can track the unauthorized charge dispute at the Dispute Center. Just know that it may take 24 hours for some disputes to appear. I'll put a link in the menu so you can come back here to access it later.",
+            "tooltip": "Afterwards, you can track the unauthorized charge dispute at the Dispute Center. Just know that it may take 24 hours for some disputes to appear. I'll put a link in the menu so you can come back here to access it later.",
+            "style": {
+              "color": ""
+            }
+          },
+          {
+            "type": "button",
+            "title": "Go to Dispute Center",
+            "tooltip": "Go to Dispute Center",
+            "click": {
+              "actions": [
+                {
+                  "type": "link",
+                  "name": "Go to Dispute Center",
+                  "uri": "citiglobal://secchatdeepdrop?deep-drop-type=navigation&feature-Id=Dispute",
+                  "ios": {
+                    "uri": "citiglobal://secchatdeepdrop?deep-drop-type=navigation&feature-Id=Dispute"
+                  },
+                  "android": {
+                    "uri": "citiglobal://DisputeCenter"
+                  },
+                  "web": {
+                    "uri": "https://online.citi.com/US/ag/disputes/disputecenter"
+                  },
+                  "target": "self"
+                }
+              ]
+            }
+          },
+          {
+            "type": "button",
+            "title": "Help with something else",
+            "tooltip": "Help with something else",
+            "click": {
+              "actions": [
+                {
+                  "type": "publishText",
+                  "text": "Help with something else"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "chatbot": {
+      "sourceData": {
+        "type": "RichContentEvent",
+        "content": {
+          "type": "vertical",
+          "elements": [
+            {
+              "type": "text",
+              "text": "Afterwards, you can track the unauthorized charge dispute at the Dispute Center. Just know that it may take 24 hours for some disputes to appear. I'll put a link in the menu so you can come back here to access it later.",
+              "tooltip": "Afterwards, you can track the unauthorized charge dispute at the Dispute Center. Just know that it may take 24 hours for some disputes to appear. I'll put a link in the menu so you can come back here to access it later.",
+              "style": {
+                "color": ""
+              }
+            },
+            {
+              "type": "button",
+              "title": "Go to Dispute Center",
+              "tooltip": "Go to Dispute Center",
+              "click": {
+                "actions": [
+                  {
+                    "type": "link",
+                    "name": "Go to Dispute Center",
+                    "uri": "citiglobal://secchatdeepdrop?deep-drop-type=navigation&feature-Id=Dispute",
+                    "ios": {
+                      "uri": "citiglobal://secchatdeepdrop?deep-drop-type=navigation&feature-Id=Dispute"
+                    },
+                    "android": {
+                      "uri": "citiglobal://DisputeCenter"
+                    },
+                    "web": {
+                      "uri": "https://online.citi.com/US/ag/disputes/disputecenter"
+                    },
+                    "target": "self"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "button",
+              "title": "Help with something else",
+              "tooltip": "Help with something else",
+              "click": {
+                "actions": [
+                  {
+                    "type": "publishText",
+                    "text": "Help with something else"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "cards": [
+        {
+          "text": "Afterwards, you can track the unauthorized charge dispute at the Dispute Center. Just know that it may take 24 hours for some disputes to appear. I'll put a link in the menu so you can come back here to access it later."
+        },
+        {
+          "buttons": [
+            {
+              "text": "Go to Dispute Center",
+              "payload": "https://online.citi.com/US/ag/disputes/disputecenter"
+            }
+          ]
+        },
+        {
+          "buttons": [
+            {
+              "text": "Help with something else",
+              "payload": "Help with something else"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "request": "Customer1.Buttons_WithPublishedTextOnly_RichContent",
+    "api": {
+      "type": "RichContentEvent",
+      "content": {
+        "type": "vertical",
+        "elements": [
+          {
+            "type": "button",
+            "title": "Thank You Button",
+            "tooltip": "Thank You Button",
+            "click": {
+              "actions": [
+                {
+                  "type": "publishText",
+                  "text": "Thank You Button"
+                }
+              ]
+            }
+          },
+          {
+            "type": "button",
+            "title": "Disputes Status Button",
+            "tooltip": "Disputes StatusButton",
+            "click": {
+              "actions": [
+                {
+                  "type": "publishText",
+                  "text": "Disputes Status Button"
+                }
+              ]
+            }
+          },
+          {
+            "type": "button",
+            "title": "Replace Card Status Button",
+            "tooltip": "Replace Card StatusButton",
+            "click": {
+              "actions": [
+                {
+                  "type": "publishText",
+                  "text": "Replace Card Status Button"
+                }
+              ]
+            }
+          },
+          {
+            "type": "button",
+            "title": "Account Balance & Info Display",
+            "tooltip": "Account Balance Info Display",
+            "click": {
+              "actions": [
+                {
+                  "type": "publishText",
+                  "text": "Account Balance Info Display"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    "chatbot": {
+      "sourceData": {
+        "type": "RichContentEvent",
+        "content": {
+          "type": "vertical",
+          "elements": [
+            {
+              "type": "button",
+              "title": "Thank You Button",
+              "tooltip": "Thank You Button",
+              "click": {
+                "actions": [
+                  {
+                    "type": "publishText",
+                    "text": "Thank You Button"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "button",
+              "title": "Disputes Status Button",
+              "tooltip": "Disputes StatusButton",
+              "click": {
+                "actions": [
+                  {
+                    "type": "publishText",
+                    "text": "Disputes Status Button"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "button",
+              "title": "Replace Card Status Button",
+              "tooltip": "Replace Card StatusButton",
+              "click": {
+                "actions": [
+                  {
+                    "type": "publishText",
+                    "text": "Replace Card Status Button"
+                  }
+                ]
+              }
+            },
+            {
+              "type": "button",
+              "title": "Account Balance & Info Display",
+              "tooltip": "Account Balance Info Display",
+              "click": {
+                "actions": [
+                  {
+                    "type": "publishText",
+                    "text": "Account Balance Info Display"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "cards": [
+        {
+          "buttons": [
+            {
+              "text": "Thank You Button",
+              "payload": "Thank You Button"
+            }
+          ]
+        },
+        {
+          "buttons": [
+            {
+              "text": "Disputes Status Button",
+              "payload": "Disputes Status Button"
+            }
+          ]
+        },
+        {
+          "buttons": [
+            {
+              "text": "Replace Card Status Button",
+              "payload": "Replace Card Status Button"
+            }
+          ]
+        },
+        {
+          "buttons": [
+            {
+              "text": "Account Balance & Info Display",
+              "payload": "Account Balance Info Display"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  {
+    "request": "Customer1.SpeechBubble_RichContent",
+    "api": {
+      "type": "RichContentEvent",
+      "hideFeedback": false,
+      "content": {
+        "type": "vertical",
+        "elements": [
+          {
+            "type": "text",
+            "text": "To learn more about Damage & Theft Purchase Protection for your credit card, you can go to the Card Benefits page or call 1-800-732-6000 to speak with a Benefit Specialist. (For TTY, we accept 711 or other Relay Servic.)",
+            "tooltip": "To learn more about Damage & Theft Purchase Protection for your credit card, you can go to the Card Benefits page or call 1-800-732-6000 to speak with a Benefit Specialist. (For TTY, we accept 711 or other Relay Servic.)"
+          }
+        ]
+      }
+    },
+    "chatbot": {
+      "sourceData": {
+        "type": "RichContentEvent",
+        "hideFeedback": false,
+        "content": {
+          "type": "vertical",
+          "elements": [
+            {
+              "type": "text",
+              "text": "To learn more about Damage & Theft Purchase Protection for your credit card, you can go to the Card Benefits page or call 1-800-732-6000 to speak with a Benefit Specialist. (For TTY, we accept 711 or other Relay Servic.)",
+              "tooltip": "To learn more about Damage & Theft Purchase Protection for your credit card, you can go to the Card Benefits page or call 1-800-732-6000 to speak with a Benefit Specialist. (For TTY, we accept 711 or other Relay Servic.)"
+            }
+          ]
+        }
+      },
+      "cards": [
+        {
+          "text": "To learn more about Damage & Theft Purchase Protection for your credit card, you can go to the Card Benefits page or call 1-800-732-6000 to speak with a Benefit Specialist. (For TTY, we accept 711 or other Relay Servic.)"
+        }
+      ]
+    }
   }
 ]

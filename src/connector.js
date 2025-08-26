@@ -336,7 +336,7 @@ class BotiumConnectorKoreaiWebhook {
               texts.filter(t => t).forEach((text) => {
                 let asJson = null
                 try {
-                  asJson = JSON.parse(text.replace(/&quot;/g, '"'))
+                  asJson = JSON.parse(_.unescape(text))
                 } catch (err) {}
 
                 let messageText = null
@@ -345,7 +345,13 @@ class BotiumConnectorKoreaiWebhook {
                 let cards = null
                 if (asJson) {
                   debug(`response as json: ${JSON.stringify(asJson)}`)
-                  if (asJson.file) {
+                  const customComponents = this._extractCustomComponents(asJson)
+                  if (customComponents) {
+                    messageText = customComponents.text
+                    buttons = customComponents.buttons
+                    media = customComponents.media
+                    cards = customComponents.cards
+                  } else if (asJson.file) {
                   // {"file":{"type":"link","payload":{"url":"...","title":"...","template_type":"attachment"}}}
                     if (asJson.file.type === 'link') {
                       media = [{
@@ -437,20 +443,15 @@ class BotiumConnectorKoreaiWebhook {
                 }
                 if (forms) {
                   botMsg.forms = forms
-                  // teoretically one form has just one (mandatory) text,
-                  // but if there are more text somehow, we dont want to display form for each
                   forms = null
                 }
+                debug(`Message with text converted to Botium format: ${JSON.stringify(botMsg)}`)
                 setTimeout(() => this.queueBotSays(botMsg), 0)
               })
             } else {
-              const customComponents = this._extractCustomComponents(body)
-              // this case has to be activated by custom components.
-              // nlp and forms are there just to be sure.
-              if (nlp || forms || customComponents) {
+              if (nlp || forms) {
                 const botMsg = {
-                  sourceData: body,
-                  ...(customComponents || {})
+                  sourceData: body
                 }
                 if (nlp) {
                   botMsg.nlp = nlp
@@ -458,10 +459,9 @@ class BotiumConnectorKoreaiWebhook {
                 }
                 if (forms) {
                   botMsg.forms = forms
-                  // teoretically one form has just one (mandatory) text,
-                  // but if there are more text somehow, we dont want to display form for each
                   forms = null
                 }
+                debug(`Message without text converted to Botium format: ${JSON.stringify(botMsg)}`)
                 setTimeout(() => this.queueBotSays(botMsg), 0)
               }
             }

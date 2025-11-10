@@ -3,6 +3,7 @@ const { v4: uuidv4 } = require('uuid')
 const jwt = require('jsonwebtoken')
 const _ = require('lodash')
 const debug = require('debug')('botium-connector-koreai-webhook')
+const { XMLParser } = require('fast-xml-parser')
 
 const Capabilities = require('./Capabilities')
 class BotiumConnectorKoreaiWebhook {
@@ -96,6 +97,208 @@ class BotiumConnectorKoreaiWebhook {
     this.toId = null
   }
 
+  /**
+   * Parse VXML response from IVR bot to Botium format
+   * Based on official Kore.ai IVR documentation: https://docs.kore.ai/xo/channels/IVR-integration/
+   * @param {string} vxmlText - VXML response text
+   * @returns {object} - Botium formatted message
+   */
+  _parseVXML (vxmlText) {
+    debug(`Parsing VXML response: ${vxmlText.substring(0, 500)}...`)
+
+    try {
+      const parser = new XMLParser({
+        ignoreAttributes: false,
+        attributeNamePrefix: '@_',
+        textNodeName: '#text',
+        parseAttributeValue: true,
+        trimValues: true
+      })
+
+      const parsed = parser.parse(vxmlText)
+      debug(`Parsed VXML to JSON: ${JSON.stringify(parsed, null, 2)}`)
+
+      const botMsg = {
+        sourceData: { vxml: vxmlText, parsed }
+      }
+
+      let messageText = ''
+      const buttons = []
+
+      // Navigate VXML structure
+      const vxml = parsed.vxml
+      if (!vxml) {
+        debug('No vxml root element found')
+        return { messageText: vxmlText }
+      }
+
+      // Extract from form blocks
+      const forms = _.isArray(vxml.form) ? vxml.form : (vxml.form ? [vxml.form] : [])
+
+      for (const form of forms) {
+        // Extract prompts (bot messages)
+        if (form.block) {
+          const blocks = _.isArray(form.block) ? form.block : [form.block]
+
+          for (const block of blocks) {
+            if (block.prompt) {
+              const prompts = _.isArray(block.prompt) ? block.prompt : [block.prompt]
+
+              for (const prompt of prompts) {
+                let promptText = ''
+
+                // Extract text from prompt
+                if (typeof prompt === 'string') {
+                  promptText = prompt
+                } else if (prompt['#text']) {
+                  promptText = prompt['#text']
+                } else if (prompt.audio && prompt.audio['@_src']) {
+                  // Audio file reference
+                  promptText = `[Audio: ${prompt.audio['@_src']}]`
+                } else if (prompt.value) {
+                  // Dynamic value
+                  promptText = prompt.value['@_expr'] || prompt.value['#text'] || ''
+                }
+
+                if (promptText) {
+                  messageText += (messageText ? ' ' : '') + promptText.trim()
+                }
+              }
+            }
+          }
+        }
+
+        // Extract from field (user input with grammar/options)
+        if (form.field) {
+          const fields = _.isArray(form.field) ? form.field : [form.field]
+
+          for (const field of fields) {
+            // Extract field prompt
+            if (field.prompt) {
+              const prompts = _.isArray(field.prompt) ? field.prompt : [field.prompt]
+
+              for (const prompt of prompts) {
+                let promptText = ''
+
+                if (typeof prompt === 'string') {
+                  promptText = prompt
+                } else if (prompt['#text']) {
+                  promptText = prompt['#text']
+                } else if (prompt.audio && prompt.audio['@_src']) {
+                  promptText = `[Audio: ${prompt.audio['@_src']}]`
+                }
+
+                if (promptText) {
+                  messageText += (messageText ? ' ' : '') + promptText.trim()
+                }
+              }
+            }
+
+            // Extract grammar/options (convert to buttons)
+            if (field.grammar) {
+              const grammars = _.isArray(field.grammar) ? field.grammar : [field.grammar]
+
+              for (const grammar of grammars) {
+                // Check for option elements (menu choices)
+                if (grammar.option) {
+                  const options = _.isArray(grammar.option) ? grammar.option : [grammar.option]
+
+                  options.forEach((option, index) => {
+                    const dtmf = option['@_dtmf'] || (index + 1).toString()
+                    const value = option['@_value'] || option['#text'] || ''
+
+                    buttons.push({
+                      text: `${dtmf}. ${value}`,
+                      payload: value
+                    })
+                  })
+                }
+              }
+            }
+
+            // Extract from option elements (for menus)
+            if (field.option) {
+              const options = _.isArray(field.option) ? field.option : [field.option]
+
+              options.forEach((option, index) => {
+                const dtmf = option['@_dtmf'] || (index + 1).toString()
+                const value = option['@_value'] || option['#text'] || ''
+
+                buttons.push({
+                  text: `${dtmf}. ${value}`,
+                  payload: value
+                })
+              })
+            }
+          }
+        }
+
+        // Extract from menu (IVR menu with choices)
+        if (form.menu) {
+          const menus = _.isArray(form.menu) ? form.menu : [form.menu]
+
+          for (const menu of menus) {
+            // Extract menu prompt
+            if (menu.prompt) {
+              const prompts = _.isArray(menu.prompt) ? menu.prompt : [menu.prompt]
+
+              for (const prompt of prompts) {
+                let promptText = ''
+
+                if (typeof prompt === 'string') {
+                  promptText = prompt
+                } else if (prompt['#text']) {
+                  promptText = prompt['#text']
+                } else if (prompt.audio && prompt.audio['@_src']) {
+                  promptText = `[Audio: ${prompt.audio['@_src']}]`
+                }
+
+                if (promptText) {
+                  messageText += (messageText ? ' ' : '') + promptText.trim()
+                }
+              }
+            }
+
+            // Extract choices (menu options)
+            if (menu.choice) {
+              const choices = _.isArray(menu.choice) ? menu.choice : [menu.choice]
+
+              choices.forEach((choice, index) => {
+                const dtmf = choice['@_dtmf'] || (index + 1).toString()
+                const next = choice['@_next'] || ''
+                const text = choice['#text'] || next || ''
+
+                buttons.push({
+                  text: `${dtmf}. ${text}`,
+                  payload: text
+                })
+              })
+            }
+          }
+        }
+      }
+
+      // Add extracted data to bot message
+      if (messageText) {
+        botMsg.messageText = messageText.trim()
+      }
+
+      if (buttons.length > 0) {
+        botMsg.buttons = buttons
+      }
+
+      debug(`Parsed VXML to Botium format: ${JSON.stringify(botMsg)}`)
+      return botMsg
+    } catch (err) {
+      debug(`Error parsing VXML: ${err.message}`)
+      // Return raw text if parsing fails
+      return {
+        messageText: vxmlText,
+        sourceData: { vxml: vxmlText, error: err.message }
+      }
+    }
+  }
+
   _extractCustomComponents (entry) {
     const _extractButtonToSubcard = (element) => {
       if (element.type === 'button') {
@@ -175,7 +378,6 @@ class BotiumConnectorKoreaiWebhook {
     const timeoutId = setTimeout(() => {
       controller.abort()
     }, timeoutMs)
-
     return new Promise((resolve, reject) => {
       Promise.all([
         fetch(requestOptions.main.url, {
@@ -183,11 +385,42 @@ class BotiumConnectorKoreaiWebhook {
           headers: requestOptions.main.headers,
           body: JSON.stringify(requestOptions.main.data),
           signal: controller.signal
-        }).then(res => res.json()).catch(err => {
+        }).then(async (res) => {
+          if (!res.ok) {
+            const text = await res.text()
+            debug(`Main request failed with HTTP ${res.status}: ${text}`)
+            throw new Error(`HTTP ${res.status}: ${text.substring(0, 500)}`)
+          }
+
+          // Handle different content types (JSON or VXML for IVR bots)
+          const contentType = res.headers.get('content-type')
+
+          if (contentType && contentType.includes('application/json')) {
+            // Standard JSON response
+            return res.json()
+          } else if (
+            contentType &&
+            (contentType.includes('application/voicexml+xml') ||
+              contentType.includes('text/xml') ||
+              contentType.includes('application/xml'))
+          ) {
+            // VXML response from IVR bot
+            const vxmlText = await res.text()
+            debug(`Received VXML response (${vxmlText.length} chars)`)
+
+            // Parse VXML to Botium format
+            const parsedVXML = this._parseVXML(vxmlText)
+            return parsedVXML
+          } else {
+            // Unknown content type
+            const text = await res.text()
+            debug(`Unknown content-type: ${contentType}, returning as text`)
+            return { messageText: text }
+          }
+        }).catch(err => {
           debug(`Error in main request: ${err.message}`)
           throw err
-        }
-        ),
+        }),
 
         requestOptions.nlp
           ? fetch(requestOptions.nlp.url, {
@@ -195,17 +428,38 @@ class BotiumConnectorKoreaiWebhook {
             headers: requestOptions.nlp.headers,
             body: JSON.stringify(requestOptions.nlp.data),
             signal: controller.signal
-          }).then(res => res.json()).catch(err => {
+          }).then(async (res) => {
+            if (!res.ok) {
+              const text = await res.text()
+              debug(`NLP request failed with HTTP ${res.status}: ${text}`)
+              throw new Error(`HTTP ${res.status}: ${text.substring(0, 500)}`)
+            }
+
+            const contentType = res.headers.get('content-type')
+            if (contentType && contentType.includes('application/json')) {
+              return res.json()
+            } else {
+              const text = await res.text()
+              throw new Error(`Expected JSON response but got: ${text.substring(0, 200)}`)
+            }
+          }).catch(err => {
             debug(`Error in NLP request: ${err.message}`)
             throw err
-          }
-          )
+          })
           : null
       ])
         .then(results => {
           resolve(this)
           const mainData = results[0]
           const nlpData = results[1]
+
+          // Check if response is already parsed VXML (from IVR bot)
+          if (mainData && mainData.sourceData && mainData.sourceData.vxml) {
+            debug('IVR VXML response detected, queuing parsed message')
+            setTimeout(() => this.queueBotSays(mainData), 0)
+            return
+          }
+
           const body = mainData || null
           if (!body) {
             debug(`body not found in response: ${JSON.stringify(results, null, 2)}`)
@@ -477,16 +731,41 @@ class BotiumConnectorKoreaiWebhook {
   }
 
   _buildRequest (msg) {
-    const url = this.caps[Capabilities.KOREAI_WEBHOOK_URL]
+    let url = this.caps[Capabilities.KOREAI_WEBHOOK_URL]
 
-    const main = {
-      url,
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${this.token}`,
-        'Content-Type': 'application/json'
-      },
-      data: {
+    const headers = {
+      'Content-Type': 'application/json'
+    }
+
+    const isIVR = url.includes('/ivr/hooks/')
+
+    let requestData
+
+    if (isIVR) {
+      requestData = {
+        callId:
+          this.caps[Capabilities.KOREAI_WEBHOOK_IVR_CALLID] || this.fromId,
+        message: msg.messageText,
+        from: this.fromId
+      }
+
+      url = `${url}?token=${this.token}`
+
+      if (this.caps[Capabilities.KOREAI_WEBHOOK_IVR_DNIS]) {
+        requestData.ivr_dnis = this.caps[Capabilities.KOREAI_WEBHOOK_IVR_DNIS]
+      }
+      if (this.caps[Capabilities.KOREAI_WEBHOOK_IVR_DOMAIN]) {
+        requestData.ivr_domain =
+          this.caps[Capabilities.KOREAI_WEBHOOK_IVR_DOMAIN]
+      }
+
+      debug(
+        `IVR bot detected. Using IVR payload format: ${JSON.stringify(
+          requestData
+        )}`
+      )
+    } else {
+      requestData = {
         message: {
           text: msg.messageText
         },
@@ -497,10 +776,27 @@ class BotiumConnectorKoreaiWebhook {
           id: this.toId
         }
       }
+
+      // add token to headers for message bots
+      headers.Authorization = `Bearer ${this.token}`
+
+      debug(
+        `Message bot detected. Using standard payload format: ${JSON.stringify(
+          requestData
+        )}`
+      )
     }
 
+    const main = {
+      url,
+      method: 'POST',
+      headers,
+      data: requestData
+    }
+
+    // NLP Analytics (only for message bots, not supported for IVR)
     let nlp = null
-    if (this.nlpAnalyticsUri && msg.messageText) {
+    if (!isIVR && this.nlpAnalyticsUri && msg.messageText) {
       nlp = {
         url: this.nlpAnalyticsUri,
         method: 'POST',

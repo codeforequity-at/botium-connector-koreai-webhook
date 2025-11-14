@@ -82,27 +82,6 @@ module.exports = {
         label: 'Admin client secret (Required for uploading training data to a Bot)',
         type: 'secret',
         advanced: true
-      },
-      {
-        name: 'KOREAI_WEBHOOK_IVR_CALLID',
-        label: 'IVR Call ID (Fixed call session ID for IVR bots)',
-        description: 'If not provided, a random UUID will be used',
-        type: 'string',
-        advanced: true
-      },
-      {
-        name: 'KOREAI_WEBHOOK_IVR_DNIS',
-        label: 'IVR DNIS (Dialed Number Identification Service)',
-        description: 'The phone number that was dialed to reach the IVR',
-        type: 'string',
-        advanced: true
-      },
-      {
-        name: 'KOREAI_WEBHOOK_IVR_DOMAIN',
-        label: 'IVR Domain',
-        description: 'Domain identifier for the IVR system',
-        type: 'string',
-        advanced: true
       }
     ]
   }

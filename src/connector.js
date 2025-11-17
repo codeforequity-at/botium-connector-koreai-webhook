@@ -25,6 +25,13 @@ class BotiumConnectorKoreaiWebhook {
     if (!this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTSECRET]) throw new Error('KOREAI_WEBHOOK_CLIENTSECRET capability required')
     if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE] && !this.caps[Capabilities.KOREAI_WEBHOOK_BOTNAME]) throw new Error('KOREAI_WEBHOOK_BOTNAME capability required for NLP Analytics')
 
+    // IVR-specific validation
+    const url = this.caps[Capabilities.KOREAI_WEBHOOK_URL]
+    const isIVR = url && url.includes('/ivr/hooks/')
+    if (isIVR && !this.caps[Capabilities.KOREAI_WEBHOOK_IVR_CALLID]) {
+      throw new Error('KOREAI_WEBHOOK_IVR_CALLID capability is required for IVR bots. Please add it in advanced capabilities.')
+    }
+
     return Promise.resolve()
   }
 

@@ -28,7 +28,7 @@ class BotiumConnectorKoreaiWebhook {
     if (!this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTSECRET]) throw new Error('KOREAI_WEBHOOK_CLIENTSECRET capability required')
     if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE] && !this.caps[Capabilities.KOREAI_WEBHOOK_BOTNAME]) throw new Error('KOREAI_WEBHOOK_BOTNAME capability required for NLP Analytics')
 
-    if (this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL] || this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT  ]) {
+    if (this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL] || this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT]) {
       if (!this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTID]) throw new Error('KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTID capability required')
       if (!this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTSECRET]) throw new Error('KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTSECRET capability required')
       if (!this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL]) throw new Error('KOREAI_WEBHOOK_WELCOME_KOREAI_URL capability required')
@@ -62,7 +62,6 @@ class BotiumConnectorKoreaiWebhook {
       this.ivr_ani = `+1${randomNumber}`
     }
 
-
     if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE]) {
       if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_URL]) {
         this.nlpAnalyticsUri = this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_URL]
@@ -76,34 +75,36 @@ class BotiumConnectorKoreaiWebhook {
       }
     }
     // sending welcome message to another koreai bot. Customer request.
-    if (!_.isNil(this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL])){
+    if (!_.isNil(this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL])) {
       debug(`Sending welcome message ${this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT]} to bot: ${this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL]}`)
       try {
         await this._doRequest(
-          { 
+          {
             messageText: this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT]
-           }, { 
+          }, {
             nlpDisabled: true,
             token: this.createToken(this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTID], this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTSECRET]),
             url: this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL]
           })
       } catch (err) {
         debug(`Error sending welcome message to different bot: ${err.message}`)
-        throw new Error(`Cannot send welcome message to different bot: ${err.message}`)      }
+        throw new Error(`Cannot send welcome message to different bot: ${err.message}`)
+      }
     }
     if (!_.isNil(this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT])) {
       debug(`Sending welcome message ${this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT]} to bot`)
       try {
         await this._doRequest(
-          { 
+          {
             messageText: this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT]
           }, {
             nlpDisabled: true
           })
       } catch (err) {
         debug(`Error sending welcome message: ${err.message}`)
-        throw new Error(`Cannot send welcome message: ${err.message}`)      }
-    } 
+        throw new Error(`Cannot send welcome message: ${err.message}`)
+      }
+    }
   }
 
   createAdminToken () {
@@ -782,11 +783,11 @@ class BotiumConnectorKoreaiWebhook {
   }
 
   _buildRequest (msg, options = {}) {
-    let { 
+    let {
       url = this.url,
       token = this.token,
       nlpDisabled = false
-     } = options
+    } = options
     const headers = {
       'Content-Type': 'application/json'
     }

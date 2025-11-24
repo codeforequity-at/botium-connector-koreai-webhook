@@ -41,6 +41,13 @@ module.exports = {
         required: true
       },
       {
+        name: 'KOREAI_WEBHOOK_WELCOME_TEXT',
+        label: 'Welcome text',
+        type: 'string',
+        required: false,
+        advanced: true
+      },
+      {
         name: 'KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE',
         label: 'Extract NLP metadata (Required for Botium Coach)',
         description: 'NLP Analytics is an extra call. Its slowing down the test',

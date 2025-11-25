@@ -13,8 +13,11 @@ class BotiumConnectorKoreaiWebhook {
     this.token = null
     this.adminToken = null
     this.fromId = null
-    this.toId = null
     this.nlpAnalyticsUri = null
+    this.ivr_ani = null
+    this.callId = null
+    this.toId = null
+    this.url = null
   }
 
   Validate () {
@@ -25,19 +28,19 @@ class BotiumConnectorKoreaiWebhook {
     if (!this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTSECRET]) throw new Error('KOREAI_WEBHOOK_CLIENTSECRET capability required')
     if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE] && !this.caps[Capabilities.KOREAI_WEBHOOK_BOTNAME]) throw new Error('KOREAI_WEBHOOK_BOTNAME capability required for NLP Analytics')
 
-    // IVR-specific validation
-    const url = this.caps[Capabilities.KOREAI_WEBHOOK_URL]
-    const isIVR = url && url.includes('/ivr/hooks/')
-    if (isIVR && !this.caps[Capabilities.KOREAI_WEBHOOK_IVR_CALLID]) {
-      throw new Error('KOREAI_WEBHOOK_IVR_CALLID capability is required for IVR bots. Please add it in advanced capabilities.')
+    if (this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL] || this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT]) {
+      if (!this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTID]) throw new Error('KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTID capability required')
+      if (!this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTSECRET]) throw new Error('KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTSECRET capability required')
+      if (!this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL]) throw new Error('KOREAI_WEBHOOK_WELCOME_KOREAI_URL capability required')
+      if (!this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT]) throw new Error('KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT capability required')
     }
-
     return Promise.resolve()
   }
 
-  Start () {
+  async Start () {
     debug('Start called')
 
+    this.url = this.caps[Capabilities.KOREAI_WEBHOOK_URL]
     if (this.caps[Capabilities.KOREAI_WEBHOOK_FROMID]) {
       this.fromId = this.caps[Capabilities.KOREAI_WEBHOOK_FROMID]
     } else {
@@ -50,16 +53,56 @@ class BotiumConnectorKoreaiWebhook {
     }
     this.token = this.createToken()
     this.adminToken = this.createAdminToken()
+    this.callId = this.caps[Capabilities.KOREAI_WEBHOOK_IVR_CALLID] || uuidv4()
+    if (this.caps[Capabilities.KOREAI_WEBHOOK_IVR_ANI]) {
+      this.ivr_ani = this.caps[Capabilities.KOREAI_WEBHOOK_IVR_ANI]
+    } else {
+      // Generate random phone number as default (format: +1XXXXXXXXXX)
+      const randomNumber = Math.floor(1000000000 + Math.random() * 9000000000)
+      this.ivr_ani = `+1${randomNumber}`
+    }
+
     if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE]) {
       if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_URL]) {
         this.nlpAnalyticsUri = this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_URL]
       } else if (!this.caps[Capabilities.KOREAI_WEBHOOK_URL].indexOf('/chatbot/hooks/') > 0) {
         debug(`Webhook URL ${this.caps[Capabilities.KOREAI_WEBHOOK_URL]} is not valid, NLP analytics disabled`)
       } else {
-        const normalizedUri = this.caps[Capabilities.KOREAI_WEBHOOK_URL].indexOf('/hookInstance/') > 0
-          ? this.caps[Capabilities.KOREAI_WEBHOOK_URL].substring(0, this.caps[Capabilities.KOREAI_WEBHOOK_URL].indexOf('/hookInstance/'))
-          : this.caps[Capabilities.KOREAI_WEBHOOK_URL]
+        const normalizedUri = this.url.indexOf('/hookInstance/') > 0
+          ? this.url.substring(0, this.url.indexOf('/hookInstance/'))
+          : this.url
         this.nlpAnalyticsUri = normalizedUri.replace('/chatbot/hooks/', '/api/v1.1/rest/bot/').concat('/findIntent?fetchConfiguredTasks=false')
+      }
+    }
+    // sending welcome message to another koreai bot. Customer request.
+    if (!_.isNil(this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL])) {
+      debug(`Sending welcome message ${this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT]} to bot: ${this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL]}`)
+      try {
+        await this._doRequest(
+          {
+            messageText: this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT]
+          }, {
+            nlpDisabled: true,
+            token: this.createToken(this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTID], this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTSECRET]),
+            url: this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL]
+          })
+      } catch (err) {
+        debug(`Error sending welcome message to different bot: ${err.message}`)
+        throw new Error(`Cannot send welcome message to different bot: ${err.message}`)
+      }
+    }
+    if (!_.isNil(this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT])) {
+      debug(`Sending welcome message ${this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT]} to bot`)
+      try {
+        await this._doRequest(
+          {
+            messageText: this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT]
+          }, {
+            nlpDisabled: true
+          })
+      } catch (err) {
+        debug(`Error sending welcome message: ${err.message}`)
+        throw new Error(`Cannot send welcome message: ${err.message}`)
       }
     }
   }
@@ -91,9 +134,9 @@ class BotiumConnectorKoreaiWebhook {
     return token
   }
 
-  UserSays (msg, timeout = 10000) {
+  UserSays (msg, timeout) {
     debug(`UserSays called ${util.inspect(msg)}`)
-    return this._doRequest(msg, timeout)
+    return this._doRequest(msg, { timeout, token: this.token })
   }
 
   Stop () {
@@ -101,7 +144,11 @@ class BotiumConnectorKoreaiWebhook {
     this.token = null
     this.adminToken = null
     this.fromId = null
+    this.nlpAnalyticsUri = null
+    this.ivr_ani = null
+    this.callId = null
     this.toId = null
+    this.url = null
   }
 
   /**
@@ -376,15 +423,13 @@ class BotiumConnectorKoreaiWebhook {
     return null
   }
 
-  _doRequest (msg, timeout) {
-    const requestOptions = this._buildRequest(msg)
+  _doRequest (msg, options = {}) {
+    const requestOptions = this._buildRequest(msg, options)
     const controller = new AbortController()
 
-    // Set timeout to abort fetch after X ms
-    const timeoutMs = timeout
     const timeoutId = setTimeout(() => {
       controller.abort()
-    }, timeoutMs)
+    }, options.timeout || 10000)
     return new Promise((resolve, reject) => {
       Promise.all([
         fetch(requestOptions.main.url, {
@@ -737,9 +782,12 @@ class BotiumConnectorKoreaiWebhook {
     })
   }
 
-  _buildRequest (msg) {
-    let url = this.caps[Capabilities.KOREAI_WEBHOOK_URL]
-
+  _buildRequest (msg, options = {}) {
+    let {
+      url = this.url,
+      token = this.token,
+      nlpDisabled = false
+    } = options
     const headers = {
       'Content-Type': 'application/json'
     }
@@ -750,13 +798,12 @@ class BotiumConnectorKoreaiWebhook {
 
     if (isIVR) {
       requestData = {
-        callId:
-          this.caps[Capabilities.KOREAI_WEBHOOK_IVR_CALLID] || this.fromId,
+        callId: this.callId,
         message: msg.messageText,
         from: this.fromId
       }
 
-      url = `${url}?token=${this.token}`
+      url = `${url}?token=${token}`
 
       if (this.caps[Capabilities.KOREAI_WEBHOOK_IVR_DNIS]) {
         requestData.ivr_dnis = this.caps[Capabilities.KOREAI_WEBHOOK_IVR_DNIS]
@@ -765,6 +812,7 @@ class BotiumConnectorKoreaiWebhook {
         requestData.ivr_domain =
           this.caps[Capabilities.KOREAI_WEBHOOK_IVR_DOMAIN]
       }
+      requestData.ivr_ani = this.ivr_ani
 
       debug(
         `IVR bot detected. Using IVR payload format: ${JSON.stringify(
@@ -785,7 +833,7 @@ class BotiumConnectorKoreaiWebhook {
       }
 
       // add token to headers for message bots
-      headers.Authorization = `Bearer ${this.token}`
+      headers.Authorization = `Bearer ${token}`
 
       debug(
         `Message bot detected. Using standard payload format: ${JSON.stringify(
@@ -803,12 +851,12 @@ class BotiumConnectorKoreaiWebhook {
 
     // NLP Analytics (only for message bots, not supported for IVR)
     let nlp = null
-    if (!isIVR && this.nlpAnalyticsUri && msg.messageText) {
+    if (!isIVR && this.nlpAnalyticsUri && msg.messageText && !nlpDisabled) {
       nlp = {
         url: this.nlpAnalyticsUri,
         method: 'POST',
         headers: {
-          auth: `${this.token}`,
+          auth: `${token}`,
           'Content-Type': 'application/json'
         },
         data: {

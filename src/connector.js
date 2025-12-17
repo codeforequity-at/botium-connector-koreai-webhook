@@ -63,7 +63,6 @@ class BotiumConnectorKoreaiWebhook {
       this.ivr_ani = `+1${randomNumber}`
     }
 
-
     if (!_.isNil(this.caps[Capabilities.KOREAI_WEBHOOK_CUSTOMDATA])) {
       const customDataValue = this.caps[Capabilities.KOREAI_WEBHOOK_CUSTOMDATA]
       if (_.isPlainObject(customDataValue) || Array.isArray(customDataValue)) {

@@ -14,6 +14,7 @@ class BotiumConnectorKoreaiWebhook {
     this.adminToken = null
     this.fromId = null
     this.nlpAnalyticsUri = null
+    this.customData = null
     this.ivr_ani = null
     this.callId = null
     this.toId = null
@@ -60,6 +61,24 @@ class BotiumConnectorKoreaiWebhook {
       // Generate random phone number as default (format: +1XXXXXXXXXX)
       const randomNumber = Math.floor(1000000000 + Math.random() * 9000000000)
       this.ivr_ani = `+1${randomNumber}`
+    }
+
+
+    if (!_.isNil(this.caps[Capabilities.KOREAI_WEBHOOK_CUSTOMDATA])) {
+      const customDataValue = this.caps[Capabilities.KOREAI_WEBHOOK_CUSTOMDATA]
+      if (_.isPlainObject(customDataValue) || Array.isArray(customDataValue)) {
+        this.customData = customDataValue
+      } else if (typeof customDataValue === 'string') {
+        if (customDataValue.length > 0) {
+          try {
+            this.customData = JSON.parse(customDataValue)
+          } catch (err) {
+            throw new Error(`KOREAI_WEBHOOK_CUSTOMDATA capability invalid JSON: ${err.message}`)
+          }
+        }
+      } else {
+        throw new Error('KOREAI_WEBHOOK_CUSTOMDATA capability has to be a JSON string or an object')
+      }
     }
 
     if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE]) {
@@ -803,6 +822,10 @@ class BotiumConnectorKoreaiWebhook {
         from: this.fromId
       }
 
+      if (!_.isNil(this.customData)) {
+        requestData.customData = this.customData
+      }
+
       url = `${url}?token=${token}`
 
       if (this.caps[Capabilities.KOREAI_WEBHOOK_IVR_DNIS]) {
@@ -830,6 +853,9 @@ class BotiumConnectorKoreaiWebhook {
         to: {
           id: this.toId
         }
+      }
+      if (!_.isNil(this.customData)) {
+        requestData.customData = this.customData
       }
 
       // add token to headers for message bots

@@ -128,6 +128,15 @@ The CLIENT ID of an app, created in Kore AI Admin Console
 ### OREAI_WEBHOOK_ADMIN_CLIENTSECRET
 The CLIENT SECRET of an app, created in Kore AI Admin Console
 
+### KOREAI_WEBHOOK_CUSTOMDATA
+Optional JSON payload appended as `customData` to each message webhook call.
+
+You can set it as a JSON string in `botium.json`, for example:
+
+```
+"KOREAI_WEBHOOK_CUSTOMDATA": "{\"foo\":\"bar\",\"locale\":\"en-US\"}"
+```
+
 ## Open Issues and Restrictions
 * Connector uses synch webhook API of Kore.ai. Always user has to start the conversation, and it is not possible to handle two following bot sections 
 

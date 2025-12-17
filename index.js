@@ -48,6 +48,14 @@ module.exports = {
         advanced: true
       },
       {
+        name: 'KOREAI_WEBHOOK_IVR_ANI',
+        label: 'IVR ANI',
+        description: 'Caller ANI phone number for IVR bots (optional, default is a random +1XXXXXXXXXX)',
+        type: 'string',
+        required: false,
+        advanced: true
+      },
+      {
         name: 'KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE',
         label: 'Extract NLP metadata (Required for Botium Coach)',
         description: 'NLP Analytics is an extra call. Its slowing down the test',
@@ -76,6 +84,14 @@ module.exports = {
         name: 'KOREAI_WEBHOOK_TOID',
         label: 'UserId of receiver',
         type: 'string',
+        advanced: true
+      },
+      {
+        name: 'KOREAI_WEBHOOK_CUSTOMDATA',
+        label: 'Custom data (Context)',
+        description: 'Optional JSON object appended as customData to each message webhook call',
+        type: 'json',
+        required: false,
         advanced: true
       },
       {

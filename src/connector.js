@@ -93,7 +93,7 @@ class BotiumConnectorKoreaiWebhook {
       }
     }
     // sending welcome message to another koreai bot. Customer request.
-    if (!_.isNil(this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL])) {
+    if (this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL]) {
       debug(`Sending welcome message ${this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT]} to bot: ${this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL]}`)
       try {
         await this._doRequest(
@@ -109,7 +109,7 @@ class BotiumConnectorKoreaiWebhook {
         throw new Error(`Cannot send welcome message to different bot: ${err.message}`)
       }
     }
-    if (!_.isNil(this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT])) {
+    if (this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT]) {
       debug(`Sending welcome message ${this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT]} to bot`)
       try {
         await this._doRequest(

@@ -445,7 +445,7 @@ class BotiumConnectorKoreaiWebhook {
     const requestOptions = this._buildRequest(msg, options)
     const controller = new AbortController()
 
-    const timeout = (options.timeout || this.caps['WAITFORBOTTIMEOUT'] || 10000) * 1.1
+    const timeout = (options.timeout || this.caps.WAITFORBOTTIMEOUT || 10000) * 1.1
     const timeoutId = setTimeout(() => {
       debug(`Timeout ${timeout} reached, aborting request`)
       controller.abort()

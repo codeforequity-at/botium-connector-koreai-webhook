@@ -109,7 +109,7 @@ class BotiumConnectorKoreaiWebhook {
         throw new Error(`Cannot send welcome message to different bot: ${err.message}`)
       }
     }
-    if (!_.isNil(this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT])) {
+    if (this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT]) {
       debug(`Sending welcome message ${this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT]} to bot`)
       try {
         await this._doRequest(

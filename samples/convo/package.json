@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "botium-bindings": "^2.1.4"
+    "botium-bindings": "^2.1.15"
   },
   "botium": {
     "convodirs": [

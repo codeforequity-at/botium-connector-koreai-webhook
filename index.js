@@ -109,21 +109,21 @@ module.exports = {
       {
         name: 'KOREAI_WEBHOOK_IVR_DOMAIN',
         label: 'IVR Domain',
-        description: 'The IVR domain identifier (Required for IVR bots)',
+        description: 'The IVR domain identifier',
         type: 'string',
         advanced: true
       },
       {
         name: 'KOREAI_WEBHOOK_IVR_DNIS',
         label: 'IVR DNIS',
-        description: 'The Dialed Number Identification Service (DNIS) number (Required for IVR bots)',
+        description: 'The Dialed Number Identification Service (DNIS) number',
         type: 'string',
         advanced: true
       },
       {
         name: 'KOREAI_WEBHOOK_IVR_CALLID',
         label: 'IVR Call ID',
-        description: 'The unique call identifier for IVR sessions (Required for IVR bots)',
+        description: 'The unique call identifier for IVR sessions',
         type: 'string',
         advanced: true
       }

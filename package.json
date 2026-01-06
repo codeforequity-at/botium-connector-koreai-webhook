@@ -1,6 +1,6 @@
 {
   "name": "botium-connector-koreai-webhook",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Botium Connector for Kore.ai Webhooks",
   "main": "dist/botium-connector-koreai-webhook-cjs.js",
   "module": "dist/botium-connector-koreai-webhook-es.js",

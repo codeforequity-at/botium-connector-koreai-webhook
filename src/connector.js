@@ -95,7 +95,8 @@ class BotiumConnectorKoreaiWebhook {
           this.nlpAnalyticsUri = normalizedUri.replace('/ivr/hooks/', '/api/v1.1/rest/bot/').concat('/findIntent?fetchConfiguredTasks=false')
           debug(`IVR NLP analytics enabled. Using endpoint: ${this.nlpAnalyticsUri}`)
         } else {
-          debug(`Webhook URL ${this.caps[Capabilities.KOREAI_WEBHOOK_URL]} is not valid for NLP analytics, NLP analytics disabled`)
+          this.nlpAnalyticsUri = normalizedUri.concat('/findIntent?fetchConfiguredTasks=false')
+          debug(`Using fallback NLP analytics endpoint: ${this.nlpAnalyticsUri}`)
         }
       }
     }

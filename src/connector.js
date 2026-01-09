@@ -83,13 +83,21 @@ class BotiumConnectorKoreaiWebhook {
     if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE]) {
       if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_URL]) {
         this.nlpAnalyticsUri = this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_URL]
-      } else if (!this.caps[Capabilities.KOREAI_WEBHOOK_URL].indexOf('/chatbot/hooks/') > 0) {
-        debug(`Webhook URL ${this.caps[Capabilities.KOREAI_WEBHOOK_URL]} is not valid, NLP analytics disabled`)
       } else {
         const normalizedUri = this.url.indexOf('/hookInstance/') > 0
           ? this.url.substring(0, this.url.indexOf('/hookInstance/'))
           : this.url
-        this.nlpAnalyticsUri = normalizedUri.replace('/chatbot/hooks/', '/api/v1.1/rest/bot/').concat('/findIntent?fetchConfiguredTasks=false')
+
+        // Support both chatbot and IVR URLs for NLP analytics
+        if (normalizedUri.indexOf('/chatbot/hooks/') > 0) {
+          this.nlpAnalyticsUri = normalizedUri.replace('/chatbot/hooks/', '/api/v1.1/rest/bot/').concat('/findIntent?fetchConfiguredTasks=false')
+        } else if (normalizedUri.indexOf('/ivr/hooks/') > 0) {
+          this.nlpAnalyticsUri = normalizedUri.replace('/ivr/hooks/', '/api/v1.1/rest/bot/').concat('/findIntent?fetchConfiguredTasks=false')
+          debug(`IVR NLP analytics enabled. Using endpoint: ${this.nlpAnalyticsUri}`)
+        } else {
+          this.nlpAnalyticsUri = normalizedUri.concat('/findIntent?fetchConfiguredTasks=false')
+          debug(`Using fallback NLP analytics endpoint: ${this.nlpAnalyticsUri}`)
+        }
       }
     }
     // sending welcome message to another koreai bot. Customer request.
@@ -876,9 +884,9 @@ class BotiumConnectorKoreaiWebhook {
       data: requestData
     }
 
-    // NLP Analytics (only for message bots, not supported for IVR)
+    // NLP Analytics (supported for both message bots and IVR bots)
     let nlp = null
-    if (!isIVR && this.nlpAnalyticsUri && msg.messageText && !nlpDisabled) {
+    if (this.nlpAnalyticsUri && msg.messageText && !nlpDisabled) {
       nlp = {
         url: this.nlpAnalyticsUri,
         method: 'POST',

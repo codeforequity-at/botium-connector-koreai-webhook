@@ -54,7 +54,7 @@ class BotiumConnectorKoreaiWebhook {
     }
     this.token = this.createToken()
     this.adminToken = this.createAdminToken()
-    this.callId = this.caps[Capabilities.KOREAI_WEBHOOK_IVR_CALLID] || uuidv4()
+    this.callId = uuidv4()
     if (this.caps[Capabilities.KOREAI_WEBHOOK_IVR_ANI]) {
       this.ivr_ani = this.caps[Capabilities.KOREAI_WEBHOOK_IVR_ANI]
     } else {

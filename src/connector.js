@@ -943,7 +943,7 @@ class BotiumConnectorKoreaiWebhook {
           id: this.toId
         }
       }
-      
+
       // Use stepCustomData if provided (context change), otherwise fall back to this.customData
       if (!_.isNil(stepCustomData)) {
         requestData.customData = stepCustomData

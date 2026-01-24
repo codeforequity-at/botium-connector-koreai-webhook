@@ -19,6 +19,8 @@ class BotiumConnectorKoreaiWebhook {
     this.callId = null
     this.toId = null
     this.url = null
+    this.initialCustomData = null
+    this.initialContextSent = false
   }
 
   Validate () {
@@ -67,10 +69,12 @@ class BotiumConnectorKoreaiWebhook {
       const customDataValue = this.caps[Capabilities.KOREAI_WEBHOOK_CUSTOMDATA]
       if (_.isPlainObject(customDataValue) || Array.isArray(customDataValue)) {
         this.customData = customDataValue
+        this.initialCustomData = customDataValue
       } else if (typeof customDataValue === 'string') {
         if (customDataValue.length > 0) {
           try {
             this.customData = JSON.parse(customDataValue)
+            this.initialCustomData = this.customData
           } catch (err) {
             throw new Error(`KOREAI_WEBHOOK_CUSTOMDATA capability invalid JSON: ${err.message}`)
           }
@@ -79,6 +83,7 @@ class BotiumConnectorKoreaiWebhook {
         throw new Error('KOREAI_WEBHOOK_CUSTOMDATA capability has to be a JSON string or an object')
       }
     }
+    this.initialContextSent = false
 
     if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE]) {
       if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_URL]) {
@@ -162,7 +167,23 @@ class BotiumConnectorKoreaiWebhook {
 
   UserSays (msg, timeout) {
     debug(`UserSays called ${util.inspect(msg)}`)
-    return this._doRequest(msg, { timeout, token: this.token })
+
+    let stepCustomData = null
+
+    if (msg.SET_KOREAI_CONTEXT) {
+      stepCustomData = msg.SET_KOREAI_CONTEXT
+      this.initialContextSent = true // Mark as sent so initial won't be sent later
+      debug(`Using SET_KOREAI_CONTEXT for this step: ${JSON.stringify(stepCustomData)}`)
+    } else if (!this.initialContextSent && this.initialCustomData) {
+      // First message without SET_KOREAI_CONTEXT: send initial context from capability
+      stepCustomData = this.initialCustomData
+      this.initialContextSent = true
+      debug(`Sending initial customData from capability: ${JSON.stringify(stepCustomData)}`)
+    } else {
+      debug('No context to send for this step (Kore.ai already has context stored server-side)')
+    }
+
+    return this._doRequest(msg, { timeout, token: this.token, stepCustomData })
   }
 
   Stop () {
@@ -175,6 +196,9 @@ class BotiumConnectorKoreaiWebhook {
     this.callId = null
     this.toId = null
     this.url = null
+    this.customData = null
+    this.initialCustomData = null
+    this.initialContextSent = false
   }
 
   /**
@@ -581,6 +605,38 @@ class BotiumConnectorKoreaiWebhook {
               }
             }
 
+            let contextData = null
+            if (body.customData && _.isPlainObject(body.customData)) {
+              const extractedCustomData = Object.keys(body.customData)
+                .filter(key => !key.startsWith('_'))
+                .reduce((obj, key) => {
+                  obj[key] = body.customData[key]
+                  return obj
+                }, {})
+
+              if (Object.keys(extractedCustomData).length > 0) {
+                contextData = extractedCustomData
+                debug(`Extracted customData from response: ${JSON.stringify(contextData)}`)
+              }
+            }
+            if (body.context && _.isPlainObject(body.context)) {
+              // Filter out internal Kore.ai context fields
+              const extractedContext = Object.keys(body.context)
+                .filter(key => !key.startsWith('_') && !['session', 'history', 'intent', 'entities'].includes(key))
+                .reduce((obj, key) => {
+                  obj[key] = body.context[key]
+                  return obj
+                }, {})
+
+              if (Object.keys(extractedContext).length > 0) {
+                if (!contextData) {
+                  contextData = {}
+                }
+                Object.assign(contextData, extractedContext)
+                debug(`Extracted context from response: ${JSON.stringify(extractedContext)}`)
+              }
+            }
+
             let forms = null
             // all other rich components are stored in the text fied.
             if (body.form) {
@@ -788,6 +844,9 @@ class BotiumConnectorKoreaiWebhook {
                   botMsg.nlp = nlp
                   nlp = null
                 }
+                if (contextData) {
+                  botMsg.contextData = contextData
+                }
                 if (forms) {
                   botMsg.forms = forms
                   forms = null
@@ -796,13 +855,16 @@ class BotiumConnectorKoreaiWebhook {
                 setTimeout(() => this.queueBotSays(botMsg), 0)
               })
             } else {
-              if (nlp || forms) {
+              if (nlp || forms || contextData) {
                 const botMsg = {
                   sourceData: body
                 }
                 if (nlp) {
                   botMsg.nlp = nlp
                   nlp = null
+                }
+                if (contextData) {
+                  botMsg.contextData = contextData
                 }
                 if (forms) {
                   botMsg.forms = forms
@@ -827,7 +889,8 @@ class BotiumConnectorKoreaiWebhook {
     let {
       url = this.url,
       token = this.token,
-      nlpDisabled = false
+      nlpDisabled = false,
+      stepCustomData = null
     } = options
     const headers = {
       'Content-Type': 'application/json'
@@ -844,7 +907,11 @@ class BotiumConnectorKoreaiWebhook {
         from: this.fromId
       }
 
-      if (!_.isNil(this.customData)) {
+      // Use stepCustomData if provided (context change), otherwise fall back to this.customData
+      if (!_.isNil(stepCustomData)) {
+        requestData.customData = stepCustomData
+        debug(`Including stepCustomData in IVR request: ${JSON.stringify(stepCustomData)}`)
+      } else if (!_.isNil(this.customData)) {
         requestData.customData = this.customData
       }
 
@@ -876,7 +943,12 @@ class BotiumConnectorKoreaiWebhook {
           id: this.toId
         }
       }
-      if (!_.isNil(this.customData)) {
+      
+      // Use stepCustomData if provided (context change), otherwise fall back to this.customData
+      if (!_.isNil(stepCustomData)) {
+        requestData.customData = stepCustomData
+        debug(`Including stepCustomData in request: ${JSON.stringify(stepCustomData)}`)
+      } else if (!_.isNil(this.customData)) {
         requestData.customData = this.customData
       }
 

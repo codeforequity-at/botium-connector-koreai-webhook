@@ -54,7 +54,7 @@ class BotiumConnectorKoreaiWebhook {
     }
     this.token = this.createToken()
     this.adminToken = this.createAdminToken()
-    this.callId = uuidv4()
+    this.callId = this.caps[Capabilities.KOREAI_WEBHOOK_IVR_CALLID] || uuidv4()
     if (this.caps[Capabilities.KOREAI_WEBHOOK_IVR_ANI]) {
       this.ivr_ani = this.caps[Capabilities.KOREAI_WEBHOOK_IVR_ANI]
     } else {
@@ -533,11 +533,14 @@ class BotiumConnectorKoreaiWebhook {
           const mainData = results[0]
           const nlpData = results[1]
 
-          const body = mainData || null
-          const isVXML = body && body.sourceData && body.sourceData.vxml
-          if (isVXML) {
-            debug('IVR VXML response detected, will process with NLP data')
+          // Check if response is already parsed VXML (from IVR bot)
+          if (mainData && mainData.sourceData && mainData.sourceData.vxml) {
+            debug('IVR VXML response detected, queuing parsed message')
+            setTimeout(() => this.queueBotSays(mainData), 0)
+            return
           }
+
+          const body = mainData || null
           if (!body) {
             debug(`body not found in response: ${JSON.stringify(results, null, 2)}`)
           } else {
@@ -662,12 +665,8 @@ class BotiumConnectorKoreaiWebhook {
                 }
               }
             }
-            // Handle both JSON responses (body.text) and VXML responses (body.messageText)
-            if (body.text || body.messageText) {
-              const texts = body.text
-                ? (_.isArray(body.text) ? body.text : [body.text])
-                : (body.messageText ? [body.messageText] : [])
-
+            if (body.text) {
+              const texts = (_.isArray(body.text) ? body.text : [body.text])
               texts.filter(t => t).forEach((text) => {
                 let asJson = null
                 try {
@@ -678,18 +677,6 @@ class BotiumConnectorKoreaiWebhook {
                 let buttons = null
                 let media = null
                 let cards = null
-
-                // For VXML responses, check if buttons/media/cards are already parsed in body
-                if (isVXML && body.buttons) {
-                  buttons = body.buttons
-                }
-                if (isVXML && body.media) {
-                  media = body.media
-                }
-                if (isVXML && body.cards) {
-                  cards = body.cards
-                }
-
                 if (asJson) {
                   debug(`response as json: ${JSON.stringify(asJson)}`)
                   const customComponents = this._extractCustomComponents(asJson)

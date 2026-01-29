@@ -1,4 +1,3 @@
-const util = require('util')
 const { v4: uuidv4 } = require('uuid')
 const _ = require('lodash')
 const debug = require('debug')('botium-connector-koreai-webhook:webchannel')
@@ -145,10 +144,8 @@ class WebChannel {
           botMsgs.forEach(botMsg => {
             if (botMsg) {
               setTimeout(() => this.connector.queueBotSays(botMsg), 0)
-    
             }
           })
-
         } catch (err) {
           debug(`WebSocket event received (failed to process, ${err.message}): ${evt?.type || 'unknown'} ${JSON.stringify(evt).substring(0, 500)}`)
         }
@@ -271,7 +268,7 @@ class WebChannel {
     return nlp
   }
 
-  ExtractBotResponses = (evt) => {
+  ExtractBotResponses (evt) {
     const botMsgs = (evt?.message || []).map(msg => {
       debug(`Bot message, Kore.ai format: ${JSON.stringify(msg).substring(0, 2500)}`)
       let asJson = null

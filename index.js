@@ -33,7 +33,7 @@ module.exports = {
         label: 'Bot ID',
         type: 'string',
         required: true
-      },     
+      },
       {
         name: 'KOREAI_WEBHOOK_CLIENTID',
         label: 'Client ID',

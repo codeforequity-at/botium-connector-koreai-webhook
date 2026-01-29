@@ -46,7 +46,7 @@ class BotiumConnectorKoreaiWebhook {
       customData = customDataMode === 'merge' ? Object.assign({}, customData || {}, customDataFromMsg) : customDataFromMsg
       debug(`Updated context with KOREAI_WEBHOOK_CUSTOM_DATA: ${JSON.stringify(customDataFromMsg)}`)
     }
-    
+
     if (customDataMode === 'replace') {
       debug(`Updating (replace) customData session: ${JSON.stringify(this.customData)} current customData: ${JSON.stringify(customData)} message: ${customDataFromMsg}`)
       this.customData = customData
@@ -75,7 +75,7 @@ class BotiumConnectorKoreaiWebhook {
     return Promise.resolve()
   }
 
-  Build() {
+  Build () {
     if (this.caps[Capabilities.KOREAI_WEBHOOK_CHANNEL] === 'Web/Mobile Client') {
       this.webChannel = new WebChannel(this)
     }
@@ -131,19 +131,19 @@ class BotiumConnectorKoreaiWebhook {
           this.nlpAnalyticsUri = `${this.caps[Capabilities.KOREAI_WEBHOOK_BASE_URL]}/api/v1.1/rest/bot/${this.caps[Capabilities.KOREAI_WEBHOOK_BOTID]}/findIntent?fetchConfiguredTasks=false`
         } else {
           const normalizedUri = this.url.indexOf('/hookInstance/') > 0
-          ? this.url.substring(0, this.url.indexOf('/hookInstance/'))
-          : this.url
+            ? this.url.substring(0, this.url.indexOf('/hookInstance/'))
+            : this.url
 
-        // Support both chatbot and IVR URLs for NLP analytics
-        if (normalizedUri.indexOf('/chatbot/hooks/') > 0) {
-          this.nlpAnalyticsUri = normalizedUri.replace('/chatbot/hooks/', '/api/v1.1/rest/bot/').concat('/findIntent?fetchConfiguredTasks=false')
-        } else if (normalizedUri.indexOf('/ivr/hooks/') > 0) {
-          this.nlpAnalyticsUri = normalizedUri.replace('/ivr/hooks/', '/api/v1.1/rest/bot/').concat('/findIntent?fetchConfiguredTasks=false')
-          debug(`IVR NLP analytics enabled. Using endpoint: ${this.nlpAnalyticsUri}`)
-        } else {
-          this.nlpAnalyticsUri = normalizedUri.concat('/findIntent?fetchConfiguredTasks=false')
-          debug(`Using fallback NLP analytics endpoint: ${this.nlpAnalyticsUri}`)
-        }
+          // Support both chatbot and IVR URLs for NLP analytics
+          if (normalizedUri.indexOf('/chatbot/hooks/') > 0) {
+            this.nlpAnalyticsUri = normalizedUri.replace('/chatbot/hooks/', '/api/v1.1/rest/bot/').concat('/findIntent?fetchConfiguredTasks=false')
+          } else if (normalizedUri.indexOf('/ivr/hooks/') > 0) {
+            this.nlpAnalyticsUri = normalizedUri.replace('/ivr/hooks/', '/api/v1.1/rest/bot/').concat('/findIntent?fetchConfiguredTasks=false')
+            debug(`IVR NLP analytics enabled. Using endpoint: ${this.nlpAnalyticsUri}`)
+          } else {
+            this.nlpAnalyticsUri = normalizedUri.concat('/findIntent?fetchConfiguredTasks=false')
+            debug(`Using fallback NLP analytics endpoint: ${this.nlpAnalyticsUri}`)
+          }
         }
       }
     }
@@ -189,7 +189,7 @@ class BotiumConnectorKoreaiWebhook {
       audience: 'https://idproxy.kore.ai/authorize',
       // Kore jwtgrant expects issuer to be the clientId?
       issuer: clientId || this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTID],
-      subject: generateSubject ? uuidv4() : this.fromId // generate from downloader 
+      subject: generateSubject ? uuidv4() : this.fromId // generate from downloader
     }
     const token = jwt.sign(tokenPayload, clientSecret || this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTSECRET], tokenOptions)
     debug(`Generated token ${token} from payload "${util.inspect(tokenPayload)}", options "${util.inspect(tokenOptions)}"`)
@@ -221,6 +221,7 @@ class BotiumConnectorKoreaiWebhook {
     debug('Clean called')
     this.webChannel = null
   }
+
   /**
    * Parse VXML response from IVR bot to Botium format
    * Based on official Kore.ai IVR documentation: https://docs.kore.ai/xo/channels/IVR-integration/
@@ -907,9 +908,9 @@ class BotiumConnectorKoreaiWebhook {
         from: this.fromId
       }
 
-      debug(`Getting customData 1`)
+      debug('Getting customData 1')
       requestData.customData = this.GetCustomData(msg.SET_KOREAI_WEBHOOK_CUSTOM_DATA)
-  
+
       url = `${url}?token=${token}`
 
       if (this.caps[Capabilities.KOREAI_WEBHOOK_IVR_DNIS]) {
@@ -938,7 +939,7 @@ class BotiumConnectorKoreaiWebhook {
           id: this.toId
         }
       }
-      debug(`Getting customData 2`)
+      debug('Getting customData 2')
       requestData.customData = this.GetCustomData(msg.SET_KOREAI_WEBHOOK_CUSTOM_DATA)
 
       // add token to headers for message bots

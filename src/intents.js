@@ -4,7 +4,6 @@ const FormData = require('form-data')
 
 const uuidv1 = require('uuid').v1
 const https = require('https')
-const { URL } = require('url')
 
 const Capabilities = require('./Capabilities')
 

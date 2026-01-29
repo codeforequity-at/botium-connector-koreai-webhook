@@ -6,10 +6,24 @@ const debug = require('debug')('botium-connector-koreai-webhook')
 const { XMLParser } = require('fast-xml-parser')
 
 const Capabilities = require('./Capabilities')
+const WebChannel = require('./WebChannel')
 class BotiumConnectorKoreaiWebhook {
   constructor ({ queueBotSays, caps }) {
     this.queueBotSays = queueBotSays
-    this.caps = caps
+    this.caps = Object.assign({}, caps)
+    if (this.caps[Capabilities.KOREAI_WEBHOOK_BASE_URL]) {
+      let baseUrl = String(this.caps[Capabilities.KOREAI_WEBHOOK_BASE_URL]).trim()
+      if (baseUrl && !/^[a-zA-Z][a-zA-Z\d+\-.]*:\/\//.test(baseUrl)) baseUrl = `https://${baseUrl}`
+
+      try {
+        const parsed = new URL(baseUrl)
+        // Normalize to protocol + hostname only (strip port, path, query, hash)
+        this.caps[Capabilities.KOREAI_WEBHOOK_BASE_URL] = `${parsed.protocol}//${parsed.hostname}`
+      } catch (err) {
+        // Keep legacy behaviour as fallback (avoid breaking on invalid inputs)
+        this.caps[Capabilities.KOREAI_WEBHOOK_BASE_URL] = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl
+      }
+    }
     this.token = null
     this.adminToken = null
     this.fromId = null
@@ -19,25 +33,52 @@ class BotiumConnectorKoreaiWebhook {
     this.callId = null
     this.toId = null
     this.url = null
-    this.initialCustomData = null
-    this.initialContextSent = false
+  }
+
+  GetCustomData (customDataFromMsg) {
+    let customData = null
+    if (!_.isNil(this.customData)) {
+      customData = this.customData
+    }
+    const customDataMode = this.caps[Capabilities.KOREAI_WEBHOOK_CUSTOMDATA_MODE]
+
+    if (customDataFromMsg) {
+      customData = customDataMode === 'merge' ? Object.assign({}, customData || {}, customDataFromMsg) : customDataFromMsg
+      debug(`Updated context with KOREAI_WEBHOOK_CUSTOM_DATA: ${JSON.stringify(customDataFromMsg)}`)
+    }
+
+    if (customDataMode === 'replace') {
+      debug(`Updating (replace) customData session: ${JSON.stringify(this.customData)} current customData: ${JSON.stringify(customData)} message: ${customDataFromMsg}`)
+      this.customData = customData
+    } else if (customDataMode === 'merge') {
+      debug(`Updating (merge) customData session: ${JSON.stringify(this.customData)} current customData: ${JSON.stringify(customData)} message: ${customDataFromMsg}`)
+      this.customData = Object.assign({}, this.customData || {}, customData)
+    } else {
+      debug(`Updating (delete) customData session: ${JSON.stringify(this.customData)} current customData: ${JSON.stringify(customData)} message: ${customDataFromMsg}`)
+      this.customData = null
+    }
+
+    return customData
   }
 
   Validate () {
     debug('Validate called')
 
-    if (!this.caps[Capabilities.KOREAI_WEBHOOK_URL]) throw new Error('KOREAI_WEBHOOK_URL capability required')
+    if (this.caps[Capabilities.KOREAI_WEBHOOK_CHANNEL] !== 'Web/Mobile Client') {
+      if (!this.caps[Capabilities.KOREAI_WEBHOOK_URL]) throw new Error('KOREAI_WEBHOOK_URL capability required')
+    }
+
     if (!this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTID]) throw new Error('KOREAI_WEBHOOK_CLIENTID capability required')
     if (!this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTSECRET]) throw new Error('KOREAI_WEBHOOK_CLIENTSECRET capability required')
     if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE] && !this.caps[Capabilities.KOREAI_WEBHOOK_BOTNAME]) throw new Error('KOREAI_WEBHOOK_BOTNAME capability required for NLP Analytics')
 
-    if (this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL] || this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT]) {
-      if (!this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTID]) throw new Error('KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTID capability required')
-      if (!this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTSECRET]) throw new Error('KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTSECRET capability required')
-      if (!this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL]) throw new Error('KOREAI_WEBHOOK_WELCOME_KOREAI_URL capability required')
-      if (!this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT]) throw new Error('KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT capability required')
-    }
     return Promise.resolve()
+  }
+
+  Build () {
+    if (this.caps[Capabilities.KOREAI_WEBHOOK_CHANNEL] === 'Web/Mobile Client') {
+      this.webChannel = new WebChannel(this)
+    }
   }
 
   async Start () {
@@ -69,12 +110,10 @@ class BotiumConnectorKoreaiWebhook {
       const customDataValue = this.caps[Capabilities.KOREAI_WEBHOOK_CUSTOMDATA]
       if (_.isPlainObject(customDataValue) || Array.isArray(customDataValue)) {
         this.customData = customDataValue
-        this.initialCustomData = customDataValue
       } else if (typeof customDataValue === 'string') {
         if (customDataValue.length > 0) {
           try {
             this.customData = JSON.parse(customDataValue)
-            this.initialCustomData = this.customData
           } catch (err) {
             throw new Error(`KOREAI_WEBHOOK_CUSTOMDATA capability invalid JSON: ${err.message}`)
           }
@@ -83,45 +122,36 @@ class BotiumConnectorKoreaiWebhook {
         throw new Error('KOREAI_WEBHOOK_CUSTOMDATA capability has to be a JSON string or an object')
       }
     }
-    this.initialContextSent = false
 
     if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE]) {
       if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_URL]) {
         this.nlpAnalyticsUri = this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_URL]
       } else {
-        const normalizedUri = this.url.indexOf('/hookInstance/') > 0
-          ? this.url.substring(0, this.url.indexOf('/hookInstance/'))
-          : this.url
-
-        // Support both chatbot and IVR URLs for NLP analytics
-        if (normalizedUri.indexOf('/chatbot/hooks/') > 0) {
-          this.nlpAnalyticsUri = normalizedUri.replace('/chatbot/hooks/', '/api/v1.1/rest/bot/').concat('/findIntent?fetchConfiguredTasks=false')
-        } else if (normalizedUri.indexOf('/ivr/hooks/') > 0) {
-          this.nlpAnalyticsUri = normalizedUri.replace('/ivr/hooks/', '/api/v1.1/rest/bot/').concat('/findIntent?fetchConfiguredTasks=false')
-          debug(`IVR NLP analytics enabled. Using endpoint: ${this.nlpAnalyticsUri}`)
+        if (this.caps[Capabilities.KOREAI_WEBHOOK_BOTID] && this.caps[Capabilities.KOREAI_WEBHOOK_BASE_URL]) {
+          this.nlpAnalyticsUri = `${this.caps[Capabilities.KOREAI_WEBHOOK_BASE_URL]}/api/v1.1/rest/bot/${this.caps[Capabilities.KOREAI_WEBHOOK_BOTID]}/findIntent?fetchConfiguredTasks=false`
         } else {
-          this.nlpAnalyticsUri = normalizedUri.concat('/findIntent?fetchConfiguredTasks=false')
-          debug(`Using fallback NLP analytics endpoint: ${this.nlpAnalyticsUri}`)
+          const normalizedUri = this.url.indexOf('/hookInstance/') > 0
+            ? this.url.substring(0, this.url.indexOf('/hookInstance/'))
+            : this.url
+
+          // Support both chatbot and IVR URLs for NLP analytics
+          if (normalizedUri.indexOf('/chatbot/hooks/') > 0) {
+            this.nlpAnalyticsUri = normalizedUri.replace('/chatbot/hooks/', '/api/v1.1/rest/bot/').concat('/findIntent?fetchConfiguredTasks=false')
+          } else if (normalizedUri.indexOf('/ivr/hooks/') > 0) {
+            this.nlpAnalyticsUri = normalizedUri.replace('/ivr/hooks/', '/api/v1.1/rest/bot/').concat('/findIntent?fetchConfiguredTasks=false')
+            debug(`IVR NLP analytics enabled. Using endpoint: ${this.nlpAnalyticsUri}`)
+          } else {
+            this.nlpAnalyticsUri = normalizedUri.concat('/findIntent?fetchConfiguredTasks=false')
+            debug(`Using fallback NLP analytics endpoint: ${this.nlpAnalyticsUri}`)
+          }
         }
       }
     }
-    // sending welcome message to another koreai bot. Customer request.
-    if (this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL]) {
-      debug(`Sending welcome message ${this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT]} to bot: ${this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL]}`)
-      try {
-        await this._doRequest(
-          {
-            messageText: this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_TEXT]
-          }, {
-            nlpDisabled: true,
-            token: this.createToken(this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTID], this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_CLIENTSECRET]),
-            url: this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_KOREAI_URL]
-          })
-      } catch (err) {
-        debug(`Error sending welcome message to different bot: ${err.message}`)
-        throw new Error(`Cannot send welcome message to different bot: ${err.message}`)
-      }
+
+    if (this.webChannel) {
+      await this.webChannel.Start()
     }
+
     if (this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT]) {
       debug(`Sending welcome message ${this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT]} to bot`)
       try {
@@ -138,17 +168,17 @@ class BotiumConnectorKoreaiWebhook {
     }
   }
 
-  createAdminToken () {
+  createAdminToken (generateSubject = false) {
     const adminClientId = this.caps[Capabilities.KOREAI_WEBHOOK_ADMIN_CLIENTID]
     const adminClientSecret = this.caps[Capabilities.KOREAI_WEBHOOK_ADMIN_CLIENTSECRET]
     if (!adminClientSecret || !adminClientId) {
       return null
     }
 
-    return this.createToken(adminClientId, adminClientSecret)
+    return this.createToken(adminClientId, adminClientSecret, generateSubject)
   }
 
-  createToken (clientId, clientSecret) {
+  createToken (clientId, clientSecret, generateSubject = false) {
     const tokenPayload = {
       isAnonymous: true,
       appId: clientId || this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTID]
@@ -157,7 +187,9 @@ class BotiumConnectorKoreaiWebhook {
       algorithm: 'HS256',
       expiresIn: '1d',
       audience: 'https://idproxy.kore.ai/authorize',
-      subject: this.fromId
+      // Kore jwtgrant expects issuer to be the clientId?
+      issuer: clientId || this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTID],
+      subject: generateSubject ? uuidv4() : this.fromId // generate from downloader
     }
     const token = jwt.sign(tokenPayload, clientSecret || this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTSECRET], tokenOptions)
     debug(`Generated token ${token} from payload "${util.inspect(tokenPayload)}", options "${util.inspect(tokenOptions)}"`)
@@ -167,26 +199,10 @@ class BotiumConnectorKoreaiWebhook {
 
   UserSays (msg, timeout) {
     debug(`UserSays called ${util.inspect(msg)}`)
-
-    let stepCustomData = null
-
-    if (msg.SET_KOREAI_CONTEXT) {
-      stepCustomData = msg.SET_KOREAI_CONTEXT
-      this.initialContextSent = true // Mark as sent so initial won't be sent later
-      debug(`Using SET_KOREAI_CONTEXT for this step: ${JSON.stringify(stepCustomData)}`)
-    } else if (!this.initialContextSent && this.initialCustomData) {
-      // First message without SET_KOREAI_CONTEXT: send initial context from capability
-      stepCustomData = this.initialCustomData
-      this.initialContextSent = true
-      debug(`Sending initial customData from capability: ${JSON.stringify(stepCustomData)}`)
-    } else {
-      debug('No context to send for this step (Kore.ai already has context stored server-side)')
-    }
-
-    return this._doRequest(msg, { timeout, token: this.token, stepCustomData })
+    return this._doRequest(msg, { timeout, token: this.token })
   }
 
-  Stop () {
+  async Stop () {
     debug('Stop called')
     this.token = null
     this.adminToken = null
@@ -196,9 +212,14 @@ class BotiumConnectorKoreaiWebhook {
     this.callId = null
     this.toId = null
     this.url = null
-    this.customData = null
-    this.initialCustomData = null
-    this.initialContextSent = false
+    if (this.webChannel) {
+      await this.webChannel.Stop()
+    }
+  }
+
+  Clean () {
+    debug('Clean called')
+    this.webChannel = null
   }
 
   /**
@@ -473,10 +494,93 @@ class BotiumConnectorKoreaiWebhook {
     return null
   }
 
+  ExtractMessagePartsFromJson (asJson) {
+    let messageText = null
+    let buttons = null
+    let media = null
+    let cards = null
+
+    debug(`Message in Kore.ai format: ${JSON.stringify(asJson)}`)
+    const customComponents = this._extractCustomComponents(asJson)
+    if (customComponents) {
+      messageText = customComponents.text
+      buttons = customComponents.buttons
+      media = customComponents.media
+      cards = customComponents.cards
+    } else if (asJson.file) {
+    // {"file":{"type":"link","payload":{"url":"...","title":"...","template_type":"attachment"}}}
+      if (asJson.file.type === 'link') {
+        media = [{
+          mediaUri: asJson.file.payload.url,
+          altText: asJson.file.payload.title
+        }]
+      } else {
+        debug('unknown file format')
+      }
+    } else if (asJson.text) {
+      messageText = asJson.text
+    } else if (asJson.type === 'template' && asJson?.payload?.template_type) {
+      messageText = asJson.payload.text
+      switch (asJson.payload.template_type) {
+      // --- BUTTON ---
+        case 'button':
+        // If I created this button, then I set just one value, "Button1".
+        // So I suppose just the title is important for me
+        // {"type":"postback","title":"Button1","payload":"button1","value":"button1"}
+          buttons = asJson.payload.buttons.map(({ title, payload }) => ({
+            text: title,
+            payload: payload
+          }))
+          break
+          // --- QUICK REPLY ---
+        case 'quick_replies':
+        // {"content_type":"text","title":"B1","payload":"button1","image_url":"https:...","value":"button1"}
+          buttons = asJson.payload.quick_replies.map(({ title, payload }) => ({
+            text: title,
+            payload: payload
+          }))
+          break
+        case 'carousel':
+        // default_action is not used. its always
+        // {
+        //   "type": "web_url",
+        //   "url": ""
+        // }
+        // eslint-disable-next-line camelcase
+          cards = asJson.payload.elements.map((element) => ({
+            text: [element.title, element.subtitle],
+            image: { mediaUri: element.image_url },
+            buttons: element.buttons.map(({ title, payload }) => ({
+              text: title,
+              payload: payload
+            })),
+            sourceData: element
+          }))
+          break
+        default:
+          debug(`Not supported template type: ${asJson.payload.template_type} in: ${JSON.stringify(asJson, null, 2)}`)
+
+          break
+      }
+    } else {
+      debug(`Not supported json: ${JSON.stringify(asJson, null, 2)}`)
+      messageText = JSON.stringify(asJson, null, 2)
+    }
+
+    const msg = { messageText, buttons, media, cards }
+    debug(`Message in Botium format: ${JSON.stringify(msg)}`)
+    return msg
+  }
+
   _doRequest (msg, options = {}) {
+    if (this.caps[Capabilities.KOREAI_WEBHOOK_CHANNEL] === 'Web/Mobile Client') {
+      if (!this.webChannel) {
+        throw new Error('WebChannel not initialized, call Build() first')
+      }
+      return this.webChannel.DoRequest(msg, options)
+    }
     const requestOptions = this._buildRequest(msg, options)
     const controller = new AbortController()
-
     const timeout = (options.timeout || this.caps.WAITFORBOTTIMEOUT || 10000) * 1.1
     const timeoutId = setTimeout(() => {
       debug(`Timeout ${timeout} reached, aborting request`)
@@ -605,38 +709,6 @@ class BotiumConnectorKoreaiWebhook {
               }
             }
 
-            let contextData = null
-            if (body.customData && _.isPlainObject(body.customData)) {
-              const extractedCustomData = Object.keys(body.customData)
-                .filter(key => !key.startsWith('_'))
-                .reduce((obj, key) => {
-                  obj[key] = body.customData[key]
-                  return obj
-                }, {})
-
-              if (Object.keys(extractedCustomData).length > 0) {
-                contextData = extractedCustomData
-                debug(`Extracted customData from response: ${JSON.stringify(contextData)}`)
-              }
-            }
-            if (body.context && _.isPlainObject(body.context)) {
-              // Filter out internal Kore.ai context fields
-              const extractedContext = Object.keys(body.context)
-                .filter(key => !key.startsWith('_') && !['session', 'history', 'intent', 'entities'].includes(key))
-                .reduce((obj, key) => {
-                  obj[key] = body.context[key]
-                  return obj
-                }, {})
-
-              if (Object.keys(extractedContext).length > 0) {
-                if (!contextData) {
-                  contextData = {}
-                }
-                Object.assign(contextData, extractedContext)
-                debug(`Extracted context from response: ${JSON.stringify(extractedContext)}`)
-              }
-            }
-
             let forms = null
             // all other rich components are stored in the text fied.
             if (body.form) {
@@ -747,71 +819,7 @@ class BotiumConnectorKoreaiWebhook {
                 }
 
                 if (asJson) {
-                  debug(`response as json: ${JSON.stringify(asJson)}`)
-                  const customComponents = this._extractCustomComponents(asJson)
-                  if (customComponents) {
-                    messageText = customComponents.text
-                    buttons = customComponents.buttons
-                    media = customComponents.media
-                    cards = customComponents.cards
-                  } else if (asJson.file) {
-                  // {"file":{"type":"link","payload":{"url":"...","title":"...","template_type":"attachment"}}}
-                    if (asJson.file.type === 'link') {
-                      media = [{
-                        mediaUri: asJson.file.payload.url,
-                        altText: asJson.file.payload.title
-                      }]
-                    } else {
-                      debug('unknown file format')
-                    }
-                  } else if (asJson.text) {
-                    messageText = asJson.text
-                  } else if (asJson.type === 'template' && asJson?.payload?.template_type) {
-                    messageText = asJson.payload.text
-                    switch (asJson.payload.template_type) {
-                    // --- BUTTON ---
-                      case 'button':
-                      // If I created this button, then I set just one value, "Button1".
-                      // So I suppose just the title is important for me
-                      // {"type":"postback","title":"Button1","payload":"button1","value":"button1"}
-                        buttons = asJson.payload.buttons.map(({ title, payload }) => ({
-                          text: title,
-                          payload: payload
-                        }))
-                        break
-                        // --- QUICK REPLY ---
-                      case 'quick_replies':
-                      // {"content_type":"text","title":"B1","payload":"button1","image_url":"https:...","value":"button1"}
-                        buttons = asJson.payload.quick_replies.map(({ title, payload }) => ({
-                          text: title,
-                          payload: payload
-                        }))
-                        break
-                      case 'carousel':
-                      // default_action is not used. its always
-                      // {
-                      //   "type": "web_url",
-                      //   "url": ""
-                      // }
-                      // eslint-disable-next-line camelcase
-                        cards = asJson.payload.elements.map((element) => ({
-                          text: [element.title, element.subtitle],
-                          image: { mediaUri: element.image_url },
-                          buttons: element.buttons.map(({ title, payload }) => ({
-                            text: title,
-                            payload: payload
-                          })),
-                          sourceData: element
-                        }))
-                        break
-                      default:
-                        debug(`Not supported template type: ${asJson.payload.template_type} in: ${JSON.stringify(asJson, null, 2)}`)
-
-                        break
-                    }
-                  } else {
-                    debug(`Not supported json: ${JSON.stringify(asJson, null, 2)}`)
-                  }
+                  ({ messageText, buttons, media, cards } = this.ExtractMessagePartsFromJson(asJson))
                 } else {
                 // --- CONFIRMATION ---
                 // "This is a confirmation\nYes, No, "
@@ -844,9 +852,6 @@ class BotiumConnectorKoreaiWebhook {
                   botMsg.nlp = nlp
                   nlp = null
                 }
-                if (contextData) {
-                  botMsg.contextData = contextData
-                }
                 if (forms) {
                   botMsg.forms = forms
                   forms = null
@@ -855,16 +860,13 @@ class BotiumConnectorKoreaiWebhook {
                 setTimeout(() => this.queueBotSays(botMsg), 0)
               })
             } else {
-              if (nlp || forms || contextData) {
+              if (nlp || forms) {
                 const botMsg = {
                   sourceData: body
                 }
                 if (nlp) {
                   botMsg.nlp = nlp
                   nlp = null
-                }
-                if (contextData) {
-                  botMsg.contextData = contextData
                 }
                 if (forms) {
                   botMsg.forms = forms
@@ -889,8 +891,7 @@ class BotiumConnectorKoreaiWebhook {
     let {
       url = this.url,
       token = this.token,
-      nlpDisabled = false,
-      stepCustomData = null
+      nlpDisabled = false
     } = options
     const headers = {
       'Content-Type': 'application/json'
@@ -907,13 +908,8 @@ class BotiumConnectorKoreaiWebhook {
         from: this.fromId
       }
 
-      // Use stepCustomData if provided (context change), otherwise fall back to this.customData
-      if (!_.isNil(stepCustomData)) {
-        requestData.customData = stepCustomData
-        debug(`Including stepCustomData in IVR request: ${JSON.stringify(stepCustomData)}`)
-      } else if (!_.isNil(this.customData)) {
-        requestData.customData = this.customData
-      }
+      debug('Getting customData 1')
+      requestData.customData = this.GetCustomData(msg.SET_KOREAI_WEBHOOK_CUSTOM_DATA)
 
       url = `${url}?token=${token}`
 
@@ -943,14 +939,8 @@ class BotiumConnectorKoreaiWebhook {
           id: this.toId
         }
       }
-
-      // Use stepCustomData if provided (context change), otherwise fall back to this.customData
-      if (!_.isNil(stepCustomData)) {
-        requestData.customData = stepCustomData
-        debug(`Including stepCustomData in request: ${JSON.stringify(stepCustomData)}`)
-      } else if (!_.isNil(this.customData)) {
-        requestData.customData = this.customData
-      }
+      debug('Getting customData 2')
+      requestData.customData = this.GetCustomData(msg.SET_KOREAI_WEBHOOK_CUSTOM_DATA)
 
       // add token to headers for message bots
       headers.Authorization = `Bearer ${token}`

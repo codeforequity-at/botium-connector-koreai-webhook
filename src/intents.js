@@ -1,32 +1,48 @@
 const Connector = require('./connector')
 const debug = () => require('debug')('botium-connector-koreai-intents')
 const FormData = require('form-data')
+
 const uuidv1 = require('uuid').v1
 const https = require('https')
-const { URL } = require('url')
 
 const Capabilities = require('./Capabilities')
 
 const extractUrl = (container) => {
+  if (container.caps[Capabilities.KOREAI_WEBHOOK_BOTID] && container.caps[Capabilities.KOREAI_WEBHOOK_BASE_URL]) {
+    const urlRoot = container.caps[Capabilities.KOREAI_WEBHOOK_BASE_URL]
+    const botId = container.caps[Capabilities.KOREAI_WEBHOOK_BOTID]
+    return { urlRoot: urlRoot + '/api/public', botId }
+  }
+  // all this are legacy. KOREAI_WEBHOOK_BOTID and KOREAI_WEBHOOK_BASE_URL are mandatory now.
   const uriWebhook = container.caps[Capabilities.KOREAI_WEBHOOK_URL]
-  if (uriWebhook.indexOf('/chatbot/hooks/') < 0) {
-    throw new Error(`Webhook URL ${uriWebhook} is not valid, download failed`)
-  } else {
+  if (uriWebhook.indexOf('/chatbot/hooks/') >= 0) {
     const normalizedUri = uriWebhook.indexOf('/hookInstance/') > 0
       ? uriWebhook.substring(0, uriWebhook.indexOf('/hookInstance/'))
       : uriWebhook
     const splitted = normalizedUri.split('/chatbot/hooks/')
     if (splitted.length !== 2) {
-      throw new Error(`Webhook URL ${uriWebhook} is not valid, download failed`)
+      throw new Error(`Webhook URL (Plain) ${uriWebhook} is not valid, download failed`)
     }
     const urlRoot = splitted[0].concat('/api/public')
     const botId = splitted[1]
-    const url = new URL(urlRoot)
-    return { urlRoot, botId, hostname: url.hostname, pathname: url.pathname }
+    return { urlRoot, botId }
+  } else if (uriWebhook.indexOf('/ivr/hooks/') >= 0) {
+    const normalizedUri = uriWebhook.indexOf('/hookInstance/') > 0
+      ? uriWebhook.substring(0, uriWebhook.indexOf('/hookInstance/'))
+      : uriWebhook
+    const splitted = normalizedUri.split('/ivr/hooks/')
+    if (splitted.length !== 2) {
+      throw new Error(`Webhook URL (IVR) ${uriWebhook} is not valid, download failed`)
+    }
+    const urlRoot = splitted[0].concat('/api/public')
+    const botId = splitted[1]
+    return { urlRoot, botId }
+  } else {
+    throw new Error(`Webhook URL ${uriWebhook} is not valid, download failed`)
   }
 }
 
-const getContent = async ({ container, statusCallback }) => {
+const getContent = async ({ container, token, statusCallback }) => {
   const status = (log, obj) => {
     obj ? debug(log, obj) : debug(log)
     if (statusCallback) statusCallback(log, obj)
@@ -43,7 +59,7 @@ const getContent = async ({ container, statusCallback }) => {
       url: `${urlRoot}/bot/${botId}/mlexport?state=configured&=&type=json`,
       method: 'POST',
       headers: {
-        auth: `${container.token}`,
+        auth: `${token}`,
         'Content-Type': 'application/json'
       }
     }
@@ -69,7 +85,7 @@ const getContent = async ({ container, statusCallback }) => {
       url: `${urlRoot}/bot/${streamId}/mlexport/status`,
       method: 'GET',
       headers: {
-        auth: `${container.token}`
+        auth: `${token}`
       }
     }
     debug(`Constructed requestOptions for mlexport/status: ${JSON.stringify(roStatus, null, 2)}`)
@@ -115,7 +131,7 @@ const getContent = async ({ container, statusCallback }) => {
     // Download
     //
     const roDownload = {
-      url: `https://bots.kore.ai/${resStatus.downloadUrl}`,
+      url: resStatus.downloadUrl,
       method: 'GET'
     }
     debug(`Constructed requestOptions for download: ${JSON.stringify(roDownload, null, 2)}`)
@@ -140,8 +156,8 @@ const getContent = async ({ container, statusCallback }) => {
 
 const importKoreaiIntents = async ({ caps, importallutterances, buildconvos }, { statusCallback }) => {
   const container = new Connector({ caps })
-  await container.Start()
-  const chatbotData = await getContent({ container, statusCallback })
+  const token = container.createToken(null, null, true)
+  const chatbotData = await getContent({ container, token, statusCallback })
 
   const utterances = {}
 
@@ -202,14 +218,14 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
       if (statusCallback) statusCallback(log, obj)
     }
     const container = new Connector({ caps })
-    await container.Start()
-    const adminToken = container.adminToken
+    const token = container.createToken(null, null, true)
+    const adminToken = container.createAdminToken(true)
     if (!adminToken) {
       throw new Error('Admin token is not available, check admin credentials!')
     }
 
     status('Import started')
-    const newData = await getContent({ container, statusCallback })
+    const newData = await getContent({ container, token, statusCallback })
 
     const existingIntents = new Set(newData.map(s => s.taskName))
     status(`Chatbot data imported. (${newData.length} utterances in ${existingIntents.size} intents)`)
@@ -275,13 +291,13 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
     }
     status('Export started')
 
-    const resImport = await koreaiImportEndpointNative({ container, urlStruct, fileName, fileId: resUpload.fileId })
+    const resImport = await koreaiImportEndpointNative({ token, urlStruct, fileName, fileId: resUpload.fileId })
 
     const roStatus = {
       url: `${urlRoot}/bot/${botId}/mlimport/status/${resImport._id}`,
       method: 'GET',
       headers: {
-        auth: `${container.token}`
+        auth: `${token}`
       }
     }
     debug(`Constructed requestOptions for mlexport/status: ${JSON.stringify(roStatus, null, 2)}`)
@@ -338,14 +354,14 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
     }
   }
  */
-const koreaiImportEndpointNative = async ({ container, urlStruct, fileName, fileId }) => {
+const koreaiImportEndpointNative = async ({ token, urlStruct, fileName, fileId }) => {
   return new Promise((resolve, reject) => {
     const options = {
       method: 'POST',
       hostname: urlStruct.hostname,
       path: `${urlStruct.pathname}/bot/${urlStruct.botId}/mlimport`,
       headers: {
-        auth: `${container.token}`,
+        auth: `${token}`,
         'content-type': 'application/json'
       },
       maxRedirects: 20

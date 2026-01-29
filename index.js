@@ -29,6 +29,12 @@ module.exports = {
         required: true
       },
       {
+        name: 'KOREAI_WEBHOOK_BOTID',
+        label: 'Bot ID',
+        type: 'string',
+        required: true
+      },     
+      {
         name: 'KOREAI_WEBHOOK_CLIENTID',
         label: 'Client ID',
         type: 'string',
@@ -38,6 +44,12 @@ module.exports = {
         name: 'KOREAI_WEBHOOK_CLIENTSECRET',
         label: 'Client Secret',
         type: 'secret',
+        required: true
+      },
+      {
+        name: 'KOREAI_WEBHOOK_CHANNEL',
+        label: 'Channel',
+        type: 'string',
         required: true
       },
       {

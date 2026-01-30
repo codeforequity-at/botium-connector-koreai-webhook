@@ -64,13 +64,18 @@ class WebChannel {
 
     // Acquire WebSocket URL
     const rtmStartUrl = new URL('/api/1.1/rtm/start', baseUrl).toString()
+    const customData = this.connector.GetCustomData(null)
+    const botInfoWithCustomData = (customData && Object.keys(customData).length > 0)
+      ? { ...this.botInfo, customData }
+      : this.botInfo
+    this.botInfo = botInfoWithCustomData
     const rtmStartRes = await fetch(rtmStartUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `bearer ${this.accessToken}`
       },
-      body: JSON.stringify({ botInfo: this.botInfo })
+      body: JSON.stringify({ botInfo: botInfoWithCustomData })
     })
     if (!rtmStartRes.ok) {
       const bodyText = await rtmStartRes.text()
@@ -184,7 +189,7 @@ class WebChannel {
       id
     }
 
-    evt.customData = this.connector.GetCustomData(msg.SET_KOREAI_WEBHOOK_CUSTOM_DATA, msg)
+    evt.customData = this.connector.GetCustomData(msg.SET_KOREAI_WEBHOOK_CUSTOM_DATA)
 
     if (this.connector?.nlpAnalyticsUri && textToSend && !nlpDisabled) {
       this.lastNlp = await this._requestNlpAnalytics(textToSend)

@@ -12,7 +12,13 @@ class WebChannel {
     this.botInfo = null
     this.accessToken = null
     this._stopping = false
-    this.lastNlp = null
+    // its promise to fix this scenario occured before:
+    // 1. user says "Hello"
+    // 2. NLP analytics is requested, and running.
+    // 3. bot sends welcome message
+    // 4. we convert welcome message to botium format, but without NLP analytics
+    // 5. NLP analytics returns NLP info
+    this.lastNlpPromise = null
     this._wsOnMessage = null
     this._wsOnClose = null
     this._wsOnError = null
@@ -91,7 +97,7 @@ class WebChannel {
 
   async Stop () {
     this._stopping = true
-    this.lastNlp = null
+    this.lastNlpPromise = null
     if (this.ws) {
       try {
         if (this._wsOnMessage) this.ws.off('message', this._wsOnMessage)
@@ -133,7 +139,7 @@ class WebChannel {
       ws.on('error', onError)
     })
 
-    this._wsOnMessage = (data) => {
+    this._wsOnMessage = async (data) => {
       if (this._stopping || !this.ws || this.ws !== ws) return
       let evt
       try {
@@ -145,7 +151,7 @@ class WebChannel {
       if (evt?.type === 'bot_response') {
         debug(`WebSocket event received (accepted): ${evt?.type || 'unknown'} ${JSON.stringify(evt).substring(0, 2500)}`)
         try {
-          const botMsgs = this.ExtractBotResponses(evt)
+          const botMsgs = await this.ExtractBotResponses(evt)
           botMsgs.forEach(botMsg => {
             if (botMsg) {
               setTimeout(() => this.connector.queueBotSays(botMsg), 0)
@@ -176,7 +182,7 @@ class WebChannel {
   async DoRequest (msg, options = {}) {
     if (!this.ws) throw new Error('WebChannel not connected (missing WebSocket), call Start() first')
     if (this.ws.readyState !== WebSocket.OPEN) throw new Error(`WebChannel WebSocket not open (readyState=${this.ws.readyState}), call Start() first`)
-    this.lastNlp = null
+    this.lastNlpPromise = null
     const textToSend = msg?.messageText || ''
     const { nlpDisabled = false } = options
 
@@ -192,7 +198,16 @@ class WebChannel {
     evt.customData = this.connector.GetCustomData(msg.SET_KOREAI_WEBHOOK_CUSTOM_DATA)
 
     if (this.connector?.nlpAnalyticsUri && textToSend && !nlpDisabled) {
-      this.lastNlp = await this._requestNlpAnalytics(textToSend)
+      debug(`Requesting NLP analytics request for text: ${textToSend}`)
+      // Never let NLP analytics failure block bot responses.
+      this.lastNlpPromise = this._requestNlpAnalytics(textToSend)
+        .catch(err => {
+          debug(`NLP analytics request failed: ${err?.message || err}`)
+          return null
+        })
+    } else {
+      debug(`Skipping NLP analytics request. nlpDisabled: ${nlpDisabled}, textToSend: ${textToSend}, nlpAnalyticsUri: ${this.connector?.nlpAnalyticsUri}`)
+      this.lastNlpPromise = null
     }
 
     debug(`Sending message over WebSocket: ${JSON.stringify(evt)}`)
@@ -273,8 +288,21 @@ class WebChannel {
     return nlp
   }
 
-  ExtractBotResponses (evt) {
-    const botMsgs = (evt?.message || []).map(msg => {
+  async ExtractBotResponses (evt) {
+    const botMsgs = []
+    // Snapshot the promise to avoid races with overlapping DoRequest() calls.
+    const nlpPromise = this.lastNlpPromise
+    let nlp = null
+    if (nlpPromise) {
+      try {
+        nlp = await nlpPromise
+      } catch (err) {
+        // Should not happen because DoRequest() catches, but keep it extra-safe.
+        debug(`NLP analytics promise failed (ignored): ${err?.message || err}`)
+        nlp = null
+      }
+    }
+    for (const msg of (evt?.message || [])) {
       debug(`Bot message, Kore.ai format: ${JSON.stringify(msg).substring(0, 2500)}`)
       let asJson = null
       try {
@@ -283,10 +311,11 @@ class WebChannel {
 
       const botMsg = asJson ? this.connector.ExtractMessagePartsFromJson(asJson) : { messageText: msg?.cInfo?.body ? _.unescape(msg.cInfo.body) : msg?.cInfo?.body }
       botMsg.sourceData = msg
-      if (this.lastNlp) botMsg.nlp = this.lastNlp
+      if (nlp) botMsg.nlp = nlp
       debug(`Bot message, botium format: ${JSON.stringify(botMsg).substring(0, 2500)}`)
-      return botMsg
-    }).filter(msg => msg !== null)
+
+      if (botMsg !== null) botMsgs.push(botMsg)
+    }
 
     return botMsgs
   }

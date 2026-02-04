@@ -50,8 +50,8 @@ class WebChannel {
 
     // Web/Mobile Client: JWT grant exchange for accessToken
     const jwtToken = this.connector.createToken(clientId, clientSecret)
-    this.botInfo = { chatBot: botName, taskBotId }
-
+    const customData = this.connector.GetCustomData(null)
+    this.botInfo = { chatBot: botName, taskBotId, ...(customData && Object.keys(customData).length > 0 ? { customData } : null) }
     const jwtGrantUrl = new URL('/api/1.1/oAuth/token/jwtgrant', baseUrl).toString()
     debug(`Starting WebChannel via jwtgrant ${jwtGrantUrl} botInfo=${JSON.stringify(this.botInfo)}`)
 
@@ -70,18 +70,13 @@ class WebChannel {
 
     // Acquire WebSocket URL
     const rtmStartUrl = new URL('/api/1.1/rtm/start', baseUrl).toString()
-    const customData = this.connector.GetCustomData(null)
-    const botInfoWithCustomData = (customData && Object.keys(customData).length > 0)
-      ? { ...this.botInfo, customData }
-      : this.botInfo
-    this.botInfo = botInfoWithCustomData
     const rtmStartRes = await fetch(rtmStartUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: `bearer ${this.accessToken}`
       },
-      body: JSON.stringify({ botInfo: botInfoWithCustomData })
+      body: JSON.stringify({ botInfo: this.botInfo })
     })
     if (!rtmStartRes.ok) {
       const bodyText = await rtmStartRes.text()
@@ -195,7 +190,10 @@ class WebChannel {
       id
     }
 
-    evt.customData = this.connector.GetCustomData(msg.SET_KOREAI_WEBHOOK_CUSTOM_DATA)
+    const customData = this.connector.GetCustomData(msg.SET_KOREAI_WEBHOOK_CUSTOM_DATA)
+    if (customData) {
+      evt.customData = customData
+    }
 
     if (this.connector?.nlpAnalyticsUri && textToSend && !nlpDisabled) {
       debug(`Requesting NLP analytics request for text: ${textToSend}`)

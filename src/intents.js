@@ -241,7 +241,6 @@ const getLinkedApps = async ({ token, status, botId, botName, urlRoot, language 
     const publishedBots = resLinkedAppsData?.publishedBots || []
     status(`Fetched ${Array.isArray(publishedBots) ? publishedBots.length : 0} linked apps for bot ${botName || 'main'}(${botId || 'main'}).`)
     return Array.isArray(publishedBots) ? publishedBots : []
-
   } catch (err) {
     throw new Error(`getLinkedApps failed: ${_errDetails(err)} (botId=${botId || 'main'})`, { cause: err })
   }

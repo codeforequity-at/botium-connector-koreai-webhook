@@ -288,13 +288,10 @@ const importKoreaiIntents = async ({ caps, importallutterances, buildconvos }, {
 
     if (adminToken) {
       try {
-        const linkedApps = await getLinkedApps({ token: adminToken, statusCallback, status, botId, botName, urlRoot })
+        const linkedApps = await getLinkedApps({ token: adminToken, status, botId, botName, urlRoot })
         if (linkedApps && linkedApps.length) {
           for (const linkedApp of linkedApps) {
-            const rawLinkedBotId = linkedApp?._id || linkedApp?.botId || linkedApp?.id
-            const linkedBotId = (rawLinkedBotId && typeof rawLinkedBotId === 'string' && !rawLinkedBotId.startsWith('st-'))
-              ? `st-${rawLinkedBotId}`
-              : rawLinkedBotId
+            const linkedBotId = linkedApp?._id || linkedApp?.botId || linkedApp?.id
             if (!linkedBotId) {
               status(`Bot ${botName || 'main'}(${botId || 'main'}) has linked app ${linkedApp?.name || linkedApp?.botName || 'main'} with missing bot id. Skipping utterance download for this linked app.`)
               continue
@@ -370,7 +367,7 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
       throw new Error('Bot name is not available!')
     }
     const urlStruct = extractUrl(container)
-    status('Export started ')
+    status('Export started')
     const newData = await getUtterances({ token, status, botId: urlStruct.botId, botName, urlRoot: urlStruct.urlRoot })
 
     const existingIntents = new Set(newData.map(s => s.taskName))

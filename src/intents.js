@@ -83,7 +83,7 @@ const extractUrl = (container) => {
   }
 }
 
-const getUtterances = async ({ container, token, statusCallback, status, botId, botName, urlRoot }) => {
+const getUtterances = async ({ token, statusCallback, status, botId, botName, urlRoot }) => {
   status = status || ((log, obj) => {
     obj ? debug(log, obj) : debug(log)
     if (statusCallback) statusCallback(log, obj)
@@ -120,7 +120,7 @@ const getUtterances = async ({ container, token, statusCallback, status, botId, 
 
     const resStartData = await resStart.json()
     const streamId = resStartData.streamId
-    debug(`Import started for bot ${botName || 'main'}(${botId || 'main'})`)
+    debug(`Export started for bot ${botName || 'main'}(${botId || 'main'})`)
     //
     // Checking download status
     //
@@ -152,16 +152,16 @@ const getUtterances = async ({ container, token, statusCallback, status, botId, 
         // Some other state to check?
         exportFinished = ['FAILED', 'SUCCESS'].includes(resStatus.status)
         if (!exportFinished) {
-          debug(`Import state is "${resStatus.status}". Waiting 1s`)
+          debug(`Export state is "${resStatus.status}". Waiting 1s`)
           await new Promise(resolve => setTimeout(resolve, retryDelayMs))
         }
       } catch (err) {
       // i get sometimes internal server error on first try, but on second try it is working.
       // To be sure retry is for all errors, and not just for the first try
-        if (tries !== 19) {
+        if (tries !== (maxTries - 1)) {
           status(`Error from mlexport/status: ${_errDetails(err)} retrying`)
         } else {
-          throw new Error(`getUtterances: import failed, mlexport/status try #${maxTries} failed with error "${_errMsg(err)}" (${roStatus.method} ${roStatus.url})`)
+          throw new Error(`getUtterances: export failed, mlexport/status try #${maxTries} failed with error "${_errMsg(err)}" (${roStatus.method} ${roStatus.url})`)
         }
       }
     }
@@ -169,12 +169,12 @@ const getUtterances = async ({ container, token, statusCallback, status, botId, 
     if (!resStatus || resStatus.status !== 'SUCCESS') {
       const statusValue = resStatus && resStatus.status
       const reason = !exportFinished
-        ? `timed out waiting for import to finish after ${maxTries} tries`
-        : `import finished with status "${statusValue}"`
+        ? `timed out waiting for export to finish after ${maxTries} tries`
+        : `export finished with status "${statusValue}"`
       throw new Error(`getUtterances: ${reason} (${roStatus.method} ${roStatus.url}) lastResponse=${_safeJson(resStatus)}`)
     }
 
-    debug(`Import finished for bot ${botName || 'main'}(${botId || 'main'})`)
+    debug(`Export finished for bot ${botName || 'main'}(${botId || 'main'})`)
 
     //
     // Download
@@ -196,7 +196,7 @@ const getUtterances = async ({ container, token, statusCallback, status, botId, 
 
     const resDownload = await resDownloadData.json()
 
-    debug(`Import file downloaded for bot ${botName || 'main'}(${botId || 'main'})`)
+    debug(`Export file downloaded for bot ${botName || 'main'}(${botId || 'main'})`)
 
     return resDownload
   } catch (err) {
@@ -205,11 +205,7 @@ const getUtterances = async ({ container, token, statusCallback, status, botId, 
   }
 }
 
-const getLinkedApps = async ({ token, status, botId, botName, urlRoot }) => {
-  status = status || ((log, obj) => {
-    obj ? debug(log, obj) : debug(log)
-  })
-
+const getLinkedApps = async ({ token, status, botId, botName, urlRoot, language = 'en' }) => {
   try {
     // extractUrl() returns "<base>/api/public" - for this endpoint we need "<base>/api/1.1/public"
     const apiPublicSuffix = '/api/public'
@@ -218,15 +214,15 @@ const getLinkedApps = async ({ token, status, botId, botName, urlRoot }) => {
       : urlRoot
     const linkedAppsUrlRoot = `${baseUrl}/api/1.1/public`
 
-    // See test/nightly/admindemo.js
+    // Request options for fetching linked apps from the universalbot/link endpoint
     const roLinkedApps = {
-      url: `${linkedAppsUrlRoot}/bot/${botId}/universalbot/link?language=en`,
+      url: `${linkedAppsUrlRoot}/bot/${botId}/universalbot/link?language=${language}`,
       method: 'GET',
       headers: {
         auth: `${token}`,
         Accept: 'application/json',
-        'bot-language': 'en',
-        'app-language': 'en',
+        'bot-language': language,
+        'app-language': language,
         'client-app': 'unified'
       }
     }
@@ -241,9 +237,8 @@ const getLinkedApps = async ({ token, status, botId, botName, urlRoot }) => {
       const body = await _tryReadBody(resLinkedApps)
       throw new Error(`getLinkedApps: universalbot/link failed (${resLinkedApps.status}) ${roLinkedApps.method} ${roLinkedApps.url}${body ? ` - ${body}` : ''}`)
     }
-
     const resLinkedAppsData = await resLinkedApps.json()
-    const publishedBots = resLinkedAppsData?.publishedBots || resLinkedAppsData?.bots || resLinkedAppsData?.linkedBots || []
+    const publishedBots = resLinkedAppsData?.publishedBots || []
     status(`Fetched ${Array.isArray(publishedBots) ? publishedBots.length : 0} linked apps for bot ${botName || 'main'}(${botId || 'main'}).`)
     return Array.isArray(publishedBots) ? publishedBots : []
   } catch (err) {
@@ -265,8 +260,16 @@ const importKoreaiIntents = async ({ caps, importallutterances, buildconvos }, {
   const { urlRoot, botId } = urlStruct
 
   const utterances = {}
+  const visitedBotIds = new Set()
   const importKoreaiIntentsRecursive = async ({ botId, botName, urlRoot }) => {
-    const chatbotData = await getUtterances({ container, token: adminToken || chatbotToken, status, botId, botName, urlRoot })
+    // Prevent infinite recursion by tracking visited bot IDs
+    if (visitedBotIds.has(botId)) {
+      debug(`Bot ${botName || 'main'}(${botId || 'main'}) already visited, skipping to prevent circular references.`)
+      return
+    }
+    visitedBotIds.add(botId)
+
+    const chatbotData = await getUtterances({ token: adminToken || chatbotToken, status, botId, botName, urlRoot })
     let utteranceBatchCount = 0
     for (const entry of chatbotData) {
       if ((importallutterances || entry.type === 'DialogIntent') && entry.taskName) {
@@ -283,17 +286,19 @@ const importKoreaiIntents = async ({ caps, importallutterances, buildconvos }, {
 
     status(`Imported ${utteranceBatchCount} utterances from bot ${botName || 'main'}(${botId || 'main'})`)
 
-    // not really recursive. Just trying to do as less 401 errors as possible.
-    // KoreAI gives ban for much 401 errors.
     if (adminToken) {
       try {
-        const linkedApps = await getLinkedApps({ container, token: adminToken, status, botId, botName, urlRoot })
+        const linkedApps = await getLinkedApps({ token: adminToken, statusCallback, status, botId, botName, urlRoot })
         if (linkedApps && linkedApps.length) {
           for (const linkedApp of linkedApps) {
             const rawLinkedBotId = linkedApp?._id || linkedApp?.botId || linkedApp?.id
             const linkedBotId = (rawLinkedBotId && typeof rawLinkedBotId === 'string' && !rawLinkedBotId.startsWith('st-'))
               ? `st-${rawLinkedBotId}`
               : rawLinkedBotId
+            if (!linkedBotId) {
+              status(`Bot ${botName || 'main'}(${botId || 'main'}) has linked app ${linkedApp?.name || linkedApp?.botName || 'main'} with missing bot id. Skipping utterance download for this linked app.`)
+              continue
+            }
             status(`Bot ${botName || 'main'}(${botId || 'main'}) has linked app ${linkedApp?.name || linkedApp?.botName || 'main'}(${linkedBotId || 'main'}). Downloading utterances from it.`)
             await importKoreaiIntentsRecursive({ botId: linkedBotId, botName: linkedApp?.name || linkedApp?.botName, urlRoot })
           }
@@ -360,8 +365,13 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
       throw new Error('Admin token is not available, check admin credentials!')
     }
 
-    status('Import started ')
-    const newData = await getUtterances({ container, token, statusCallback })
+    const botName = container.caps[Capabilities.KOREAI_WEBHOOK_BOTNAME]
+    if (!botName) {
+      throw new Error('Bot name is not available!')
+    }
+    const urlStruct = extractUrl(container)
+    status('Export started ')
+    const newData = await getUtterances({ token, status, botId: urlStruct.botId, botName, urlRoot: urlStruct.urlRoot })
 
     const existingIntents = new Set(newData.map(s => s.taskName))
     status(`Chatbot data imported. (${newData.length} utterances in ${existingIntents.size} intents)`)
@@ -392,7 +402,6 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
       status(`Adding ${added} utterance(s) to exported data`)
     }
 
-    const urlStruct = extractUrl(container)
     const { urlRoot, botId } = urlStruct
 
     const fileName = `BotiumUtterances${uuidv1()}.json`

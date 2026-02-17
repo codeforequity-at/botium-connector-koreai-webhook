@@ -83,7 +83,7 @@ const extractUrl = (container) => {
   }
 }
 
-const getUtterances = async ({ container, token, statusCallback, status, botId, botName, urlRoot }) => {
+const getUtterances = async ({ token, statusCallback, status, botId, botName, urlRoot }) => {
   status = status || ((log, obj) => {
     obj ? debug(log, obj) : debug(log)
     if (statusCallback) statusCallback(log, obj)
@@ -205,18 +205,7 @@ const getUtterances = async ({ container, token, statusCallback, status, botId, 
   }
 }
 
-const getLinkedApps = async ({ token, statusCallback, status, botId, botName, urlRoot, language = 'en' }) => {
-  status = status || ((log, obj) => {
-    obj ? debug(log, obj) : debug(log)
-    if (typeof statusCallback === 'function') {
-      try {
-        statusCallback(log, obj)
-      } catch (err) {
-        debug(`statusCallback in getLinkedApps failed: ${_errDetails(err)}`)
-      }
-    }
-  })
-
+const getLinkedApps = async ({ token, status, botId, botName, urlRoot, language = 'en' }) => {
   try {
     // extractUrl() returns "<base>/api/public" - for this endpoint we need "<base>/api/1.1/public"
     const apiPublicSuffix = '/api/public'
@@ -248,25 +237,11 @@ const getLinkedApps = async ({ token, statusCallback, status, botId, botName, ur
       const body = await _tryReadBody(resLinkedApps)
       throw new Error(`getLinkedApps: universalbot/link failed (${resLinkedApps.status}) ${roLinkedApps.method} ${roLinkedApps.url}${body ? ` - ${body}` : ''}`)
     }
-
     const resLinkedAppsData = await resLinkedApps.json()
-    // Kore.ai APIs have used different fields for the same concept over time:
-    // - "publishedBots" (documented in newer API responses)
-    // - "bots" / "linkedBots" (seen in some environments / versions)
-    // We support all three but also log which one is actually present for easier debugging.
-    const publishedBotsRaw = resLinkedAppsData?.publishedBots ?? resLinkedAppsData?.bots ?? resLinkedAppsData?.linkedBots ?? []
-    let publishedBotsSource = 'none'
-    if (Array.isArray(resLinkedAppsData?.publishedBots)) {
-      publishedBotsSource = 'publishedBots'
-    } else if (Array.isArray(resLinkedAppsData?.bots)) {
-      publishedBotsSource = 'bots'
-    } else if (Array.isArray(resLinkedAppsData?.linkedBots)) {
-      publishedBotsSource = 'linkedBots'
-    }
-    debug(`getLinkedApps: using "${publishedBotsSource}" field from universalbot/link response for bot ${botName || 'main'}(${botId || 'main'}).`)
-    const publishedBots = Array.isArray(publishedBotsRaw) ? publishedBotsRaw : []
-    status(`Fetched ${publishedBots.length} linked apps for bot ${botName || 'main'}(${botId || 'main'}). (source field: ${publishedBotsSource})`)
-    return publishedBots
+    const publishedBots = resLinkedAppsData?.publishedBots || []
+    status(`Fetched ${Array.isArray(publishedBots) ? publishedBots.length : 0} linked apps for bot ${botName || 'main'}(${botId || 'main'}).`)
+    return Array.isArray(publishedBots) ? publishedBots : []
+
   } catch (err) {
     throw new Error(`getLinkedApps failed: ${_errDetails(err)} (botId=${botId || 'main'})`, { cause: err })
   }
@@ -295,7 +270,7 @@ const importKoreaiIntents = async ({ caps, importallutterances, buildconvos }, {
     }
     visitedBotIds.add(botId)
 
-    const chatbotData = await getUtterances({ container, token: adminToken || chatbotToken, status, botId, botName, urlRoot })
+    const chatbotData = await getUtterances({ token: adminToken || chatbotToken, status, botId, botName, urlRoot })
     let utteranceBatchCount = 0
     for (const entry of chatbotData) {
       if ((importallutterances || entry.type === 'DialogIntent') && entry.taskName) {
@@ -312,8 +287,6 @@ const importKoreaiIntents = async ({ caps, importallutterances, buildconvos }, {
 
     status(`Imported ${utteranceBatchCount} utterances from bot ${botName || 'main'}(${botId || 'main'})`)
 
-    // Recursive over linked apps (typically one level: parent bot -> linked bots) to minimize 401 errors.
-    // KoreAI may temporarily ban clients that generate too many 401 errors.
     if (adminToken) {
       try {
         const linkedApps = await getLinkedApps({ token: adminToken, statusCallback, status, botId, botName, urlRoot })
@@ -393,10 +366,13 @@ const exportKoreaiIntents = async ({ caps, language = 'en' }, { utterances }, { 
       throw new Error('Admin token is not available, check admin credentials!')
     }
 
-    const botName = container.caps[Capabilities.KOREAI_WEBHOOK_BOTNAME] || 'main'
+    const botName = container.caps[Capabilities.KOREAI_WEBHOOK_BOTNAME]
+    if (!botName) {
+      throw new Error('Bot name is not available!')
+    }
     const urlStruct = extractUrl(container)
     status('Export started ')
-    const newData = await getUtterances({ container, token, statusCallback, status, botId: urlStruct.botId, botName, urlRoot: urlStruct.urlRoot })
+    const newData = await getUtterances({ token, status, botId: urlStruct.botId, botName, urlRoot: urlStruct.urlRoot })
 
     const existingIntents = new Set(newData.map(s => s.taskName))
     status(`Chatbot data imported. (${newData.length} utterances in ${existingIntents.size} intents)`)

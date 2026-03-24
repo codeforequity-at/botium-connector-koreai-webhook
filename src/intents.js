@@ -278,9 +278,15 @@ const importKoreaiIntents = async ({ caps, importallutterances, buildconvos }, {
             name: entry.taskName,
             utterances: entry.taskName !== entry.sentence ? [entry.taskName] : []
           }
+          if (entry.taskName !== entry.sentence) {
+            utteranceBatchCount++
+          }
         }
-        utterances[entry.taskName].utterances.push(entry.sentence)
-        utteranceBatchCount++
+        const sentence = entry.sentence && entry.sentence.trim()
+        if (sentence) {
+          utterances[entry.taskName].utterances.push(sentence)
+          utteranceBatchCount++
+        }
       }
     }
 

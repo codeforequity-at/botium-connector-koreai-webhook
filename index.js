@@ -50,7 +50,12 @@ module.exports = {
         name: 'KOREAI_WEBHOOK_CHANNEL',
         label: 'Channel',
         type: 'string',
-        required: true
+        required: true,
+        choices: [
+          { key: 'Webhook', name: 'Webhook' },
+          { key: 'Web/Mobile Client', name: 'Web/Mobile Client' },
+          { key: 'Pure NLP', name: 'Pure NLP' }
+        ]
       },
       {
         name: 'KOREAI_WEBHOOK_WELCOME_TEXT',

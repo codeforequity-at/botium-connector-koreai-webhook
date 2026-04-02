@@ -64,13 +64,23 @@ class BotiumConnectorKoreaiWebhook {
   Validate () {
     debug('Validate called')
 
-    if (this.caps[Capabilities.KOREAI_WEBHOOK_CHANNEL] !== 'Web/Mobile Client') {
+    const isPureNlp = this.caps[Capabilities.KOREAI_WEBHOOK_CHANNEL] === 'Pure NLP'
+
+    if (!isPureNlp && this.caps[Capabilities.KOREAI_WEBHOOK_CHANNEL] !== 'Web/Mobile Client') {
       if (!this.caps[Capabilities.KOREAI_WEBHOOK_URL]) throw new Error('KOREAI_WEBHOOK_URL capability required')
     }
 
     if (!this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTID]) throw new Error('KOREAI_WEBHOOK_CLIENTID capability required')
     if (!this.caps[Capabilities.KOREAI_WEBHOOK_CLIENTSECRET]) throw new Error('KOREAI_WEBHOOK_CLIENTSECRET capability required')
-    if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE] && !this.caps[Capabilities.KOREAI_WEBHOOK_BOTNAME]) throw new Error('KOREAI_WEBHOOK_BOTNAME capability required for NLP Analytics')
+
+    if (isPureNlp) {
+      if (!this.caps[Capabilities.KOREAI_WEBHOOK_BOTNAME]) throw new Error('KOREAI_WEBHOOK_BOTNAME capability required for Pure NLP channel')
+      if (!this.caps[Capabilities.KOREAI_WEBHOOK_BASE_URL] && !this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_URL]) {
+        throw new Error('KOREAI_WEBHOOK_BASE_URL or KOREAI_WEBHOOK_NLP_ANALYTICS_URL capability required for Pure NLP channel')
+      }
+    } else if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE] && !this.caps[Capabilities.KOREAI_WEBHOOK_BOTNAME]) {
+      throw new Error('KOREAI_WEBHOOK_BOTNAME capability required for NLP Analytics')
+    }
 
     return Promise.resolve()
   }
@@ -83,6 +93,8 @@ class BotiumConnectorKoreaiWebhook {
 
   async Start () {
     debug('Start called')
+
+    const isPureNlp = this.caps[Capabilities.KOREAI_WEBHOOK_CHANNEL] === 'Pure NLP'
 
     this.url = this.caps[Capabilities.KOREAI_WEBHOOK_URL]
     if (this.caps[Capabilities.KOREAI_WEBHOOK_FROMID]) {
@@ -101,7 +113,6 @@ class BotiumConnectorKoreaiWebhook {
     if (this.caps[Capabilities.KOREAI_WEBHOOK_IVR_ANI]) {
       this.ivr_ani = this.caps[Capabilities.KOREAI_WEBHOOK_IVR_ANI]
     } else {
-      // Generate random phone number as default (format: +1XXXXXXXXXX)
       const randomNumber = Math.floor(1000000000 + Math.random() * 9000000000)
       this.ivr_ani = `+1${randomNumber}`
     }
@@ -123,18 +134,17 @@ class BotiumConnectorKoreaiWebhook {
       }
     }
 
-    if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE]) {
+    if (isPureNlp || this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_ENABLE]) {
       if (this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_URL]) {
         this.nlpAnalyticsUri = this.caps[Capabilities.KOREAI_WEBHOOK_NLP_ANALYTICS_URL]
       } else {
         if (this.caps[Capabilities.KOREAI_WEBHOOK_BOTID] && this.caps[Capabilities.KOREAI_WEBHOOK_BASE_URL]) {
           this.nlpAnalyticsUri = `${this.caps[Capabilities.KOREAI_WEBHOOK_BASE_URL]}/api/v1.1/rest/bot/${this.caps[Capabilities.KOREAI_WEBHOOK_BOTID]}/findIntent?fetchConfiguredTasks=false`
-        } else {
+        } else if (this.url) {
           const normalizedUri = this.url.indexOf('/hookInstance/') > 0
             ? this.url.substring(0, this.url.indexOf('/hookInstance/'))
             : this.url
 
-          // Support both chatbot and IVR URLs for NLP analytics
           if (normalizedUri.indexOf('/chatbot/hooks/') > 0) {
             this.nlpAnalyticsUri = normalizedUri.replace('/chatbot/hooks/', '/api/v1.1/rest/bot/').concat('/findIntent?fetchConfiguredTasks=false')
           } else if (normalizedUri.indexOf('/ivr/hooks/') > 0) {
@@ -146,13 +156,19 @@ class BotiumConnectorKoreaiWebhook {
           }
         }
       }
+      if (isPureNlp && !this.nlpAnalyticsUri) {
+        throw new Error('Could not determine NLP Analytics URL for Pure NLP channel. Provide KOREAI_WEBHOOK_NLP_ANALYTICS_URL or KOREAI_WEBHOOK_BASE_URL + KOREAI_WEBHOOK_BOTID.')
+      }
+      if (isPureNlp) {
+        debug(`Pure NLP mode enabled. Using NLP endpoint: ${this.nlpAnalyticsUri}`)
+      }
     }
 
-    if (this.webChannel) {
+    if (!isPureNlp && this.webChannel) {
       await this.webChannel.Start()
     }
 
-    if (this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT]) {
+    if (!isPureNlp && this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT]) {
       debug(`Sending welcome message ${this.caps[Capabilities.KOREAI_WEBHOOK_WELCOME_TEXT]} to bot`)
       try {
         await this._doRequest(
@@ -573,6 +589,9 @@ class BotiumConnectorKoreaiWebhook {
   }
 
   _doRequest (msg, options = {}) {
+    if (this.caps[Capabilities.KOREAI_WEBHOOK_CHANNEL] === 'Pure NLP') {
+      return this._doPureNlpRequest(msg, options)
+    }
     if (this.caps[Capabilities.KOREAI_WEBHOOK_CHANNEL] === 'Web/Mobile Client') {
       if (!this.webChannel) {
         throw new Error('WebChannel not initialized, call Build() first')
@@ -880,6 +899,92 @@ class BotiumConnectorKoreaiWebhook {
         })
         .catch(err => {
           reject(new Error(`failed to call endpoint "${requestOptions.main.url}" error message "${err.message}"`))
+        })
+        .finally(() => {
+          clearTimeout(timeoutId)
+        })
+    })
+  }
+
+  _doPureNlpRequest (msg, options = {}) {
+    const token = options.token || this.token
+    if (!this.nlpAnalyticsUri) {
+      return Promise.reject(new Error('NLP Analytics URI not configured for Pure NLP channel'))
+    }
+    if (!msg.messageText) {
+      return Promise.reject(new Error('No message text provided for Pure NLP request'))
+    }
+
+    const nlpRequest = {
+      url: this.nlpAnalyticsUri,
+      method: 'POST',
+      headers: {
+        auth: `${token}`,
+        'Content-Type': 'application/json'
+      },
+      data: {
+        input: msg.messageText,
+        streamName: this.caps[Capabilities.KOREAI_WEBHOOK_BOTNAME]
+      }
+    }
+
+    const controller = new AbortController()
+    const timeout = (options.timeout || this.caps.WAITFORBOTTIMEOUT || 10000) * 1.1
+    const timeoutId = setTimeout(() => {
+      debug(`Pure NLP timeout ${timeout} reached, aborting request`)
+      controller.abort()
+    }, timeout)
+
+    return new Promise((resolve, reject) => {
+      fetch(nlpRequest.url, {
+        method: nlpRequest.method,
+        headers: nlpRequest.headers,
+        body: JSON.stringify(nlpRequest.data),
+        signal: controller.signal
+      })
+        .then(async (res) => {
+          if (!res.ok) {
+            const text = await res.text()
+            throw new Error(`Pure NLP request failed with HTTP ${res.status}: ${text.substring(0, 500)}`)
+          }
+          return res.json()
+        })
+        .then((nlpData) => {
+          resolve(this)
+
+          let nlp = null
+          if (nlpData?.response) {
+            const intentName = _.get(nlpData, 'response.finalResolver.winningIntent[0].intent')
+            if (intentName) {
+              nlp = { intent: { name: intentName } }
+            } else if (nlpData.response.result === 'failintent') {
+              nlp = { intent: { name: 'None', incomprehension: true } }
+            }
+            const entities = _.get(nlpData, 'response.finalResolver.entities')
+            if (entities && entities.length) {
+              if (!nlp) nlp = {}
+              nlp.entities = entities.map(e => ({
+                name: e.field,
+                value: e.value
+                  ? _.isArray(e.value) && e.value.length === 1
+                    ? _.isString(e.value[0]) ? e.value[0] : JSON.stringify(e.value[0])
+                    : JSON.stringify(e.value)
+                  : ''
+              }))
+            }
+          }
+
+          const botMsg = {
+            sourceData: nlpData
+          }
+          if (nlp) {
+            botMsg.nlp = nlp
+          }
+          debug(`Pure NLP response converted to Botium format: ${JSON.stringify(botMsg)}`)
+          setTimeout(() => this.queueBotSays(botMsg), 0)
+        })
+        .catch(err => {
+          reject(new Error(`Pure NLP request to "${this.nlpAnalyticsUri}" failed: ${err.message}`))
         })
         .finally(() => {
           clearTimeout(timeoutId)

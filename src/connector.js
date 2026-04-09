@@ -1,12 +1,14 @@
-const util = require('util')
-const { v4: uuidv4 } = require('uuid')
-const jwt = require('jsonwebtoken')
-const _ = require('lodash')
-const debug = require('debug')('botium-connector-koreai-webhook')
-const { XMLParser } = require('fast-xml-parser')
+import util from 'util'
+import { v4 as uuidv4 } from 'uuid'
+import jwt from 'jsonwebtoken'
+import _ from 'lodash'
+import createDebug from 'debug'
+import { XMLParser } from 'fast-xml-parser'
 
-const Capabilities = require('./Capabilities')
-const WebChannel = require('./WebChannel')
+import Capabilities from './Capabilities.js'
+import WebChannel from './WebChannel.js'
+
+const debug = createDebug('botium-connector-koreai-webhook')
 class BotiumConnectorKoreaiWebhook {
   constructor ({ queueBotSays, caps }) {
     this.queueBotSays = queueBotSays
@@ -1087,4 +1089,4 @@ class BotiumConnectorKoreaiWebhook {
   }
 }
 
-module.exports = BotiumConnectorKoreaiWebhook
+export default BotiumConnectorKoreaiWebhook

@@ -1,2 +1,3 @@
-const bb = require('botium-bindings')
+import bb from 'botium-bindings'
+
 bb.helper.mocha().setupMochaTestSuite()

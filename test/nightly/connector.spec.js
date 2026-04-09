@@ -1,7 +1,8 @@
-require('dotenv').config()
-const assert = require('chai').assert
-const BotiumConnectorKoreAI = require('../../src/connector')
-const { readCaps } = require('./helper')
+import 'dotenv/config'
+import { assert } from 'chai'
+
+import BotiumConnectorKoreAI from '../../src/connector.js'
+import { readCaps } from './helper.js'
 
 describe('connector', function () {
   beforeEach(async function () {

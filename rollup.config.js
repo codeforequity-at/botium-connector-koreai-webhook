@@ -1,9 +1,8 @@
-import babel from 'rollup-plugin-babel'
-import commonjs from 'rollup-plugin-commonjs'
 import json from 'rollup-plugin-json'
 
 export default {
   input: 'index.js',
+  external: (id) => !id.startsWith('.') && !id.startsWith('/') && !id.startsWith('\0'),
   output: [
     {
       file: 'dist/botium-connector-koreai-webhook-es.js',
@@ -11,19 +10,13 @@ export default {
       sourcemap: true
     },
     {
-      file: 'dist/botium-connector-koreai-webhook-cjs.js',
+      file: 'dist/botium-connector-koreai-webhook-cjs.cjs',
       format: 'cjs',
+      exports: 'default',
       sourcemap: true
     }
   ],
   plugins: [
-    commonjs({
-      exclude: 'node_modules/**'
-    }),
-    babel({
-      exclude: 'node_modules/**',
-      runtimeHelpers: true
-    }),
     json()
   ]
 }

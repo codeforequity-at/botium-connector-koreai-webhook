@@ -1,11 +1,15 @@
-const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
+import { createRequire } from 'module'
+import chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
+import _ from 'lodash'
+import nock from 'nock'
+
+import Connector from '../../src/connector.js'
+
 chai.use(chaiAsPromised)
 const assert = chai.assert
-const _ = require('lodash')
-const nock = require('nock')
 
-const Connector = require('../../src/connector')
+const require = createRequire(import.meta.url)
 const capsBasic = require('./jsons/mocked_botium_basic.json').botium
   .Capabilities
 const capsWithNlp = require('./jsons/mocked_botium_with_nlp.json').botium
@@ -76,7 +80,7 @@ describe('connector', function () {
       }
       const connector = new Connector({
         caps: capsWithNlp,
-        queueBotSays,
+        queueBotSays
       })
       await connector.Validate()
       await connector.Start()
@@ -110,12 +114,12 @@ describe('connector', function () {
               // response.finalResolver.winningIntent[0].intent
               return _.isString(desc.nlp)
                 ? {
-                  response: {
-                    finalResolver: {
-                      winningIntent: [{ intent: desc.nlp }],
-                    },
-                  },
-                }
+                    response: {
+                      finalResolver: {
+                        winningIntent: [{ intent: desc.nlp }]
+                      }
+                    }
+                  }
                 : desc.nlp
             }
           } catch (err) {

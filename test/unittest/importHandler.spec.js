@@ -1,12 +1,9 @@
-const chai = require('chai')
-const chaiAsPromised = require('chai-as-promised')
-chai.use(chaiAsPromised)
-const assert = chai.assert
+import chai from 'chai'
+import chaiAsPromised from 'chai-as-promised'
 
-const caps = require('./jsons/mocked_botium_for_importer.json').botium.Capabilities
-const downloadConverted = require('./jsons/expected_import.json')
-const intents = require('../../src/intents')
-const { addDownloaderMocks } = require('./helper')
+import { addDownloaderMocks } from './helper.js'
+
+chai.use(chaiAsPromised)
 
 describe('importer', function () {
   beforeEach(async function () {

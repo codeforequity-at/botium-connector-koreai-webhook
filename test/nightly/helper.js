@@ -1,8 +1,14 @@
-module.exports.readCaps = () => {
-  // botium caps should come from env variable (.env) or botium.json. Priority is not defined if booth are filled
+import { readFileSync } from 'fs'
+import { dirname, join } from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+
+export const readCaps = () => {
+  // botium caps should come from env variable (.env) or botium.json. Priority is not defined if both are filled
   let botiumJson
   try {
-    botiumJson = require('./botium.json')
+    botiumJson = JSON.parse(readFileSync(join(__dirname, 'botium.json'), 'utf8'))
   } catch (err) {
   }
   const caps = botiumJson?.botium.Capabilities || {}

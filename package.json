@@ -2,12 +2,22 @@
   "name": "botium-connector-koreai-webhook",
   "version": "0.0.22",
   "description": "Botium Connector for Kore.ai Webhooks",
-  "main": "dist/botium-connector-koreai-webhook-cjs.js",
+  "type": "module",
+  "main": "dist/botium-connector-koreai-webhook-cjs.cjs",
   "module": "dist/botium-connector-koreai-webhook-es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/botium-connector-koreai-webhook-es.js",
+      "require": "./dist/botium-connector-koreai-webhook-cjs.cjs",
+      "default": "./dist/botium-connector-koreai-webhook-cjs.cjs"
+    }
+  },
   "scripts": {
-    "build": "npm run eslint && rollup -c",
-    "eslint": "eslint index.js src/**/*.js",
-    "eslint:fix": "eslint --fix index.js src/**/*.js",
+    "build": "rollup -c",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build",
+    "eslint": "eslint index.js src/**/*.js test/**/*.js samples/convo/spec/**/*.js",
+    "eslint:fix": "eslint --fix index.js src/**/*.js test/**/*.js samples/convo/spec/**/*.js",
     "test": "mocha test/unittest/**/*spec.js",
     "test-nightly": "mocha test/nightly/**/*spec.js"
   },
@@ -22,10 +32,6 @@
   },
   "homepage": "https://github.com/codeforequity-at/botium-core",
   "devDependencies": {
-    "@babel/core": "^7.12.13",
-    "@babel/node": "^7.12.13",
-    "@babel/plugin-transform-runtime": "^7.12.15",
-    "@babel/preset-env": "^7.12.13",
     "chai": "^4.3.7",
     "chai-as-promised": "^7.1.1",
     "dotenv": "^16.0.3",
@@ -39,14 +45,10 @@
     "mocha": "^10.2.0",
     "nock": "^14.0.0-beta.19",
     "rollup": "^2.38.5",
-    "rollup-plugin-babel": "^4.4.0",
-    "rollup-plugin-commonjs": "^10.1.0",
     "rollup-plugin-json": "^4.0.0",
-    "rollup-plugin-node-resolve": "^5.2.0",
     "ws": "^8.19.0"
   },
   "dependencies": {
-    "@babel/runtime": "^7.12.13",
     "debug": "^4.3.1",
     "fast-xml-parser": "^5.3.1",
     "form-data": "^4.0.0",

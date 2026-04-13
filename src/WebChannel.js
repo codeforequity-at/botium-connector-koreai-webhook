@@ -1,9 +1,11 @@
-const { v4: uuidv4 } = require('uuid')
-const _ = require('lodash')
-const debug = require('debug')('botium-connector-koreai-webhook:webchannel')
-const WebSocket = require('ws')
+import { v4 as uuidv4 } from 'uuid'
+import _ from 'lodash'
+import createDebug from 'debug'
+import WebSocket from 'ws'
 
-const Capabilities = require('./Capabilities')
+import Capabilities from './Capabilities.js'
+
+const debug = createDebug('botium-connector-koreai-webhook:webchannel')
 
 class WebChannel {
   constructor (connector) {
@@ -319,4 +321,4 @@ class WebChannel {
   }
 }
 
-module.exports = WebChannel
+export default WebChannel

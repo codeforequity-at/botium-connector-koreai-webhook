@@ -1,9 +1,9 @@
-const PluginClass = require('./src/connector')
-const { importHandler, importArgs, exportHandler, exportArgs } = require('./src/intents')
+import BotiumConnectorKoreaiWebhookClass from './src/connector.js'
+import { importHandler, importArgs, exportHandler, exportArgs } from './src/intents.js'
 
-module.exports = {
+export default {
   PluginVersion: 1,
-  PluginClass: PluginClass,
+  PluginClass: BotiumConnectorKoreaiWebhookClass,
   Import: {
     Handler: importHandler,
     Args: importArgs

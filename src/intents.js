@@ -1,11 +1,13 @@
-const Connector = require('./connector')
-const debug = require('debug')('botium-connector-koreai-intents')
-const FormData = require('form-data')
+import createDebug from 'debug'
+import FormData from 'form-data'
+import https from 'https'
+import { v1 as uuidv1 } from 'uuid'
 
-const uuidv1 = require('uuid').v1
-const https = require('https')
+import BotiumConnectorKoreaiWebhook from './connector.js'
+import Capabilities from './Capabilities.js'
 
-const Capabilities = require('./Capabilities')
+const Connector = BotiumConnectorKoreaiWebhook
+const debug = createDebug('botium-connector-koreai-intents')
 
 const _errMsg = (err) => (err && err.message) ? err.message : String(err)
 const _errDetails = (err) => {
@@ -547,36 +549,37 @@ const koreaiImportEndpointNative = async ({ token, urlStruct, fileName, fileId }
   })
 }
 
-module.exports = {
-  importHandler: ({ caps, importallutterances, buildconvos, ...rest } = {}, { statusCallback } = {}) => importKoreaiIntents({ caps, importallutterances, buildconvos, ...rest }, { statusCallback }),
-  importArgs: {
-    caps: {
-      describe: 'Capabilities',
-      type: 'json',
-      skipCli: true
-    },
-    importallutterances: {
-      describe: 'Import all utterances as intents. Not just DialogIntents',
-      type: 'boolean',
-      default: false
-    },
-    buildconvos: {
-      describe: 'Build convo files for intent assertions (otherwise, just write utterances files)',
-      type: 'boolean',
-      default: false
-    }
+export const importHandler = ({ caps, importallutterances, buildconvos, ...rest } = {}, { statusCallback } = {}) => importKoreaiIntents({ caps, importallutterances, buildconvos, ...rest }, { statusCallback })
+
+export const importArgs = {
+  caps: {
+    describe: 'Capabilities',
+    type: 'json',
+    skipCli: true
   },
-  exportHandler: ({ caps, language, ...rest } = {}, { convos, utterances } = {}, { statusCallback } = {}) => exportKoreaiIntents({ caps, language, ...rest }, { convos, utterances }, { statusCallback }),
-  exportArgs: {
-    caps: {
-      describe: 'Capabilities',
-      type: 'json',
-      skipCli: true
-    },
-    language: {
-      describe: 'The language of the data (like "en")',
-      type: 'string',
-      default: 'en'
-    }
+  importallutterances: {
+    describe: 'Import all utterances as intents. Not just DialogIntents',
+    type: 'boolean',
+    default: false
+  },
+  buildconvos: {
+    describe: 'Build convo files for intent assertions (otherwise, just write utterances files)',
+    type: 'boolean',
+    default: false
+  }
+}
+
+export const exportHandler = ({ caps, language, ...rest } = {}, { convos, utterances } = {}, { statusCallback } = {}) => exportKoreaiIntents({ caps, language, ...rest }, { convos, utterances }, { statusCallback })
+
+export const exportArgs = {
+  caps: {
+    describe: 'Capabilities',
+    type: 'json',
+    skipCli: true
+  },
+  language: {
+    describe: 'The language of the data (like "en")',
+    type: 'string',
+    default: 'en'
   }
 }

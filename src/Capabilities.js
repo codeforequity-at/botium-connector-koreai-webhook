@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   // Webhook, Web/Mobile Client
   KOREAI_WEBHOOK_CHANNEL: 'KOREAI_WEBHOOK_CHANNEL',
   KOREAI_WEBHOOK_BASE_URL: 'KOREAI_WEBHOOK_BASE_URL',
